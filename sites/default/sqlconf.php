@@ -3,16 +3,16 @@
 //  MySQL Config
 
 $host	= 'localhost';
-// $port	= '3306';
-// $login	= 'openemr';
-// $pass	= 'psrbarngardenfood11';
-// $dbase	= 'openemr';
-
-
-$port	= '8080';
+$port	= '3306';
 $login	= 'root';
-$pass	= 'teamdebona';
-$dbase	= 'openemr';
+$pass	= '';
+$dbase	= 'openemr4';
+
+
+//$port	= '8080';
+//$login	= 'root';
+//$pass	= 'teamdebona';
+//$dbase	= 'openemr';
 
 
 //Added ability to disable

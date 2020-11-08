@@ -59,3 +59,7 @@
 .field-group-wrapper .form-group {
 	margin-bottom: 10px!important;
 }
+
+.table-cell-center{
+	text-align: center; vertical-align: middle;
+}
