@@ -18,7 +18,7 @@ require_once($GLOBALS["srcdir"]."/api.inc");
 function cbrs_progress_notes_report($pid, $encounter, $cols, $id)
 {
     $count = 0;
-    $data = formFetch("form_progress_note", $id);
+    $data = formFetch("form_comprehensive_assessment", $id);
     if ($data) {
         ?>
         <table style='border-collapse:collapse;border-spacing:0;width: 100%;'>
