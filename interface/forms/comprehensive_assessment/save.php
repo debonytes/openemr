@@ -1,6 +1,6 @@
 <?php
 /*
- * This program saves data from the progress_note
+ * This program saves data from the comprehensive_assessment
  *
  * @package   OpenEMR
  * @link      http://www.open-emr.org
@@ -29,9 +29,9 @@ if (!CsrfUtils::verifyCsrfToken($_POST["csrf_token_form"])) {
 
 $encounter = ( isset($_SESSION['encounter']) && $_SESSION['encounter'] ) ? true:false; 
 
-$folderName = 'progress_note';
+$folderName = 'comprehensive_assessment';
 $tableName = 'form_' . $folderName;
-$form_textual_name = 'Progress Note';
+$form_textual_name = 'Comprehensive Assessment';
 
 $table_fields = sqlListFields($tableName); /* An array of the table fields */
 
@@ -46,7 +46,7 @@ $exclude_fields = array('id');
 $fieldValues = array();
 $encounter = ( isset($_REQUEST['encounter']) && $_REQUEST['encounter'] ) ? $_REQUEST['encounter'] : '';
 
-$implode_arr = array('risk_self_harm', 'risk_suicidality', 'risk_homicidality', 'symptoms_orientation', 'symptoms_speech', 'symptoms_mood', 'symptoms_thought_content', 'symptoms_hygiene', 'symptoms_motor', 'symptoms_affect', 'symptoms_perception', 'symptoms_thought_process', 'symptoms_other');
+$implode_arr = array('recipient_report', 'referral_comm_services', 'appearance_weight', 'appearance_hygiene', 'speech_rate', 'speech_volume', 'motor_activity', 'eye_contact', 'cooperativeness', 'thought_process', 'thought_content', 'thought_perception', 'mood', 'affect', 'orientation', 'memory_immediate', 'memory_recent', 'memory_remote', 'insight', 'insight_awareness_symptoms', 'insight_awareness_need', 'dsm_5_code', 'dsm_5_code_disorder');
 
 /* UPDATE FIELDS */
 if ($id) {

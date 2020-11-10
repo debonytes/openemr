@@ -4022,4 +4022,69 @@ function isOption($options, $test)
 
     return !is_null($options) && in_array($test, $options, true) ? true : false; // finally the truth!
 }
+
+
+/*
+*
+*/
+function get_service_type($value = null)
+{
+    $option = '<option value="">'. xlt('Choose') .'</option>';
+    $arr = array('Individual/Interactive/Play Therapy', 'Family', 'Family without Client', 'Medication Management', 'CBRS Skill Training', 'Group', 'Psych. Testing', 'Partial Care', 'Case Management', 'Peer Support Services', 'Family Support Services', 'Respite Care');
+
+    foreach($arr as $key){
+        $checked = ($key == $value) ? 'selected' : '';
+        $option .= '<option value="'. $key .'"  '. $checked .'  >'. xlt($key) .'</option>';
+    }    
+    return $option;
+}
+
+function get_intensity_hours($value = null)
+{
+    $option = '<option value="">'. xlt('Choose') .'</option>';
+    $arr = array('15 min', '30 min', '45 min', '1 hour', '1.5 hours', '2 hours', '3 hours', '4 hours', '5 hours', '6 hours', '7 hours', '8 hours', '9 hours', '10 hours', '11 hours', '12 hours', '13 hours', '14 hours', '15 hours', '16 hours', '17 hours', '18 hours', '19 hours', '20 hours');
+
+    foreach($arr as $key){
+        $checked = ($key == $value) ? 'selected' : '';
+        $option .= '<option value="'. $key .'" '. $checked .' >'. xlt($key) .'</option>';
+    }    
+    return $option;
+}
+
+function get_weekly_frequency($value = null)
+{
+    $option = '<option value="">'. xlt('Choose') .'</option>';
+    $arr = array('1xweek', '2xweek', '3xweek', '4xweek', '5xweek', '6xweek', 'monthly', '1x2months', '2xmonth', '1x3months', '1x6months');
+
+    foreach($arr as $key){
+        $checked = ($key == $value) ? 'selected' : '';
+        $option .= '<option value="'. $key .'"  '. $checked .' >'. xlt($key) .'</option>';
+    }   
+    return $option;
+}
+
+function get_treatment_duration($value = null)
+{
+    $option = '<option value="">'. xlt('Choose') .'</option>';
+    $arr = array('360 Days', 'Less Than 120 Days', '120 Days', '240 Days');
+
+    foreach($arr as $key){
+        $checked = ($key == $value) ? 'selected' : '';
+        $option .= '<option value="'. $key .'" '. $checked .' >'. xlt($key) .'</option>';
+    }    
+    return $option;
+}
+
+function get_examiner_name_dregree($value = null)
+{
+    $option = '<option value="">'. xlt('Name, Degree, Credential of Examiner') .'</option>';
+    $arr = array('Jim A. Grigg, LCPC', 'Brandon Markham, LCPC', 'Dawn Toth, LCPC', 'Kyle Alegria, LMSW', 'Erin Fischer, LPC', 'Janece Geisel, LPC', 'Angie Brewster, LPC', 'Lindsay Nelson, LMSW', 'Lisa Nestler, LPC', 'Marie Breton, MFTI', 'Suzanne Larsen, LCPC', 'Melinda Hill, Intern', 'Bethany Townsend, PhD, LPC, NCC', 'Jessy Diaz, LPC, NCC, ICADC', 'Iris Anson, LCPC, NCC');
+
+    foreach($arr as $key){
+        $checked = ($key == $value) ? 'selected' : '';
+        $option .= '<option value="'. $key .'" '. $checked .' >'. xlt($key) .'</option>';
+    }    
+    return $option;
+}
+
 ?>
