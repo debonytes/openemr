@@ -40,6 +40,93 @@ if ($is_group && !acl_check("groups", "glog", false, array('view','write'))) {
     exit();
 }
 
+
+global $dbLink;
+$dbLink = $GLOBALS['dbh'];
+
+/* Get Form Categories */
+$registryFields = sqlListFields("registry");
+$hasCatOrderField = array();
+if($registryFields) {
+    foreach($registryFields as $rf) {
+       if($rf=='category_order') {
+            $hasCatOrderField[] = 1;
+       }
+    }
+}
+
+/* MAKE SURE 'category_order' field exists otherwise add this category in the table */
+if(empty($hasCatOrderField)) {
+  $sql_action = "ALTER TABLE `registry` ADD `category_order` INT NULL DEFAULT NULL AFTER `aco_spec`";
+  sqlStatement($sql_action);
+}
+
+/* FORM TABS CATEGORIES ORDER */
+function get_registry_form_categories() {
+  global $dbLink;
+  $sqlquery = "SELECT category FROM registry WHERE TRIM(IFNULL(category,'')) <> '' GROUP BY category ORDER BY category_order ASC";
+  $result = $dbLink->query($sqlquery);
+  $categories = array();
+  if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      $categories[] = $row['category'];
+    }
+  }
+  return ($categories) ? $categories : '';
+}
+
+function get_sorted_form_categories() {
+    global $dbLink;
+    $sqlquery = "SELECT * FROM globals WHERE gl_name='form_tabs_custom_order'";
+    $result = sqlquery($sqlquery);
+    $sortCatData = ( isset($result['gl_value']) && $result['gl_value'] ) ? @unserialize($result['gl_value']) : '';
+    return $sortCatData;
+}
+
+function getAllFormCategories() {
+  $formCategoriesList = array();
+  $formCategoriesSorted = get_sorted_form_categories();
+  $formCategories = get_registry_form_categories(); 
+  $exceptions = array('Miscellaneous','Layout Based');
+  $otherCats = implode(",",$exceptions);
+  if($formCategories) {
+    array_push($formCategories,'Miscellaneous','Layout Based');
+    if($formCategoriesSorted) {
+      $actualList = array_values($formCategories);
+      $sorted = array_values($formCategoriesSorted);
+      $newCats = array();
+      
+      foreach($formCategories as $k=>$v) {
+        if( !in_array($v,$formCategoriesSorted) ) {
+          $newCats[] = $v;
+        }
+      }
+
+      if($newCats) {
+        $formCategoriesList = array_merge($sorted,$newCats);
+      } else {
+        $formCategoriesList = $sorted;
+      }
+
+      foreach($formCategoriesList as $k=>$v) {
+        if(!in_array($v,$actualList) ) {
+          unset($formCategoriesList[$k]);
+        }
+      }
+      
+    } else {
+      $formCategoriesList = $formCategories;
+    }
+  }
+  return ($formCategoriesList) ? $formCategoriesList : '';
+}
+
+function slugify($string){
+  return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $string), '-'));
+}
+
+$reorderdFormCats = getAllFormCategories();
+
 ?>
 <html>
 
@@ -559,7 +646,8 @@ isset($GLOBALS['encounter']) &&
 }
 
 if (!empty($reg)) {
-    $StringEcho= '<ul id="sddm">';
+    /* Form Tabs */;
+    $StringEcho= '<ul id="sddm" class="sddmList" style="display:none">';
     if ($encounterLocked === false) {
         foreach ($reg as $entry) {
           // Check permission to create forms of this type.
@@ -587,7 +675,7 @@ if (!empty($reg)) {
                 if ($old_category != '') {
                     $StringEcho .= "</table></div></li>";
                 }
-                $StringEcho .= "<li class=\"encounter-form-category-li\"><a href='JavaScript:void(0);' onClick=\"mopen(" . attr_js($DivId) . ");\" >" . text($new_category) . "</a><div id='" . attr($DivId) . "' ><table border='0' cellspacing='0' cellpadding='0'>";
+                $StringEcho .= "<li data-name='".trim($new_category)."' class=\"encounter-form-category-li\"><a href='JavaScript:void(0);' onClick=\"mopen(" . attr_js($DivId) . ");\" >" . text($new_category) . "</a><div id='" . attr($DivId) . "' ><table border='0' cellspacing='0' cellpadding='0'>";
                 $old_category = $new_category;
                 $DivId++;
             }
@@ -618,7 +706,7 @@ if ($encounterLocked === false) {
         if (!$StringEcho) {
             $StringEcho= '<ul id="sddm">';
         }
-        $StringEcho.= "<li class=\"encounter-form-category-li\"><a href='JavaScript:void(0);' onClick=\"mopen('lbf');\" >" .
+        $StringEcho.= "<li data-name='Layout Based' class=\"encounter-form-category-li\"><a href='JavaScript:void(0);' onClick=\"mopen('lbf');\" >" .
         xlt('Layout Based') . "</a><div id='lbf' ><table border='0' cellspacing='0' cellpadding='0'>";
         while ($lrow = sqlFetchArray($lres)) {
             $option_id = $lrow['option_id']; // should start with LBF
@@ -1098,5 +1186,32 @@ if (!$pass_sens_squad) {
 ?>
 
 </div> <!-- end large encounter_forms DIV -->
+
+<script src="../../../public/assets/jquery-1-10-2/jquery.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($){
+  var sortItems = <?php echo (isset($reorderdFormCats) && $reorderdFormCats) ? json_encode(array_values($reorderdFormCats)):''?>;
+  if(sortItems && sortItems.length>0) {
+    var newList = '';
+    $(sortItems).each(function(k,v){
+      $("ul.sddmList li.encounter-form-category-li").each(function(){
+        var n = $(this).attr("data-name");
+        if(n==v) {
+          var content = $(this).html();
+          newList += '<li data-name="'+n+'" class="encounter-form-category-li">'+content+'</li>';
+        }
+      });
+    });
+
+    if(newList) {
+      $("ul.sddmList").html(newList);
+      $("ul.sddmList").show();
+    } else {
+      $("ul.sddmList").show();
+    }
+  }
+
+});
+</script>
 </body>
 </html>

@@ -132,6 +132,45 @@ function get_postcalendar_categories() {
     return ($calendar_categories) ? $calendar_categories : '';
 }
 
+/* Get Form Categories */
+$registryFields = sqlListFields("registry");
+$hasCatOrderField = array();
+if($registryFields) {
+    foreach($registryFields as $rf) {
+       if($rf=='category_order') {
+            $hasCatOrderField[] = 1;
+       }
+    }
+}
+
+/* MAKE SURE 'category_order' field exists otherwise add this category in the table */
+if(empty($hasCatOrderField)) {
+    $sql_action = "ALTER TABLE `registry` ADD `category_order` INT NULL DEFAULT NULL AFTER `aco_spec`";
+    sqlStatement($sql_action);
+}
+
+function get_registry_form_categories() {
+    global $dbLink;
+    $sqlquery = "SELECT category FROM registry WHERE TRIM(IFNULL(category,'')) <> '' GROUP BY category ORDER BY category ASC";
+    $result = $dbLink->query($sqlquery);
+    $categories = array();
+    if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+        $categories[] = $row['category'];
+      }
+    }
+    return ($categories) ? $categories : '';
+}
+
+function get_sorted_form_categories() {
+    global $dbLink;
+    $sqlquery = "SELECT * FROM globals WHERE gl_name='form_tabs_custom_order'";
+    $result = sqlquery($sqlquery);
+    $sortCatData = ( isset($result['gl_value']) && $result['gl_value'] ) ? @unserialize($result['gl_value']) : '';
+    return $sortCatData;
+}
+
+
 function updateTblDB($dir){
     $folderName = basename($dir);
     $tblName = "form_" . $folderName  . "_BAK";
@@ -169,9 +208,30 @@ if ($_GET['method'] == "updateDb") {
     }
 }
 
+if ($_POST['method'] == "form_cat_reorder" && isset($_POST['categoryorder']) ) {
+    $sortedItems = array();
+    $n=1; foreach( $_POST['categoryorder'] as $k=>$val ) {
+        $val = trim($val);
+        sqlStatement("UPDATE registry SET category_order = '".$n."' WHERE category = '".$val."'");
+        $sortedItems[$n] = $val;
+        $n++;
+    }
+
+    /* Check if 'form_tabs_custom_order' on `globals` table */
+    $sortedItemsVal = ($sortedItems) ? serialize($sortedItems) : '';
+    $globalData = sqlQuery("SELECT * FROM globals WHERE gl_name='form_tabs_custom_order'");
+    if($globalData) {
+        sqlStatement("UPDATE globals SET gl_value = '".$sortedItemsVal."' WHERE gl_name = 'form_tabs_custom_order'");
+    } else {
+        sqlStatement("INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES ('form_tabs_custom_order', '0', '".$sortedItemsVal."')");
+    }
+}
+
+
+
 
 $bigdata = getRegistered("%") or $bigdata = false;
-
+    
 //START OUT OUR PAGE....
 ?>
 
@@ -206,12 +266,19 @@ if (!empty($_POST)) {
 <head>
 <link rel="stylesheet" href="<?php echo $css_header;?>" type="text/css">
 <link rel="stylesheet" href="../../public/assets/font-awesome/css/font-awesome.min.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../public/assets/jquery-ui/jquery-ui.min.css">
 <style type="text/css">
+a.link_submit,
+a.link_submit:active,
+a.link_submit:visited {
+    color: #00C;
+}
 #formMessage {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
+    z-index: 200;
 }
 #formMessage .messagediv {
     background: #fdffe7;
@@ -262,6 +329,12 @@ if (!empty($_POST)) {
     left: 5px;
     font-size: 14px;
     text-transform: capitalize;
+}
+table.tableStyle thead td {
+    font-size: 11px;
+    background: #353535;
+    color: #FFF;
+    padding: 5px 5px;
 }
 @keyframes fadeIn {
   from {
@@ -366,6 +439,57 @@ div#loader {
     display: inline-block;
     color: #FFF;
 }
+.formTopLinks {
+    position: relative;
+    z-index: 5;
+}
+span.formMiscOption {
+    display: inline-block;
+    position: relative;
+    bottom: -1px;
+}
+span.formMiscOption a {
+    display: inline-block;
+    color: #00c;
+    padding: 6px 8px;
+    border: 1px solid #b5b5b5;
+}
+span.formMiscOption a.active {
+    color: #ababab;
+    border-bottom-color: #f0fbf5;
+}
+.toggleContent {
+    padding: 15px;
+    border: 1px solid #b5b5b5;
+    margin: 0 0;
+}
+.toggleContent h2.formHead {
+    font-size: 16px;
+    margin: 0 0 10px;
+}
+.toggleContent,
+.toggleContent * {
+    box-sizing: border-box;
+}
+.toggleContent table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+}
+.toggleContent table td {
+    border: 1px solid #FFF;
+}
+.toggleContent table tbody td {
+    padding: 2px 3px;
+}
+.toggleContent table .formTitle input {
+    width: 100%;
+    margin: 0 0!important;
+}
+.customHR {
+    border-top: 5px solid #CCC!important;
+    margin: 25px 0;
+}
 </style>
 </head>
 <body class="body_top">
@@ -384,204 +508,447 @@ if ($err) {
 $calendar_categories = get_postcalendar_categories();  
 ?>
 <?php //REGISTERED SECTION ?>
-<span class=bold><?php echo xlt('Registered');?></span><br>
-<form method=POST action ='./forms_admin.php' id="formAdmin" data-baseurl="<?php echo $rootdir; ?>/forms_admin/forms_admin.php?formstat=updated">
-<i><?php echo xlt('click here to update priority, category, nickname and access control settings'); ?></i>
-<input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
-<input type='submit' name='update' value='<?php echo xla('update'); ?>' class="updateBtn"><br>
-<table border=0 cellpadding=1 cellspacing=2 width="500">
-    <tr>
-        <td> </td>
-        <td> </td>
-        <td> </td>
-        <td> </td>
-        <td> </td>
-        <td><?php echo xlt('Priority'); ?> </td>
-        <td><?php echo xlt('Category'); ?> </td>
-        <td><?php echo xlt('Nickname'); ?> </td>
-        <td><?php echo xlt('Assign Calendar Category'); ?></td>
-        <td><?php echo xlt('Access Control'); ?></td>
-    </tr>
-<?php
-$color="#CCCCCC";
-if ($bigdata != false) {
-    foreach ($bigdata as $registry) {
-        $priority_category = sqlQuery(
-            "select priority, category, nickname, aco_spec from registry where id = ?",
-            array($registry['id'])
-        );
-        $formDIR = $registry['directory'];
-        $file_tbl_update = $absPath."interface/forms/".$formDIR."/update-table.sql";
-        $formTblName = "form_" . $formDIR;
-        $must_update_tbl = false;
-        if(file_exists($file_tbl_update)) {
-            $formTblNameBAK = "form_" . $formDIR . "_BAK";
-            if( $res = isTableExists($formTblNameBAK) ) {
-                $must_update_tbl = false;
-            } else {
-                $must_update_tbl = true;
-            }
-        }
-        ?>
-      <tr class="registeredFormItem" id="row-id-<?php echo text($registry['id']); ?>" data-id="<?php echo text($registry['id']); ?>" data-directory="<?php echo text($formDIR); ?>">
-    <td bgcolor="<?php echo $color; ?>" width="2%">
-      <span class='text'><?php echo text($registry['id']); ?></span>
-      <input type="hidden" name="registryformid[]" value="<?php echo text($registry['id']); ?>">
-    </td>
-    <td bgcolor="<?php echo attr($color); ?>" width="30%">
-      <span class='bold formTitle'><input type="text" name="formtitle_<?php echo text($registry['id']); ?>" value="<?php echo text(xl_form_title($registry['name'])); ?>"></span>
-    </td>
-        <?php
-        if ($registry['sql_run'] == 0) {
-            echo "<td bgcolor='" . attr($color) . "' width='10%'><span class='text'>" . xlt('registered') . "</span>";
-        } elseif ($registry['state'] == "0") {
-            echo "<td bgcolor='#FFCCCC' width='10%'><a class='link_submit' href='./forms_admin.php?id=" . attr_url($registry['id']) . "&method=enable&csrf_token_form=" . attr_url(CsrfUtils::collectCsrfToken()) . "'>" . xlt('activate') . "</a>";
-        } else {
-            echo "<td bgcolor='#CCFFCC' width='10%'><a class='link_submit' href='./forms_admin.php?id=" . attr_url($registry['id']) . "&method=disable&csrf_token_form=" . attr_url(CsrfUtils::collectCsrfToken()) . "'>" . xlt('deactivate') . "</a>";
-        }
-        ?></td>
-        <td bgcolor="<?php echo attr($color); ?>" width="10%">
-      <span class='text'><?php
-        if ($registry['unpackaged']) {
-            echo xlt('PHP extracted');
-        } else {
-            echo xlt('PHP compressed');
-        }
-        ?></span>
-        </td>
-        <td bgcolor="<?php echo attr($color); ?>" width="10%">
-        <?php
-        if ($registry['sql_run']) {
-            echo "<span class='text dbstat dbInstalled'>" . xlt('DB installed') . "</span>";            
-            if($must_update_tbl) {
-                echo "<div style='margin:5px 0;width:80px;'><a href='#' data-table='form_".$formDIR."' data-action='./forms_admin.php?id=".attr_url($registry['id'])."&method=updateDb&csrf_token_form=".attr_url(CsrfUtils::collectCsrfToken())."' class='updateDb' style='font-size:11px;color:red;text-decoration:underline;'>" . xlt('Update Table') . "</a></div>";
-            }
-        } else {
-            echo "<a class='link_submit dbstat dbUninstalled' href='./forms_admin.php?id=" . attr_url($registry['id']) . "&method=install_db&csrf_token_form=" . attr_url(CsrfUtils::collectCsrfToken()) . "'>" . xlt('install DB') . "</a>";
-        }
-        ?>
-        </td>
-        <?php
-        echo "<td><input type='text' size='4'  name='priority_" . attr($registry['id']) . "' value='" . attr($priority_category['priority']) . "'></td>";
-        echo "<td><input type='text' size='10' name='category_" . attr($registry['id']) . "' value='" . attr($priority_category['category']) . "'></td>";
-        echo "<td><input type='text' size='10' name='nickname_" . attr($registry['id']) . "' value='" . attr($priority_category['nickname']) . "'></td>";
-        
-        echo "<td>";
-        echo "<select name='calendar_cat_" . attr($registry['id']) . "' style='width:150px;'>";
-        echo "<option value='-1'>---</option>";
-        if($calendar_categories) {
-            foreach($calendar_categories as $c) {
-                $c_id = $c['pc_catid'];
-                $c_form_id = get_assigned_form_info($c_id,'registry_form_id');
-                $c_selected = ($registry['id']==$c_form_id) ? ' selected':'';
-                echo "<option value='".$c['pc_catid']."'".$c_selected.">".$c['pc_catname']."</option>";
-            }
-        }
-        echo "</select>";
-        echo "</td>";
+<div class="formTopLinks">
+ <span class="formMiscOption bold"><a href="#" id="registeredFormsBtn" data-content="#registeredData" class="toggleLink active"><?php echo xlt('Registered/Unregistered');?></span></a>
+ <span class="formMiscOption bold"><a href="#" id="sortFormTab" data-content="#formCatsData" class="toggleLink">Reorder Form Tabs</a></span>   
+</div>
 
-        echo "<td>";
-        echo "<select name='aco_spec_" . attr($registry['id']) . "' style='width:280px;'>";
-        echo "<option value=''></option>";
-        echo gen_aco_html_options($priority_category['aco_spec']);
-        echo "</select>";
-        echo "</td>";
+<div id="registeredData" class="screenWrap toggleContent">
+    <div class="formInner">
+    <h2 class="formHead"><?php echo xlt('Registered');?></h2>
+    <form method=POST action ='./forms_admin.php' id="formAdmin" data-baseurl="<?php echo $rootdir; ?>/forms_admin/forms_admin.php?formstat=updated">
+    <i><?php echo xlt('click here to update priority, category, nickname and access control settings'); ?></i>
+    <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
+    <input type='submit' name='update' value='<?php echo xla('update'); ?>' class="updateBtn"><br>
+    <table border=0 cellpadding=1 cellspacing=2 width="500" class="tableStyle registeredEntries">
+        <thead>
+            <tr>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td><?php echo xlt('Priority'); ?> </td>
+                <td><?php echo xlt('Category'); ?> </td>
+                <td><?php echo xlt('Nickname'); ?> </td>
+                <td><?php echo xlt('Assign Calendar Category'); ?></td>
+                <td><?php echo xlt('Access Control'); ?></td>
+            </tr>
+        </thead>
+    <?php
+    $color="#CCCCCC";
+    if ($bigdata != false) {
+        foreach ($bigdata as $registry) {
+            $priority_category = sqlQuery(
+                "select priority, category, nickname, aco_spec from registry where id = ?",
+                array($registry['id'])
+            );
+            $formDIR = $registry['directory'];
+            $file_tbl_update = $absPath."interface/forms/".$formDIR."/update-table.sql";
+            $formTblName = "form_" . $formDIR;
+            $must_update_tbl = false;
+            if(file_exists($file_tbl_update)) {
+                $formTblNameBAK = "form_" . $formDIR . "_BAK";
+                if( $res = isTableExists($formTblNameBAK) ) {
+                    $must_update_tbl = false;
+                } else {
+                    $must_update_tbl = true;
+                }
+            }
+            ?>
+          <tr class="registeredFormItem" id="row-id-<?php echo text($registry['id']); ?>" data-id="<?php echo text($registry['id']); ?>" data-directory="<?php echo text($formDIR); ?>">
+        <td bgcolor="<?php echo $color; ?>" width="2%">
+          <span class='text'><?php echo text($registry['id']); ?></span>
+          <input type="hidden" name="registryformid[]" value="<?php echo text($registry['id']); ?>">
+        </td>
+        <td bgcolor="<?php echo attr($color); ?>" width="30%">
+          <span class='bold formTitle'><input type="text" name="formtitle_<?php echo text($registry['id']); ?>" value="<?php echo text(xl_form_title($registry['name'])); ?>"></span>
+        </td>
+            <?php
+            if ($registry['sql_run'] == 0) {
+                echo "<td bgcolor='" . attr($color) . "' width='10%'><span class='text'>" . xlt('registered') . "</span>";
+            } elseif ($registry['state'] == "0") {
+                echo "<td bgcolor='#FFCCCC' width='10%' class='tdStatz'><a class='link_submit statz' href='./forms_admin.php?id=" . attr_url($registry['id']) . "&method=enable&csrf_token_form=" . attr_url(CsrfUtils::collectCsrfToken()) . "'>" . xlt('activate') . "</a>";
+            } else {
+                echo "<td bgcolor='#CCFFCC' width='10%' class='tdStatz'><a class='link_submit statz' href='./forms_admin.php?id=" . attr_url($registry['id']) . "&method=disable&csrf_token_form=" . attr_url(CsrfUtils::collectCsrfToken()) . "'>" . xlt('deactivate') . "</a>";
+            }
+            ?></td>
+            <td bgcolor="<?php echo attr($color); ?>" width="10%">
+          <span class='text'><?php
+            if ($registry['unpackaged']) {
+                echo xlt('PHP extracted');
+            } else {
+                echo xlt('PHP compressed');
+            }
+            ?></span>
+            </td>
+            <td bgcolor="<?php echo attr($color); ?>" width="10%">
+            <?php
+            if ($registry['sql_run']) {
+                echo "<span class='text dbstat dbInstalled'>" . xlt('DB installed') . "</span>";            
+                if($must_update_tbl) {
+                    echo "<div style='margin:5px 0;width:80px;'><a data-form='".text(xl_form_title($registry['name']))."' href='#' data-table='form_".$formDIR."' data-action='./forms_admin.php?id=".attr_url($registry['id'])."&method=updateDb&csrf_token_form=".attr_url(CsrfUtils::collectCsrfToken())."' class='updateDb' style='font-size:11px;color:red;text-decoration:underline;'>" . xlt('Update Table') . "</a></div>";
+                }
+            } else {
+                echo "<a data-form='".text(xl_form_title($registry['name']))."' class='link_submit dbstat startDbInstall dbUninstalled' href='./forms_admin.php?id=" . attr_url($registry['id']) . "&method=install_db&csrf_token_form=" . attr_url(CsrfUtils::collectCsrfToken()) . "'>" . xlt('install DB') . "</a>";
+            }
+            ?>
+            </td>
+            <?php
+            echo "<td><input type='text' size='4'  name='priority_" . attr($registry['id']) . "' value='" . attr($priority_category['priority']) . "'></td>";
+            echo "<td><input type='text' size='10' name='category_" . attr($registry['id']) . "' value='" . attr($priority_category['category']) . "' class='catNameField'></td>";
+            echo "<td><input type='text' size='10' name='nickname_" . attr($registry['id']) . "' value='" . attr($priority_category['nickname']) . "'></td>";
+            
+            echo "<td>";
+            echo "<select name='calendar_cat_" . attr($registry['id']) . "' style='width:150px;'>";
+            echo "<option value='-1'>---</option>";
+            if($calendar_categories) {
+                foreach($calendar_categories as $c) {
+                    $c_id = $c['pc_catid'];
+                    $c_form_id = get_assigned_form_info($c_id,'registry_form_id');
+                    $c_selected = ($registry['id']==$c_form_id) ? ' selected':'';
+                    echo "<option value='".$c['pc_catid']."'".$c_selected.">".$c['pc_catname']."</option>";
+                }
+            }
+            echo "</select>";
+            echo "</td>";
+
+            echo "<td>";
+            echo "<select name='aco_spec_" . attr($registry['id']) . "' style='width:280px;'>";
+            echo "<option value=''></option>";
+            echo gen_aco_html_options($priority_category['aco_spec']);
+            echo "</select>";
+            echo "</td>";
+            ?>
+          </tr>
+            <?php
+            if ($color=="#CCCCCC") {
+                $color="#999999";
+            } else {
+                $color="#CCCCCC";
+            }
+        } //end of foreach
+    }
+    ?>
+    </table>
+
+    <div class="customHR"></div>
+
+    <?php  //UNREGISTERED SECTION ?>
+    <h2 class="formHead"><?php echo xlt('Unregistered');?></h2>
+    <table border=0 cellpadding=1 cellspacing=2 width="500" class="unRegisteredEntries tableStyle">
+    <?php
+    $dpath = "$srcdir/../interface/forms/";
+    $dp = opendir($dpath);
+    $color="#CCCCCC";
+    for ($i=0; false != ($fname = readdir($dp)); $i++) {
+        if ($fname != "." && $fname != ".." && $fname != "CVS" && $fname != "LBF" &&
+        (is_dir($dpath.$fname) || stristr($fname, ".tar.gz") ||
+        stristr($fname, ".tar") || stristr($fname, ".zip") ||
+        stristr($fname, ".gz"))) {
+            $inDir[$i] = $fname;
+        }
+    }
+
+    // ballards 11/05/2005 fixed bug in removing registered form from the list
+    if ($bigdata != false) {
+        foreach ($bigdata as $registry) {
+            $key = array_search($registry['directory'], $inDir) ;  /* returns integer or FALSE */
+            unset($inDir[$key]);
+        }
+    }
+
+    foreach ($inDir as $fname) {
+        if (stristr($fname, ".tar.gz") || stristr($fname, ".tar") || stristr($fname, ".zip") || stristr($fname, ".gz")) {
+            $phpState = "PHP compressed";
+        } else {
+            $phpState =  "PHP extracted";
+        }
         ?>
-      </tr>
+        <tr>
+            <td bgcolor="<?php echo $color?>" width="1%">
+                <span class=text> </span>
+            </td>
+            <td bgcolor="<?php echo $color?>" width="20%">
+                <?php
+                    $form_title_file = @file($GLOBALS['srcdir']."/../interface/forms/$fname/info.txt");
+                if ($form_title_file) {
+                        $form_title = $form_title_file[0];
+                } else {
+                    $form_title = $fname;
+                }
+                ?>
+                <span class="bold newForm"><?php echo text(xl_form_title($form_title)); ?></span>
+            </td>
+            <td bgcolor="<?php echo $color?>" width="10%"><?php
+            if ($phpState == "PHP extracted") {
+                echo '<a data-form="'.text(xl_form_title($form_title)).'" class="link_submit registerFormBtn" href="./forms_admin.php?name=' . attr_url($fname) . '&method=register&csrf_token_form=' . attr_url(CsrfUtils::collectCsrfToken()) . '">' . xlt('register') . '</a>';
+            } else {
+                echo '<span class=text>' . xlt('n/a') . '</span>';
+            }
+            ?></td>
+            <td bgcolor="<?php echo $color?>" width="20%">
+                <span class=text><?php echo xlt($phpState); ?></span>
+            </td>
+            <td bgcolor="<?php echo $color?>" width="10%">
+                <span class=text><?php echo xlt('n/a'); ?></span>
+            </td>
+        </tr>
         <?php
         if ($color=="#CCCCCC") {
-            $color="#999999";
+                $color="#999999";
         } else {
             $color="#CCCCCC";
         }
-    } //end of foreach
-}
-?>
-</table>
-<hr>
 
-<?php  //UNREGISTERED SECTION ?>
-<span class='bold'><?php echo xlt('Unregistered'); ?></span><br>
-<table border=0 cellpadding=1 cellspacing=2 width="500">
-<?php
-$dpath = "$srcdir/../interface/forms/";
-$dp = opendir($dpath);
-$color="#CCCCCC";
-for ($i=0; false != ($fname = readdir($dp)); $i++) {
-    if ($fname != "." && $fname != ".." && $fname != "CVS" && $fname != "LBF" &&
-    (is_dir($dpath.$fname) || stristr($fname, ".tar.gz") ||
-    stristr($fname, ".tar") || stristr($fname, ".zip") ||
-    stristr($fname, ".gz"))) {
-        $inDir[$i] = $fname;
-    }
-}
-
-// ballards 11/05/2005 fixed bug in removing registered form from the list
-if ($bigdata != false) {
-    foreach ($bigdata as $registry) {
-        $key = array_search($registry['directory'], $inDir) ;  /* returns integer or FALSE */
-        unset($inDir[$key]);
-    }
-}
-
-foreach ($inDir as $fname) {
-    if (stristr($fname, ".tar.gz") || stristr($fname, ".tar") || stristr($fname, ".zip") || stristr($fname, ".gz")) {
-        $phpState = "PHP compressed";
-    } else {
-        $phpState =  "PHP extracted";
-    }
+        flush();
+    }//end of foreach
     ?>
-    <tr>
-        <td bgcolor="<?php echo $color?>" width="1%">
-            <span class=text> </span>
-        </td>
-        <td bgcolor="<?php echo $color?>" width="20%">
-            <?php
-                $form_title_file = @file($GLOBALS['srcdir']."/../interface/forms/$fname/info.txt");
-            if ($form_title_file) {
-                    $form_title = $form_title_file[0];
-            } else {
-                $form_title = $fname;
-            }
-            ?>
-            <span class="bold"><?php echo text(xl_form_title($form_title)); ?></span>
-        </td>
-        <td bgcolor="<?php echo $color?>" width="10%"><?php
-        if ($phpState == "PHP extracted") {
-            echo '<a class=link_submit href="./forms_admin.php?name=' . attr_url($fname) . '&method=register&csrf_token_form=' . attr_url(CsrfUtils::collectCsrfToken()) . '">' . xlt('register') . '</a>';
-        } else {
-            echo '<span class=text>' . xlt('n/a') . '</span>';
-        }
-        ?></td>
-        <td bgcolor="<?php echo $color?>" width="20%">
-            <span class=text><?php echo xlt($phpState); ?></span>
-        </td>
-        <td bgcolor="<?php echo $color?>" width="10%">
-            <span class=text><?php echo xlt('n/a'); ?></span>
-        </td>
-    </tr>
-    <?php
-    if ($color=="#CCCCCC") {
-            $color="#999999";
-    } else {
-        $color="#CCCCCC";
-    }
+    </table>
+    </form>
+  </div>
+</div>
 
-    flush();
-}//end of foreach
+<style type="text/css">
+.reorderWrapper ul {
+    margin: 0 0;
+    padding: 0 0;
+    list-style: none;
+}
+.reorderWrapper li.ui-sortable-placeholder{
+    border: 1px dashed #a3a74d;
+    background: #feffeb;
+    height: 31px;
+    padding: 0 0;
+}
+
+.reorderWrapper ul li span.ui-icon {
+    background-image: none!important;
+}
+.reorderWrapper ul li {
+    padding: 6px 10px 6px 32px;
+    margin: 5px 0;
+    position: relative;
+}
+.reorderWrapper ul li span.fa {
+    display: none;
+    font-size: 13px;
+    line-height: 1;
+    position: absolute;
+    top: 9px;
+    left: 10px;
+}
+.reorderWrapper ul li em {
+    display: inline-block;
+    font-style: normal;
+    color: #03ab4a;
+    font-size: 13px;
+    line-height: 1;
+    position: absolute;
+    top: 9px;
+    left: 7px;
+}
+.formSubmitBtn {
+    margin: 5px 0 10px;
+    padding: 5px 12px;
+    text-transform: capitalize;
+}
+</style>
+<?php 
+    $formCategoriesSorted = get_sorted_form_categories();
+    $formCategories = get_registry_form_categories(); 
+    $formCategoriesList = array();
+    $exceptions = array('Miscellaneous','Layout Based');
+    $otherCats = implode(",",$exceptions);
+
+    if($formCategories) {
+      array_push($formCategories,'Miscellaneous','Layout Based');
+      if($formCategoriesSorted) {
+        $actualList = array_values($formCategories);
+        $sorted = array_values($formCategoriesSorted);
+        $newCats = array();
+        
+        foreach($formCategories as $k=>$v) {
+          if( !in_array($v,$formCategoriesSorted) ) {
+            $newCats[] = $v;
+          }
+        }
+
+        if($newCats) {
+          $formCategoriesList = array_merge($sorted,$newCats);
+        } else {
+          $formCategoriesList = $sorted;
+        }
+
+        foreach($formCategoriesList as $k=>$v) {
+          if(!in_array($v,$actualList) ) {
+            unset($formCategoriesList[$k]);
+          }
+        }
+        
+      } else {
+        $formCategoriesList = $formCategories;
+      }
+    }
 ?>
-</table>
+<div id="formCatsData" class="form-reorder-wrap reorderWrapper toggleContent" style="display:none;">
+    <div class="reorder-content">
+        <h2 class="formHead">Reorder Form Tabs:</h2>
+        <?php if ($formCategoriesList) { ?>
+        <form action="./forms_admin.php" method="POST" id="reorderFormTabs" data-baseurl="<?php echo $rootdir; ?>/forms_admin/forms_admin.php?formstat=updated">
+            <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
+            <input type="hidden" name="method" value="form_cat_reorder">
+            <input type='submit' name='updatefrmtab' value='<?php echo xla('update'); ?>' class="updateBtnFrmTab formSubmitBtn">
+            <ul id="formTabsSortable">
+                <?php $ctr=1; foreach ($formCategoriesList as $cat) { ?>
+                    <li class="ui-state-default">
+                        <span class="fa fa-arrows"></span><em class="num">[<?php echo $ctr;?>]</em> <strong><?php echo $cat;?></strong>
+                        <input type="hidden" name="categoryorder[<?php echo $ctr;?>]" class="catsortInput" value="<?php echo $cat;?>">
+                    </li>
+                <?php $ctr++; } ?>
+            </ul>
+        </form>  
+        <?php } else { ?>
+            <p><strong style="color:red">No categories added.</strong></p>
+        <?php } ?>
+    </div>
+</div>
 
 <script src="../../public/assets/jquery-1-10-2/jquery.min.js"></script>
-<script>
+<script src="../../public/assets/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
+var pageURL = '<?php echo $rootdir; ?>/forms_admin/forms_admin.php';
 var params={};location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){params[k]=v});
 jQuery(document).ready(function($){
+
     if( typeof params.formstat!='undefined' && params.formstat=='updated' ) {
         var baseURL = $("form#formAdmin").attr('data-baseurl');
         var newBaseURL = baseURL.replace('?formstat=updated','');
         window.history.replaceState = newBaseURL;
     }
-    $("a.updateDb").click(function(e){
+
+    /* Activate / Deactivate */
+    $(document).on("click","a.statz",function(e){
+        e.preventDefault();
+        var target = $(this);
+        var currentText = target.text().toLowerCase();
+        var actionLink = target.attr("href");
+        var newLink = actionLink;
+        var row = $(this).parents("tr.registeredFormItem");
+        var formName = row.find(".formTitle input").val();
+        var confirmMessage = '';
+        var newActionType = 'deactivate';
+        if ( ~actionLink.indexOf("enable") ) {
+            confirmMessage = "Are you sure you want to ACTIVATE `" + formName + "`?";
+            newLink = actionLink.replace("method=enable","method=disable");
+            newActionType = 'deactivate';
+        } else {
+            confirmMessage = "Are you sure you want to DEACTIVATE `" + formName + "`?";
+            newLink = actionLink.replace("method=disable","method=enable");
+            newActionType = 'activate';
+        }
+
+        if ( confirm(confirmMessage) ) {
+
+            $.ajax({
+              url: actionLink,
+              type: 'POST',
+              beforeSend:function(){
+                  $("#loader").show();
+              },
+              success: function(response){
+                  var message = '<div class="messagediv fadeIn"><i class="fa fa-fw fa-check"></i> <strong>Forms Administration Updated.</strong> <a id="closeFormMsg">x</a></div>';
+                  $("#formMessage").html(message);
+                  target.attr("href",newLink);
+                  target.text(newActionType);
+                  if(currentText=='activate') {
+                    target.parents("td.tdStatz").css("background-color","#FFC9CC");
+                  } else {
+                    target.parents("td.tdStatz").css("background-color","#CCFFCC");
+                  }
+                 
+
+                  setTimeout(function(){
+                      $("#loader").hide();
+                  },500);
+              },
+              errors: function(response){
+
+              }
+          });
+
+        } else {
+            return false;
+        }
+    });
+
+    /* Register a Form */
+    $(document).on("click","a.registerFormBtn",function(e){
+        e.preventDefault();
+        var target = $(this);
+        var actionLink = target.attr("href");
+        var formName = target.attr("data-form");
+        if ( confirm("Are you sure you want to register the `"+formName+"`?") ) {
+
+            $.ajax({
+            url: actionLink,
+            type: 'POST',
+            beforeSend:function(){
+              $("#loader").show();
+            },
+            success: function(response){
+              var message = '<div class="messagediv fadeIn"><i class="fa fa-fw fa-check"></i> <strong>Forms Administration Updated.</strong> <a id="closeFormMsg">x</a></div>';
+              $("#registeredData").load(pageURL+" .formInner",function(){
+                $("#formMessage").html(message);
+                setTimeout(function(){
+                  $("#loader").hide();
+                },500);
+              });
+            },
+            errors: function(response){
+
+            }
+        });
+
+      } else {
+        return false;
+      }
+    });
+
+    /* Install Database */
+    $(document).on("click","a.startDbInstall",function(e){
+        e.preventDefault();
+        var target = $(this);
+        var actionLink = target.attr("href");
+        var formName = target.attr("data-form");
+        if ( confirm("Are you sure you want to install the table for `"+formName+"`?") ) {
+          $.ajax({
+          url: actionLink,
+          type: 'POST',
+          beforeSend:function(){
+            $("#loader").show();
+          },
+          success: function(response){
+            var message = '<div class="messagediv fadeIn"><i class="fa fa-fw fa-check"></i> <strong>Forms Administration Updated.</strong> <a id="closeFormMsg">x</a></div>';
+            $("#registeredData").load(pageURL+" .formInner",function(){
+              $("#formMessage").html(message);
+              setTimeout(function(){
+                $("#loader").hide();
+              },500);
+            });
+          },
+          errors: function(response){
+
+          }
+        });
+
+      } else {
+        return false;
+      }
+    });
+
+
+    $(document).on("click","a.updateDb",function(e){
         e.preventDefault();
         var target = $(this);
         var action = $(this).attr("data-action");
@@ -598,7 +965,72 @@ jQuery(document).ready(function($){
             return false;
         }
     });
-    $("form#formAdmin").submit(function(e){
+    $(document).on("submit","form#formAdmin",function(e){
+        e.preventDefault();
+        var formAction = $(this).attr("action");
+        var formData = $(this).serialize();
+        var baseURL = $(this).attr('data-baseurl');
+        $.ajax({
+            url: formAction,
+            type: 'POST',
+            data: formData,
+            beforeSend:function(){
+                $("#loader").show();
+            },
+            success: function(response){
+                var message = '<div class="messagediv fadeIn"><i class="fa fa-fw fa-check"></i> <strong>Forms Administration Updated.</strong> <a id="closeFormMsg">x</a></div>';
+                $("#formMessage").html(message);
+                $("#formCatsData").load(formAction+" .reorder-content",function(){
+                    doSortFormTabs();
+                });
+
+                setTimeout(function(){
+                    $("#loader").hide();
+                },500);
+            },
+            errors: function(response){
+
+            }
+        });
+    });
+    $(document).on("click","#closeFormMsg",function(e){
+        e.preventDefault();
+        $("#formMessage").html("");
+    });
+
+    /* REORDER FORM TABS */
+
+    doSortFormTabs();
+    function doSortFormTabs() {
+        $( "#formTabsSortable" ).sortable({
+            placeholder: "ui-state-highlight",
+            update: function( event, ui ) {
+                var i = 1;
+                $("#formTabsSortable li").each(function(){
+                    $(this).find(".num").text("["+i+"]");
+                    $(this).find("input.catsortInput").attr("name","categoryorder["+i+"]");
+                    i++;
+                });
+            }
+        });
+        $( "#formTabsSortable" ).disableSelection();
+    }
+    
+
+
+    $(document).on("click","a.toggleLink",function(e){
+        e.preventDefault();
+        var content = $(this).attr("data-content");
+        $("a.toggleLink").removeClass("active");
+        $(".toggleContent").hide();
+        if( $(content).length>0 ) {
+            $(this).addClass("active");
+            $(".toggleContent"+content).show();
+        }
+    });
+
+
+    $(document).on("submit","form#reorderFormTabs",function(e){
         e.preventDefault();
         var formAction = $(this).attr("action");
         var formData = $(this).serialize();
@@ -622,10 +1054,7 @@ jQuery(document).ready(function($){
             }
         });
     });
-    $(document).on("click","#closeFormMsg",function(e){
-        e.preventDefault();
-        $("#formMessage").html("");
-    });
+
 });
 </script>
 </body>
