@@ -15,10 +15,10 @@
 require_once(dirname(__FILE__).'/../../globals.php');
 require_once($GLOBALS["srcdir"]."/api.inc");
 
-function comprehensive_assessment_report($pid, $encounter, $cols, $id)
+function counselor_treatment_plan_report($pid, $encounter, $cols, $id)
 {
     $count = 0;
-    $data = formFetch("form_comprehensive_assessment", $id);
+    $data = formFetch("form_counselor_treatment_plan", $id);
     if ($data) {
         ?>
         <table style='border-collapse:collapse;border-spacing:0;width: 100%;'>

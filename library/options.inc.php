@@ -4087,4 +4087,34 @@ function get_examiner_name_dregree($value = null)
     return $option;
 }
 
+
+function get_task_modality($value = null)
+{
+    $option = '<option value="">'. xlt('Choose') .'</option>';
+    $arr = array('Individual', 'Family', 'Family without Client', 'Collateral', 'Group', 'Play Therapy', 'Medication Management', 'Psych. Testing', 'Partial Care', 'Service Coordination', 'PSR Skill Training', 'PSR Group Skills Training', 'PSR Community Reintegration', 'Intensive Outpatient');
+
+    foreach($arr as $key){
+        $checked = ($key == $value) ? 'selected' : '';
+        $option .= '<option value="'. $key .'" '. $checked .' >'. xlt($key) .'</option>';
+    }    
+    return $option;
+}
+
+
+function get_task_place($value = null)
+{
+    $option = '<option value="">'. xlt('Choose') .'</option>';
+    $arr = array('Office, Home, or where appropriate in community', 'Office');
+
+    foreach($arr as $key){
+        $checked = ($key == $value) ? 'selected' : '';
+        $option .= '<option value="'. $key .'" '. $checked .' >'. xlt($key) .'</option>';
+    }    
+    return $option;
+}
+
+
+
+
+
 ?>
