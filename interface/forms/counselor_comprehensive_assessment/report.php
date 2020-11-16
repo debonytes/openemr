@@ -15,20 +15,20 @@
 require_once(dirname(__FILE__).'/../../globals.php');
 require_once($GLOBALS["srcdir"]."/api.inc");
 
-function comprehensive_assessment_report($pid, $encounter, $cols, $id)
+function counselor_comprehensive_assessment_report($pid, $encounter, $cols, $id)
 {
     $count = 0;
-    $data = formFetch("form_comprehensive_assessment", $id);
+    $data = formFetch("form_counselor_comprehensive_assessment", $id);
     if ($data) {
         ?>
         <table style='border-collapse:collapse;border-spacing:0;width: 100%;'>
             <tr>
                 <td align='center' style='border:1px solid #ccc;padding:4px;'><span class=bold><?php echo xlt('Name'); ?></span></td>
-                <td align='center' style='border:1px solid #ccc;padding:4px;'><span class=bold><?php echo xlt('Medicaid'); ?></span></td>
+                <td align='center' style='border:1px solid #ccc;padding:4px;'><span class=bold><?php echo xlt('Billing Code'); ?></span></td>
             </tr>
             <tr>
                 <td style='border:1px solid #ccc;padding:4px;'><span class=text><?php echo nl2br(text($data['name'])); ?></span></td>
-                <td style='border:1px solid #ccc;padding:4px;'><span class=text><?php echo nl2br(text($data['medicaid'])); ?></span></td>
+                <td style='border:1px solid #ccc;padding:4px;'><span class=text><?php echo nl2br(text($data['billing_code'])); ?></span></td>
             </tr>
         </table>
         <?php

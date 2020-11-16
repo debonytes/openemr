@@ -1,6 +1,6 @@
 <?php
 /**
- * Comprehensive Assessment form.
+ * Comprehensive Diagnostic Assessment form.
  *
  * @package   OpenEMR
  * @link      http://www.open-emr.org
@@ -20,7 +20,7 @@ require_once("$srcdir/options.inc.php");
 use OpenEMR\Common\Csrf\CsrfUtils;
 use OpenEMR\Core\Header;
 
-$folderName = 'comprehensive_assessment';
+$folderName = 'counselor_comprehensive_assessment';
 $tableName = 'form_' . $folderName;
 
 
@@ -45,6 +45,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
             </div>
             <?php
             $current_date = date('Y-m-d');
+            $timeStamp = date('Y-m-d H:i:s');
 
             $patient_id = ( isset($_SESSION['alert_notify_pid']) && $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
             $pid = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
@@ -73,10 +74,9 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                     <input type="hidden" name="user" value="<?php echo $user_id; ?>">
                     <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
                     <input type="hidden" name="activity" value="1">
+    
 
-                    <fieldset>
-                        <legend class=""><?php echo xlt('Comprehensive Diagnostic Assessment'); ?></legend>
-                            
+                    <fieldset style="padding-top:20px!important">    
                             <div class="col-md-12" style="margin-top: 10px">
                                 <div class="col-sm-6">
                                     <label class="checkbox-inline"><strong><?php echo xlt('Type of CDA:'); ?></strong> </label>
@@ -122,7 +122,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                         <label for="" class="col-sm-3 "><?php echo xlt('Date'); ?></label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="date" id="date" class="form-control datepicker" value="<?php echo text(date('Y-m-d', strtotime($check_res['date'])  )); ?>" autocomplete="off">
+                                            <input type="text" name="date" id="date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
                                             <small class="text-danger date_error"></small>
                                         </div>                                    
                                     </div>
@@ -184,7 +184,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                         <label for="dob" class="col-sm-3 "><?php echo xlt('DOB'); ?></label>
                                         <div class="col-sm-9">
-                                            <input type="text" name="dob" id="dob" class="form-control datepicker" value="<?php echo text($check_res['dob']); ?>" autocomplete="off">
+                                            <input type="text" name="dob" id="dob" class="form-control newDatePicker" value="<?php echo ( isset($check_res['dob']) && $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])):''; ?>" autocomplete="off">
                                             <small class="text-danger dob_error"></small>
                                         </div>                                    
                                     </div>
@@ -2194,7 +2194,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <div class="form-group">    
                                             <label for="" class="col-sm-3"><?php echo xlt('Date:'); ?></label>
                                             <div class="col-sm-9">  
-                                                    <input type="text" name="date_examine" class="form-control datepicker" value="<?php echo text($check_res['date_examine']); ?>" autocomplete="off">
+                                                <input type="text" name="date_examine" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date_examine']) && $check_res['date_examine'] ) ? date('m/d/Y',strtotime($check_res['date_examine'])):''; ?>" autocomplete="off">
                                             </div>                                            
                                         </div>  
                                     </div>  
@@ -2236,7 +2236,10 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                   <?php // can add any additional javascript settings to datetimepicker here; need to prepend first setting with a comma ?>
                 });
 
-                var today = new Date();
+                $('.newDatePicker').datetimepicker({
+                    timepicker:false,
+                    format:'m/d/Y'
+                });
 
                 
 

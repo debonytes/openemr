@@ -11,7 +11,6 @@
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
 
-
 require_once("../../globals.php");
 require_once("$srcdir/api.inc");
 require_once("$srcdir/patient.inc");
@@ -60,7 +59,6 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
             }
 
             
-
             ?>
             <div class="row">
                 
@@ -110,7 +108,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                         <label for="" class="col-sm-8"><?php echo xlt('If update/review initial plan date:'); ?></label>
                                         <div class="col-sm-4">
-                                            <input type="text" name="initial_plan_date" class="form-control datepicker" value="<?php echo text($check_res['initial_plan_date']); ?>" autocomplete="off">
+                                            <input type="text" name="initial_plan_date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['initial_plan_date']) && $check_res['initial_plan_date'] ) ? date('m/d/Y', strtotime($check_res['initial_plan_date'])):''; ?>" autocomplete="off">
                                         </div>                                        
                                     </div>
                                 </div>
@@ -174,7 +172,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                         <label for="" class="col-sm-2"><?php echo xlt('Date'); ?></label>
                                         <div class="col-sm-10">
-                                            <input type="text" name="date" class="form-control datepicker" value="<?php echo text($check_res['date']); ?>" autocomplete="off">
+                                            <input type="text" name="date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -182,7 +180,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                         <label for="dob" class="col-sm-2"><?php echo xlt('DOB'); ?></label>
                                         <div class="col-sm-10">
-                                            <input type="text" name="dob" class="form-control datepicker" value="<?php echo text($check_res['dob']); ?>" autocomplete="off">
+                                            <input type="text" name="dob" class="form-control newDatePicker" value="<?php echo ( isset($check_res['dob']) && $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])):''; ?>" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -1206,7 +1204,10 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                   <?php // can add any additional javascript settings to datetimepicker here; need to prepend first setting with a comma ?>
                 });
 
-                var today = new Date();
+                $('.newDatePicker').datetimepicker({
+                    timepicker:false,
+                    format:'m/d/Y'
+                });
 
                 
 

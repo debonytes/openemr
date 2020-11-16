@@ -1,10 +1,11 @@
 --
--- Table structure for table `form_comprehensive_assessment`
+-- Table structure for table `form_counselor_comprehensive_assessment`
 --
 
-CREATE TABLE IF NOT EXISTS `form_comprehensive_assessment` (
+CREATE TABLE IF NOT EXISTS `form_counselor_comprehensive_assessment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date` varchar(100) DEFAULT NULL,
   `pid` bigint(20) DEFAULT NULL,  
   `encounter` varchar(255) DEFAULT NULL,
   `user` varchar(255) DEFAULT NULL,  
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `form_comprehensive_assessment` (
   `sex` varchar(10) DEFAULT NULL,
   `ethnicity` varchar(100) DEFAULT NULL,
   `ethnicity_other` varchar(200) DEFAULT NULL,
-  `dob` varchar(20) DEFAULT NULL,
+  `dob` varchar(100) DEFAULT NULL,
   `examiner` varchar(100) DEFAULT NULL,
   `region` varchar(100) DEFAULT NULL,
   `agency` varchar(100) DEFAULT NULL,

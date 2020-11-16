@@ -1,6 +1,6 @@
 <?php
 /*
- * This program saves data from the treatment_plan_annual
+ * This program saves data from the comprehensive_assessment
  *
  * @package   OpenEMR
  * @link      http://www.open-emr.org
@@ -29,9 +29,9 @@ if (!CsrfUtils::verifyCsrfToken($_POST["csrf_token_form"])) {
 
 $encounter = ( isset($_SESSION['encounter']) && $_SESSION['encounter'] ) ? true:false; 
 
-$folderName = 'counselor_treatment_plan';
+$folderName = 'counselor_comprehensive_assessment';
 $tableName = 'form_' . $folderName;
-$form_textual_name = 'Counselor Treatment Plan';
+$form_textual_name = 'Comprehensive Diagnostic Assessment';
 
 $table_fields = sqlListFields($tableName); /* An array of the table fields */
 
@@ -46,9 +46,9 @@ $exclude_fields = array('id');
 $fieldValues = array();
 $encounter = ( isset($_REQUEST['encounter']) && $_REQUEST['encounter'] ) ? $_REQUEST['encounter'] : '';
 
-$dateFields = array('dob','date','initial_plan_date');
+$dateFields = array('dob','date','date_examine');
 
-$implode_arr = array();
+$implode_arr = array('recipient_report', 'referral_comm_services', 'appearance_weight', 'appearance_hygiene', 'speech_rate', 'speech_volume', 'motor_activity', 'eye_contact', 'cooperativeness', 'thought_process', 'thought_content', 'thought_perception', 'mood', 'affect', 'orientation', 'memory_immediate', 'memory_recent', 'memory_remote', 'insight', 'insight_awareness_symptoms', 'insight_awareness_need', 'dsm_5_code', 'dsm_5_code_disorder');
 
 /* UPDATE FIELDS */
 if ($id) {
@@ -58,20 +58,23 @@ if ($id) {
 			$val = ($val) ? $val : NULL;
 
 			if( in_array($field, $table_fields) ) {
+				
 				if($val) {
+
 					if( in_array($field, $dateFields) ) {
 						$dateVal = DateTime::createFromFormat('m/d/Y', $val);
 						$val = $dateVal->format('Y-m-d');
 					}
 
-					if(in_array($field, $implode_arr)){
-                        $val = implode('|', $val);
-                    }
 					if( is_numeric($val) ) {
 						if( $val < 1 ) {
 							$val = 0;
 						}
 					}
+
+					if(in_array($field, $implode_arr)){
+            $val = implode('|', $val);
+          } 
 				}
 
 				$comma = ($i>0) ? ', ':'';
@@ -92,29 +95,28 @@ if ($id) {
 		if( $encounter ) {
 
 			$i=0; foreach( $_REQUEST as $field=>$val ) {
-
 				$val = ($val) ? $val : NULL;
 
 				if( in_array($field, $table_fields) ) {
+					
 					if($val) {
-						//if(($field == 'areas_to_be_addressed') || ($field == 'dsm_diagnoses') ){
 
 						if( in_array($field, $dateFields) ) {
 							$dateVal = DateTime::createFromFormat('m/d/Y', $val);
 							$val = $dateVal->format('Y-m-d');
 						}
-
-						if(in_array($field, $implode_arr)){
-             	$val = implode('|', $val);
-            }
-
+				
 						if( is_numeric($val) ) {
 							if( $val < 1 ) {
 								$val = 0;
 							}
 						}
-					}
 
+						if(in_array($field, $implode_arr)){
+	            $val = implode('|', $val);
+	          } 
+
+					}
 					$comma = ($i>0) ? ', ':'';
 					$sets .= $comma . $field . ' = ?';
 					$fieldValues[] = $val;

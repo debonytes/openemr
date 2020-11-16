@@ -4,7 +4,8 @@
 
 CREATE TABLE IF NOT EXISTS `form_counselor_treatment_plan` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date` varchar(100) DEFAULT NULL,
   `pid` bigint(20) DEFAULT NULL,  
   `encounter` varchar(255) DEFAULT NULL,
   `user` varchar(255) DEFAULT NULL,  
