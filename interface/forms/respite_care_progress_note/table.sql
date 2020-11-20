@@ -5,8 +5,7 @@ CREATE TABLE IF NOT EXISTS `form_respite_care_progress_note` (
   `user` varchar(255) DEFAULT NULL,
   `encounter` varchar(255) DEFAULT NULL,
   `groupname` varchar(255) DEFAULT NULL,
-  `authorized` tinyint(4) DEFAULT NULL,
-  `activity` tinyint(4) DEFAULT NULL,
+  `authorized` tinyint(4) DEFAULT NULL,  
   `billing_code` varchar(255) DEFAULT NULL,
   `dateofservice` varchar(255) DEFAULT NULL,
   `starttime` varchar(255) DEFAULT NULL,
@@ -20,5 +19,6 @@ CREATE TABLE IF NOT EXISTS `form_respite_care_progress_note` (
   `progress_narrative` text,
   `critical_incidents_explan` text,
   `provider_id` bigint(10) DEFAULT NULL,
+  `activity` TINYINT DEFAULT 1 NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB;

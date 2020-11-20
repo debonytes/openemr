@@ -349,6 +349,171 @@ function check_event_exist($eid)
         }
     }
 }
+
+//==============================================================================
+// insert form after the InsertEvent
+// $args is mainly filled with content from the POST http var
+
+function InsertFormCategory($args, $pc_eid)
+{
+    if(empty($pc_eid) || empty($args)){
+        return;
+    }
+
+    $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE id = ?", array($pc_eid));
+
+    if(empty($query)){
+        $form_pid = empty($args['form_pid']) ? '' : $args['form_pid'];
+        //$encounter = empty($_SESSION['encounter']) ? 0 : $_SESSION['encounter'];
+             
+        $userauthorized = empty($_SESSION['userauthorized']) ? 0 : $_SESSION['userauthorized'];
+        $groupname = empty($_SESSION['authProvider']) ? 0 : $_SESSION['authProvider'];
+
+        $patient_full_name = '';
+        //$pid = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
+        if($form_pid) {
+          $patient = getPatientData($form_pid);
+          $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
+          $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
+          $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+          $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
+          if($patientInfo && array_filter($patientInfo)) {
+            $patient_full_name = implode( ' ', array_filter($patientInfo) );
+          }
+        }
+        // $args['form_category']
+
+        $folderName = get_db_table_name($args['form_category']);
+
+        if(!empty($folderName)){
+
+            // generate encounter ID
+            $conn = $GLOBALS['adodb']['db'];
+            $encounter = $conn->GenID("sequences");   
+
+            // creating form encounter
+            // date, reason, facility, facility_id, pid, encounter, onset_date, provider_id, billing_facility
+            $date               = date('Y-m-d');
+            $reason             = $args['form_comments'];
+            $facility           = get_facility_by_id($args['facility']);
+            $facility_id        = $args['facility'];
+            $pid                = $args['form_pid'];
+            $onset_date         = $args['event_date'];
+            $provider_id        = $args['form_provider'];
+            $billing_facility   = $args['billing_facility'];
+
+            $encounter_data = array($date, $reason, $facility, $facility_id, $pid, $encounter, $onset_date, $provider_id, $billing_facility);
+
+            $db_encounter = sqlInsert(
+                "INSERT INTO form_encounter ( " .
+                "date, reason, facility, facility_id, pid, encounter, onset_date, provider_id, billing_facility" .
+                ") VALUES (?,?,?,?,?,?,?,?,?)", $encounter_data                
+            );
+
+
+            // create a record in the form for the specific service
+
+            $table = 'form_' . $folderName['directory'];
+            $form_textual_name = $folderName['name'];
+
+            $table_fields = sqlListFields($table); /* An array of the table fields */
+
+            // pid, name, dateofservice, billing_code
+            $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code');
+
+            $date = date('Y-m-d H:i:s', strtotime($args['event_date']));
+
+            $column_arr = 'pid, encounter, date';
+            $data = array($form_pid, $encounter, $date);
+            $set = '?,?,?';
+
+            // additional parameter name
+            if(in_array('name', $table_fields)){
+                $column_arr .= ', name';
+                array_push($data, $patient_full_name);
+                $set .= ',?';
+            }
+
+            if(in_array('participant_name', $table_fields)){
+                $column_arr .= ', participant_name';
+                array_push($data, $patient_full_name);
+                $set .= ',?';
+            }
+
+            if(in_array('dateofservice', $table_fields)){
+                $column_arr .= ', dateofservice';
+                array_push($data, $args['event_date']);
+                $set .= ',?';
+            }
+
+            if(in_array('billing_code', $table_fields)){
+                $column_arr .= ', billing_code';
+                array_push($data, $args['form_title']);
+                $set .= ',?';
+            }
+
+            $db_name_id = sqlInsert(
+                "INSERT INTO {$table} ( " .
+                "{$column_arr}" .
+                ") VALUES ({$set})", $data                
+            );
+
+            // insert into record
+            if($db_name_id){
+                $addl = sqlInsert(
+                    "INSERT INTO openemr_postcalendar_categories_additional ( " .
+                    "pc_eid, db_name, db_name_id " .
+                    ") VALUES (?,?,?)", array($pc_eid, $table, $db_name_id)               
+                );
+            }
+
+            addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
+        }
+        
+    }  // if(empty($query))
+}
+
+//========================================================================
+// getting facility
+
+function get_facility_by_id($id)
+{
+    $facility = '';
+    $qsql = sqlStatement("SELECT id, name FROM facility WHERE service_location != 0");
+    while ($facrow = sqlFetchArray($qsql)) {
+        if($facrow['id'] == $id){
+            $facility = $facrow['name'];
+            break;
+        }
+    }
+    return $facility;
+}
+
+//========================================================================
+// getting table name based on category
+
+function get_db_table_name($pc_catid)
+{
+    $tablename = array();
+    if(empty($pc_catid)){
+        return null;
+    }
+
+    $query = sqlQuery("SELECT registry_form_id FROM openemr_postcalendar_categories_extra WHERE pc_catid = ?", array($pc_catid));
+
+    if($query){
+        $query_reg = sqlQuery("SELECT directory, name FROM registry WHERE id = ?", array($query['registry_form_id']));
+        if($query_reg){
+            $tablename['directory'] = $query_reg['directory'];
+            $tablename['name'] = $query_reg['name'];
+        }
+    }
+
+    return $tablename;
+}
+
+
+
 //===============================================================================
 // insert an event
 // $args is mainly filled with content from the POST http var
@@ -388,6 +553,8 @@ function InsertEvent($args, $from = 'general')
         }
 
             $GLOBALS['temporary-eid-for-manage-tracker'] = $pc_eid; //used by manage tracker module to set correct encounter in tracker when check in
+
+            InsertFormCategory($args, $pc_eid);
 
             return $pc_eid;
     } elseif ($from == 'payment') {

@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `form_cbrs_treatment_plan` (
   `problem_3_date_target` date DEFAULT NULL,
   `problem_3_date_completion` date DEFAULT NULL,
   `individual_included` varchar(255) DEFAULT NULL,  
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  
+  `date` timestamp DEFAULT NULL CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  
   `activity` TINYINT DEFAULT 1 NULL,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB;

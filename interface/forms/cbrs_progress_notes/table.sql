@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS `form_cbrs_progress_notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date` timestamp DEFAULT NULL CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `pid` bigint(20) DEFAULT NULL,
   `cbrs` varchar(255) DEFAULT NULL,
   `encounter` varchar(255) DEFAULT NULL,
