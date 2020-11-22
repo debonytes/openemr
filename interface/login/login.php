@@ -32,6 +32,32 @@ use OpenEMR\Services\FacilityService;
 $ignoreAuth = true;
 require_once("../globals.php");
 
+
+//=========================================================================
+// Create a Table for Categories Additional Fields
+//=========================================================================
+global $addlCatTable, $dbLink;
+$dbLink = $GLOBALS['dbh'];
+$addlCatTable = 'openemr_postcalendar_categories_additional';
+$catTblSql = "SHOW TABLES LIKE '".$addlCatTable."'";
+$catTblResult = array_column(mysqli_fetch_all($dbLink->query($catTblSql)),0);
+/* If table not exists, create... */
+if(empty($catTblResult)) { 
+    $sqlStr = "CREATE TABLE IF NOT EXISTS `$addlCatTable` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `pc_eid` bigint(20) DEFAULT NULL,
+      `db_name` varchar(100) DEFAULT NULL,
+      `db_name_id` bigint(20) DEFAULT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB";
+    
+    sqlStatement(rtrim("$sqlStr"));
+    $catTblSql = "SHOW TABLES LIKE '".$addlCatTable."'";
+    $catTblResult = array_column(mysqli_fetch_all($dbLink->query($catTblSql)),0);
+}
+
+
+
 // mdsupport - Add 'App' functionality for user interfaces without standard menu and frames
 // If this script is called with app parameter, validate it without showing other apps.
 //

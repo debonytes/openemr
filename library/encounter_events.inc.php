@@ -360,6 +360,13 @@ function InsertFormCategory($args, $pc_eid)
         return;
     }
 
+    $status_sym = array('@', '~', '>');
+    $status = $args['form_apptstatus'];
+
+    if(empty($status) || !in_array($status, $status_sym) ){
+        return;
+    }
+
     $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE id = ?", array($pc_eid));
 
     if(empty($query)){
@@ -468,7 +475,7 @@ function InsertFormCategory($args, $pc_eid)
             }
 
             addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
-        }
+        } // if(!empty($folderName))
         
     }  // if(empty($query))
 }
@@ -494,6 +501,8 @@ function get_facility_by_id($id)
 
 function get_db_table_name($pc_catid)
 {
+    $folderList = array('cbrs_progress_notes', 'cbrs_treatment_plan','cm_progress_note','cm_treatment_plan','counselor_progress_note','counselor_treatment_plan','peer_support_progress_note','peer_support_txt_plan','respite_care_progress_note','youth_support_progress_note');
+
     $tablename = array();
     if(empty($pc_catid)){
         return null;
@@ -503,13 +512,17 @@ function get_db_table_name($pc_catid)
 
     if($query){
         $query_reg = sqlQuery("SELECT directory, name FROM registry WHERE id = ?", array($query['registry_form_id']));
+        
         if($query_reg){
-            $tablename['directory'] = $query_reg['directory'];
-            $tablename['name'] = $query_reg['name'];
+
+            if( in_array( trim($query_reg['directory']), $folderList)  ){
+                $tablename['directory'] = $query_reg['directory'];
+                $tablename['name'] = $query_reg['name'];
+            }            
         }
     }
 
-    return $tablename;
+    return (!empty($tablename)) ? $tablename : null;
 }
 
 
