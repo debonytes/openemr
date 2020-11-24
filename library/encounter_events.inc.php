@@ -367,7 +367,7 @@ function InsertFormCategory($args, $pc_eid)
         return;
     }
 
-    $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE id = ?", array($pc_eid));
+    $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($pc_eid));
 
     if(empty($query)){
         $form_pid = empty($args['form_pid']) ? '' : $args['form_pid'];
@@ -430,9 +430,9 @@ function InsertFormCategory($args, $pc_eid)
 
             $date = date('Y-m-d H:i:s', strtotime($args['event_date']));
 
-            $column_arr = 'pid, encounter, date';
-            $data = array($form_pid, $encounter, $date);
-            $set = '?,?,?';
+            $column_arr = 'pid, encounter';
+            $data = array($form_pid, $encounter);
+            $set = '?,?';
 
             // additional parameter name
             if(in_array('name', $table_fields)){

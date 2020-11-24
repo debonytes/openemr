@@ -716,8 +716,31 @@ if ($_POST['form_action'] == "save") {
                 "pc_facility = '" . add_escape_custom((int)$_POST['facility']) ."' ,"  . // FF stuff
                 "pc_billing_location = '" . add_escape_custom((int)$_POST['billing_facility']) ."' "  .
                 "WHERE pc_eid = '" . add_escape_custom($eid) . "'");
+
+
+                // =======================================
+                // Insert if change of status
+                // =======================================
+                $args = $_POST;
+                $status_sym = array('@', '~', '>');
+                $status = $args['form_apptstatus'];
+
+                if(!empty($status) || in_array($status, $status_sym) ){
+                    $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
+
+                    if(empty($query)){
+                        $args['event_date'] = $args['form_date'];
+                        InsertFormCategory($args, $eid);
+                    }            
+                }
+
+
             }
         }
+
+        
+
+
 
         // =======================================
         // end Update Multi providers case
