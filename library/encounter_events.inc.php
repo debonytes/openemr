@@ -426,7 +426,7 @@ function InsertFormCategory($args, $pc_eid)
             $table_fields = sqlListFields($table); /* An array of the table fields */
 
             // pid, name, dateofservice, billing_code
-            $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code');
+            $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code', 'user');
 
             $date = date('Y-m-d H:i:s', strtotime($args['event_date']));
 
@@ -444,6 +444,12 @@ function InsertFormCategory($args, $pc_eid)
             if(in_array('participant_name', $table_fields)){
                 $column_arr .= ', participant_name';
                 array_push($data, $patient_full_name);
+                $set .= ',?';
+            }
+
+            if(in_array('user', $table_fields)){
+                $column_arr .= ', user';
+                array_push($data, $_SESSION['authUser']);
                 $set .= ',?';
             }
 
