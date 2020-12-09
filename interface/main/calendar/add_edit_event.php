@@ -971,11 +971,16 @@ if ($patientid) {
     $prow = sqlQuery("SELECT lname, fname, phone_home, phone_biz, DOB " .
      "FROM patient_data WHERE pid = ?", array($patientid));
     $patientname = $prow['lname'] . ", " . $prow['fname'];
+    $patient_phone = array();
     if ($prow['phone_home']) {
+        $patient_phone['phone_label'] = xl("Home Phone");
+        $patient_phone['phone_number'] = strip_tags($prow['phone_home']);
         $patienttitle['phone_home'] = xl("Home Phone").": " . $prow['phone_home'];
     }
 
     if ($prow['phone_biz']) {
+        $patient_phone['phone_label'] = xl("Work Phone");
+        $patient_phone['phone_number'] = strip_tags($prow['phone_biz']);
         $patienttitle['phone_biz'] = xl("Work Phone").": " . $prow['phone_biz'];
     }
 }
@@ -1517,17 +1522,22 @@ if ($_GET['prov'] != true && $_GET['group'] != true) { ?>
             <input type='hidden' name='form_pid' value='<?php echo attr($patientid) ?>' />
         </div>
         <!-- Patient phone numbers -->
-        <div class="form-group" style='font-size:8pt'>
-            <span class="infobox text-danger">
+        <div class="form-group" style='font-size:11pt'>
+            <?php if($patient_phone):  ?>
+                <span class="infobox text-success">
+                    <?php echo $patient_phone['phone_label'] ?> : <strong><?php echo $patient_phone['phone_number'] ?></strong>
+                </span>
+            <?php endif; ?>
+            <span class="infobox text-success">
             <?php
-            foreach ($patienttitle as $value) {
+            /*foreach ($patienttitle as $value) {
                 if ($value != "") {
                     echo text(trim($value));
                 }
                 if (count($patienttitle) > 1) {
                     echo "<br />";
                 }
-            }
+            }*/
             ?>
             </span>
         </div>

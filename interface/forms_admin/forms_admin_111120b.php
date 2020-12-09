@@ -18,13 +18,11 @@ use OpenEMR\Common\Csrf\CsrfUtils;
 //=========================================================================
 // Create a Table for Additional Fields
 //=========================================================================
-global $extraCatTable, $dbLink, $dbName;
-$dbName = $GLOBALS["dbase"];
+global $extraCatTable, $dbLink;
 $dbLink = $GLOBALS['dbh'];
 $extraCatTable = 'openemr_postcalendar_categories_extra';
 $catTblSql = "SHOW TABLES LIKE '".$extraCatTable."'";
 $catTblResult = array_column(mysqli_fetch_all($dbLink->query($catTblSql)),0);
-
 /* If table not exists, create... */
 if(empty($catTblResult)) { 
     $sqlStr = "CREATE TABLE IF NOT EXISTS `$extraCatTable` (
@@ -67,74 +65,6 @@ if ($_GET['method'] == "enable") {
     registerForm($_GET['name']) or $err=xl('error while registering form!');
 }
 
-if ($_GET['method'] == "updateDb") {
-    if (!CsrfUtils::verifyCsrfToken($_GET["csrf_token_form"])) {
-        CsrfUtils::csrfNotVerified();
-    }
-    $dir = getRegistryEntry($_GET['id'], "directory");
-    $formDIR = $dir['directory'];
-    $formPATH = $absPath . 'interface/forms/' . $formDIR;
-    if (updateTblDB($formPATH)) {
-    } else {
-        $err = xl('ERROR: could not open table.sql, broken form?');
-    }
-}
-
-if ($_POST['method'] == "form_cat_reorder" && isset($_POST['categoryorder']) ) {
-    $sortedItems = array();
-    $n=1; foreach( $_POST['categoryorder'] as $k=>$val ) {
-        $val = trim($val);
-        sqlStatement("UPDATE registry SET category_order = '".$n."' WHERE category = '".$val."'");
-        $sortedItems[$n] = $val;
-        $n++;
-    }
-
-    /* Check if 'form_tabs_custom_order' on `globals` table */
-    $sortedItemsVal = ($sortedItems) ? serialize($sortedItems) : '';
-    $globalData = sqlQuery("SELECT * FROM globals WHERE gl_name='form_tabs_custom_order'");
-    if($globalData) {
-        sqlStatement("UPDATE globals SET gl_value = '".$sortedItemsVal."' WHERE gl_name = 'form_tabs_custom_order'");
-    } else {
-        sqlStatement("INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES ('form_tabs_custom_order', '0', '".$sortedItemsVal."')");
-    }
-}
-
-
-if ($_POST['method'] == "modifytable") {
-    if (!CsrfUtils::verifyCsrfToken($_POST["csrf_token_form"])) {
-        CsrfUtils::csrfNotVerified();
-    }
-    $errors = array();
-
-    if( empty($_POST['table']) ) {
-        $errors[] = 'Select a table.';
-    } 
-    if( empty($_POST['tbl_name']) ) {
-        $errors[] = 'Field name is required.';
-    } 
-
-    if( $errors ) {
-        $message = '';
-        foreach($errors as $err) {
-            $message .= '<div>'.$err.'</div>';
-        }
-        $result['success'] = '';
-        $result['message'] = '<div>ERROR(s):</div>'.$message;
-    } else {
-        if( modifyTableFields($_POST) ) {
-            $result['success'] = true;
-            $result['message'] = '<strong><i>'.$_POST['tbl_name'].'</i></strong> field was successfully added to table <strong><i>'.$_POST['table'].'</i></strong>';
-        } else {
-            $result['success'] = '';
-            $result['message'] = 'ERROR: Field already exists!';
-        }
-    }
-
-    
-    $result = json_encode($result);
-    echo $result;
-    die();
-}
 
 if( isset($_POST['registryformid']) && $_POST['registryformid'] ) {
     foreach($_POST['registryformid'] as $k=>$val) {
@@ -265,45 +195,37 @@ function updateTblDB($dir){
     }
 }
 
-function getFormsTables() {
-    global $dbLink;
-    $sql2 = "SHOW TABLES LIKE '%form_%'";
-    $result = array_column(mysqli_fetch_all($dbLink->query($sql2)),0);
-    return ($result) ? $result : '';
+if ($_GET['method'] == "updateDb") {
+    if (!CsrfUtils::verifyCsrfToken($_GET["csrf_token_form"])) {
+        CsrfUtils::csrfNotVerified();
+    }
+    $dir = getRegistryEntry($_GET['id'], "directory");
+    $formDIR = $dir['directory'];
+    $formPATH = $absPath . 'interface/forms/' . $formDIR;
+    if (updateTblDB($formPATH)) {
+    } else {
+        $err = xl('ERROR: could not open table.sql, broken form?');
+    }
 }
 
-function modifyTableFields($fields) {
-    //$query = "ALTER TABLE `form_cm_progress_note` ADD `activity` TINYINT(5) NULL DEFAULT NULL";
-    if($fields) {
-        $table = $fields['table'];
-        $tbl_name = $fields['tbl_name'];
-        $tbl_type = $fields['tbl_type'];
-        $tbl_length = $fields['tbl_length'];
-        $tbl_default = ($fields['tbl_default']) ? $fields['tbl_default'] : 'NULL';
-        $table_fields = sqlListFields($table);
-        if( !in_array($tbl_name,$table_fields) ) {
+if ($_POST['method'] == "form_cat_reorder" && isset($_POST['categoryorder']) ) {
+    $sortedItems = array();
+    $n=1; foreach( $_POST['categoryorder'] as $k=>$val ) {
+        $val = trim($val);
+        sqlStatement("UPDATE registry SET category_order = '".$n."' WHERE category = '".$val."'");
+        $sortedItems[$n] = $val;
+        $n++;
+    }
 
-            //`activity` tinyint(4) DEFAULT NULL,
-            //ALTER TABLE `form_cm_progress_note` ADD `test` VARCHAR(100) NULL DEFAULT 'Test' AFTER `work_on`;
-            //ALTER TABLE `form_cm_progress_note` ADD `activityrr` VARCHAR(200) NULL DEFAULT NULL AFTER `test`;
-
-            if($tbl_length && is_numeric($tbl_length)) {
-                $query = "ALTER TABLE `".$table."` ADD `".$tbl_name."` ".$tbl_type."(".$tbl_length.") NULL DEFAULT ".$tbl_default;
-            } else {
-                $query = "ALTER TABLE `".$table."` ADD `".$tbl_name."` ".$tbl_type." NULL DEFAULT ".$tbl_default;
-            }
-
-            sqlStatement(rtrim("$query"));
-            return true;
-
-        } else {
-            return false;
-        }
-        
-    }   
+    /* Check if 'form_tabs_custom_order' on `globals` table */
+    $sortedItemsVal = ($sortedItems) ? serialize($sortedItems) : '';
+    $globalData = sqlQuery("SELECT * FROM globals WHERE gl_name='form_tabs_custom_order'");
+    if($globalData) {
+        sqlStatement("UPDATE globals SET gl_value = '".$sortedItemsVal."' WHERE gl_name = 'form_tabs_custom_order'");
+    } else {
+        sqlStatement("INSERT INTO `globals` (`gl_name`, `gl_index`, `gl_value`) VALUES ('form_tabs_custom_order', '0', '".$sortedItemsVal."')");
+    }
 }
-
-
 
 
 
@@ -588,8 +510,7 @@ $calendar_categories = get_postcalendar_categories();
 <?php //REGISTERED SECTION ?>
 <div class="formTopLinks">
  <span class="formMiscOption bold"><a href="#" id="registeredFormsBtn" data-content="#registeredData" class="toggleLink active"><?php echo xlt('Registered/Unregistered');?></span></a>
- <span class="formMiscOption bold"><a href="#" id="sortFormTab" data-content="#formCatsData" class="toggleLink">Reorder Form Tabs</a></span>
- <span class="formMiscOption bold"><a href="#" id="updateTablesTab" data-content="#updateTables" class="toggleLink">Modify Tables</a></span>   
+ <span class="formMiscOption bold"><a href="#" id="sortFormTab" data-content="#formCatsData" class="toggleLink">Reorder Form Tabs</a></span>   
 </div>
 
 <div id="registeredData" class="screenWrap toggleContent">
@@ -832,27 +753,6 @@ $calendar_categories = get_postcalendar_categories();
     padding: 5px 12px;
     text-transform: capitalize;
 }
-.table-data-fields {
-    margin-top: 15px;
-}
-#tableDatacolumns td {
-    vertical-align: middle;
-}
-#tableDatacolumns td input,
-#tableDatacolumns td select {
-    width: 100%;
-}
-#tableDatacolumns,
-#tableDatacolumns th,
-#tableDatacolumns td {
-    border: none;
-}
-#updateTbleBtn {
-    position: relative;
-    left: 6px;
-    padding: 5px 10px;
-    margin-top: 15px;
-}
 </style>
 <?php 
     $formCategoriesSorted = get_sorted_form_categories();
@@ -914,64 +814,6 @@ $calendar_categories = get_postcalendar_categories();
     </div>
 </div>
 
-<div id="updateTables" class="toggleContent">
-    <div class="wrapper">
-        <form action="<?php echo $rootdir; ?>/forms_admin/forms_admin.php" method="POST" id="updateTbleFrm">
-            <?php 
-                $formTables = getFormsTables(); 
-                sort($formTables);
-            ?>
-            <input type="hidden" name="method" value="modifytable">
-            <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
-            <div class="form-group">
-                <select name="table" class="form-control">
-                    <option value="">Select a table...</option>
-                    <?php if ($formTables) { ?>
-                    <?php foreach ($formTables as $tbl) { ?>
-                    <option value="<?php echo $tbl ?>"><?php echo $tbl ?></option>
-                    <?php } ?>   
-                    <?php } ?>
-                </select>
-            </div>
-
-            <div class="table-data-fields">
-                <table id="tableDatacolumns" class="noclick">
-                    <thead>
-                        <tr>
-                            <th>Field Name</th>
-                            <th>Type</th>
-                            <th>Length/Values</th>
-                            <th>Default (e.g. NULL)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="text" name="tbl_name" class="form-control" value=""></td>
-                            <td>
-                                <select name="tbl_type" class="form-control">
-                                    <option value="varchar">VARCHAR</option>
-                                    <option value="text">TEXT</option>
-                                    <option value="int">INT</option>
-                                    <option value="tinyint">TINYINT</option>
-                                    <option value="bigint">BIGINT</option>
-                                </select>
-                            </td>
-                            <td><input type="text" name="tbl_length" class="form-control" value=""></td>
-                            <td><input type="text" name="tbl_default" class="form-control" value=""></td>
-                        </tr>
-                    </tbody>
-                </table> 
-            </div>
-            
-            <div class="buttonDiv">
-                <input type="button" id="updateTbleBtn" class="btn-default" value="Save New Field">
-            </div>
-
-        </form>
-    </div>
-</div>
-
-
 <script src="../../public/assets/jquery-1-10-2/jquery.min.js"></script>
 <script src="../../public/assets/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
@@ -979,49 +821,11 @@ var pageURL = '<?php echo $rootdir; ?>/forms_admin/forms_admin.php';
 var params={};location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){params[k]=v});
 jQuery(document).ready(function($){
 
-    $(document).on("click","#updateTbleBtn",function(e){
-        e.preventDefault();
-        var message = '';
-        var form = $("#updateTbleFrm");
-        var postData = form.serialize();
-        //form.trigger("submit");
-        $.ajax({
-          url: form.attr("action"),
-          type: 'POST',
-          data: postData,
-          dataType : "json",
-          beforeSend:function(){
-              $("#loader").show();
-          },
-          success: function(response){
-            if(response.success) {
-                message = '<div class="messagediv fadeIn">'+response.message+' <a id="closeFormMsg">x</a></div>';
-                form[0].reset();
-            } else {
-                message = '<div class="errormsg fadeIn"><strong>'+response.message+'</strong> <a id="closeFormMsg">x</a></div>';
-                
-            }
-
-            $("#formMessage").html(message);
-            setTimeout(function(){
-                $("#loader").hide();
-            },500);
-            
-          },
-          errors: function(response){
-
-          }
-        });
-
-    });
-
     if( typeof params.formstat!='undefined' && params.formstat=='updated' ) {
         var baseURL = $("form#formAdmin").attr('data-baseurl');
         var newBaseURL = baseURL.replace('?formstat=updated','');
         window.history.replaceState = newBaseURL;
     }
-
-    
 
     /* Activate / Deactivate */
     $(document).on("click","a.statz",function(e){

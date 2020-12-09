@@ -89,7 +89,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                     <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
                     <input type="hidden" name="pid" value="<?php echo $pid; ?>">
                     <input type="hidden" name="encounter" value="<?php echo $encounter; ?>">
-                    <input type="hidden" name="user" value="<?php echo $user_id; ?>">
+                    <input type="hidden" name="user" value="<?php echo $_SESSION['authUser']; ?>">
                     <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
                     <input type="hidden" name="activity" value="1">
 

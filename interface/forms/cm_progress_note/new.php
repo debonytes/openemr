@@ -83,14 +83,14 @@ $miles = ( isset($check_res['miles']) && $check_res['miles'] ) ? $check_res['mil
             ?>
             <div class="row">
                 
-                <form method="post" id="my_progress_notes_form" name="my_progress_notes_form" action="<?php echo $rootdir; ?>/forms/cbrs_progress_notes/save.php?id=<?php echo attr_url($formid); ?>">
+                <form method="post" id="my_progress_notes_form" name="my_progress_notes_form" action="<?php echo $rootdir; ?>/forms/<?php echo $folderName; ?>/save.php?id=<?php echo attr_url($formid); ?>">
             
 
                 
                     <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
                     <input type="hidden" name="pid" value="<?php echo $pid; ?>">
                     <input type="hidden" name="encounter" value="<?php echo $encounter; ?>">
-                    <input type="hidden" name="user" value="<?php echo $user_id; ?>">
+                    <input type="hidden" name="user" value="<?php echo $_SESSION['authUser']; ?>">
                     <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
                     <input type="hidden" name="activity" value="1">
 

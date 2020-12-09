@@ -46,6 +46,7 @@ $exclude_fields = array('id');
 $fieldValues = array();
 $encounter = ( isset($_REQUEST['encounter']) && $_REQUEST['encounter'] ) ? $_REQUEST['encounter'] : '';
 
+
 /* UPDATE FIELDS */
 if ($id) {
 
@@ -78,22 +79,29 @@ if ($id) {
 		if( $encounter ) {
 
 			$i=0; foreach( $_REQUEST as $field=>$val ) {
-				if( in_array($field, $table_fields) ) {
-					if($val) {
-						if( is_numeric($val) ) {
-							if( $val < 1 ) {
-								$val = 0;
+
+				if( $field != 'id' ){
+					if( in_array($field, $table_fields) ) {
+						if($val) {
+							if( is_numeric($val) ) {
+								if( $val < 1 ) {
+									$val = 0;
+								}
 							}
+						} else {
+							$val = NULL;
 						}
-					} else {
-						$val = NULL;
+						$comma = ($i>0) ? ', ':'';
+						$sets .= $comma . $field . ' = ?';
+						$fieldValues[] = $val;
+						$i++;
 					}
-					$comma = ($i>0) ? ', ':'';
-					$sets .= $comma . $field . ' = ?';
-					$fieldValues[] = $val;
-					$i++;
 				}
+
+				
 			}
+
+			//die($sets);
 
 			$newid = sqlInsert( 
 				"INSERT INTO $tableName SET $sets",$fieldValues

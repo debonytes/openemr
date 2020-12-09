@@ -62,10 +62,12 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
             }
             $patient_DOB = ( isset($patient['DOB']) && $patient['DOB'] ) ? $patient['DOB'] : '';
             $patient_Age = '';
+            $birthdate = '';
             if($patient_DOB) {
                 $dob = strtotime($patient_DOB);       
                 $tdate = time();
                 $patient_Age = date('Y', $tdate) - date('Y', $dob);
+                $birthdate = date('m-d-Y', $dob);
             }
             
 
@@ -184,7 +186,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                         <label for="date" class="col-sm-2"><?php echo xlt('Date'); ?></label>
                                         <div class="col-sm-10">
-                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo text($check_res['date']); ?>">
+                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo text(date('Y-m-d', strtotime($check_res['date']))); ?>">
                                           <small class="text-danger date_error"></small>
                                         </div>
                                     </div>
