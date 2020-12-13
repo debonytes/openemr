@@ -352,11 +352,23 @@ function check_event_exist($eid)
 
 //==============================================================================
 
-function planStatus($reference = null)
+function tablePlanOngoing($table, $form_pid)
 {
-    if($reference){
+    $query = sqlQuery("SELECT reference, status FROM {$table} WHERE pid = ? ORDER BY id DESC LIMIT 1", array($form_pid));
 
+    if($query){
+        if(empty( $query['reference'] )){
+            return false;
+        } else {
+            if( $query['status'] !== 'completed' ){
+                return true;
+            } else {
+                return false;
+            }            
+        }
     }
+
+    return false;
 }
 
 //==============================================================================
@@ -434,75 +446,126 @@ function InsertFormCategory($args, $pc_eid)
 
             $table_fields = sqlListFields($table); /* An array of the table fields */
 
-            // pid, name, dateofservice, billing_code
-            $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code', 'user');
-
-            $date = date('Y-m-d H:i:s', strtotime($args['event_date']));
-
-            $column_arr = 'pid, encounter';
-            $data = array($form_pid, $encounter);
-            $set = '?,?';
-
-            // additional parameter name
-            if(in_array('name', $table_fields)){
-                $column_arr .= ', name';
-                array_push($data, $patient_full_name);
-                $set .= ',?';
+            $isTablePlan = false;
+            // check if PID is existing in table plan
+            if (strpos($table, '_plan') !== false) {
+                $isTablePlan = true;
             }
 
-            if(in_array('participant_name', $table_fields)){
-                $column_arr .= ', participant_name';
-                array_push($data, $patient_full_name);
-                $set .= ',?';
-            }
+            if( $isTablePlan && tablePlanOngoing($table, $form_pid)  ) { // PID is existing in plan table and status is not completed
 
-            if(in_array('user', $table_fields)){
-                $column_arr .= ', user';
-                array_push($data, $_SESSION['authUser']);
-                $set .= ',?';
-            }
+                //$customFields = unset($table_fields['date']);
+                $customFields = implode(',', $table_fields);
+                $lastRecord = sqlQuery("SELECT * FROM {$table} WHERE pid = ? ORDER BY id DESC LIMIT 1", array($form_pid));
+                $oldData = array();
+                $oldSet = '';
 
-            if(in_array('dateofservice', $table_fields)){
-                $column_arr .= ', dateofservice';
-                array_push($data, $args['event_date']);
-                $set .= ',?';
-            }
+                foreach($table_fields as $field){
+                    if($field === 'id'){
+                        array_push($oldData, 'NULL');
+                        $oldSet .= '?';
+                    } elseif($field === 'date'){
+                        array_push($oldData, date('Y-m-d H:i:s'));
+                        $oldSet .= ',?';
+                    } elseif($field === 'encounter'){
+                        array_push($oldData, $encounter);
+                        $oldSet .= ',?';
+                    }else {
+                        array_push($oldData, $lastRecord[$field]);
+                        $oldSet .= ',?';
+                    }
+                }
 
-            if(in_array('billing_code', $table_fields)){
-                $column_arr .= ', billing_code';
-                array_push($data, $args['form_title']);
-                $set .= ',?';
-            }
-
-            $reference = md5(uniqid(rand(), true) . time());
-            if(in_array('reference', $table_fields)){
-                $column_arr .= ', reference';
-                array_push($data, $reference);
-                $set .= ',?';
-            }
-
-            if(in_array('status', $table_fields)){
-                $column_arr .= ', status';
-                array_push($data, 'started');
-                $set .= ',?';
-            }
-
-            $db_name_id = sqlInsert(
-                "INSERT INTO {$table} ( " .
-                "{$column_arr}" .
-                ") VALUES ({$set})", $data                
-            );
-
-            // insert into record
-            if($db_name_id){
-                $addl = sqlInsert(
-                    "INSERT INTO openemr_postcalendar_categories_additional ( " .
-                    "pc_eid, db_name, db_name_id " .
-                    ") VALUES (?,?,?)", array($pc_eid, $table, $db_name_id)               
+                $db_name_id = sqlInsert(
+                    "INSERT INTO {$table} ( " .
+                    "{$customFields}" .
+                    ") VALUES ({$oldSet})", $oldData                
                 );
-            }
 
-            addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
+                // insert into record
+                if($db_name_id){
+                    $addl = sqlInsert(
+                        "INSERT INTO openemr_postcalendar_categories_additional ( " .
+                        "pc_eid, db_name, db_name_id " .
+                        ") VALUES (?,?,?)", array($pc_eid, $table, $db_name_id)               
+                    );
+                }
+
+                addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
+
+            } else { // else PID is existing in plan table and status is not completed 
+
+                // pid, name, dateofservice, billing_code
+                $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code', 'user');
+
+                $date = date('Y-m-d H:i:s', strtotime($args['event_date']));
+
+                $column_arr = 'pid, encounter';
+                $data = array($form_pid, $encounter);
+                $set = '?,?';
+
+                // additional parameter name
+                if(in_array('name', $table_fields)){
+                    $column_arr .= ', name';
+                    array_push($data, $patient_full_name);
+                    $set .= ',?';
+                }
+
+                if(in_array('participant_name', $table_fields)){
+                    $column_arr .= ', participant_name';
+                    array_push($data, $patient_full_name);
+                    $set .= ',?';
+                }
+
+                if(in_array('user', $table_fields)){
+                    $column_arr .= ', user';
+                    array_push($data, $_SESSION['authUser']);
+                    $set .= ',?';
+                }
+
+                if(in_array('dateofservice', $table_fields)){
+                    $column_arr .= ', dateofservice';
+                    array_push($data, $args['event_date']);
+                    $set .= ',?';
+                }
+
+                if(in_array('billing_code', $table_fields)){
+                    $column_arr .= ', billing_code';
+                    array_push($data, $args['form_title']);
+                    $set .= ',?';
+                }
+
+                $reference = md5(uniqid(rand(), true) . time());
+                if(in_array('reference', $table_fields)){
+                    $column_arr .= ', reference';
+                    array_push($data, $reference);
+                    $set .= ',?';
+                }
+
+                if(in_array('status', $table_fields)){
+                    $column_arr .= ', status';
+                    array_push($data, 'started');
+                    $set .= ',?';
+                }
+
+                $db_name_id = sqlInsert(
+                    "INSERT INTO {$table} ( " .
+                    "{$column_arr}" .
+                    ") VALUES ({$set})", $data                
+                );
+
+                // insert into record
+                if($db_name_id){
+                    $addl = sqlInsert(
+                        "INSERT INTO openemr_postcalendar_categories_additional ( " .
+                        "pc_eid, db_name, db_name_id " .
+                        ") VALUES (?,?,?)", array($pc_eid, $table, $db_name_id)               
+                    );
+                }
+
+                addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
+
+            } // endif PID is existing in plan table and status is not completed
         } // if(!empty($folderName))
         
     }  // if(empty($query))
