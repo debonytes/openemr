@@ -351,6 +351,15 @@ function check_event_exist($eid)
 }
 
 //==============================================================================
+
+function planStatus($reference = null)
+{
+    if($reference){
+
+    }
+}
+
+//==============================================================================
 // insert form after the InsertEvent
 // $args is mainly filled with content from the POST http var
 
@@ -465,6 +474,19 @@ function InsertFormCategory($args, $pc_eid)
                 $set .= ',?';
             }
 
+            $reference = md5(uniqid(rand(), true) . time());
+            if(in_array('reference', $table_fields)){
+                $column_arr .= ', reference';
+                array_push($data, $reference);
+                $set .= ',?';
+            }
+
+            if(in_array('status', $table_fields)){
+                $column_arr .= ', status';
+                array_push($data, 'started');
+                $set .= ',?';
+            }
+
             $db_name_id = sqlInsert(
                 "INSERT INTO {$table} ( " .
                 "{$column_arr}" .
@@ -502,12 +524,44 @@ function get_facility_by_id($id)
     return $facility;
 }
 
+function getFormPlanTables() {
+    global $dbLink;
+    $dbLink = $GLOBALS['dbh'];
+    $sql2 = "SHOW TABLES LIKE '%_plan'";
+    $result = array_column(mysqli_fetch_all($dbLink->query($sql2)),0);
+    //$result = sqlFetchArray(sqlStatement($sql2),0);
+    return ($result) ? $result : '';
+}
+
+
+function getFormsTables() {
+    global $dbLink;
+    $dbLink = $GLOBALS['dbh'];
+    $sql2 = "SHOW TABLES LIKE 'form_%'";
+    $result = array_column(mysqli_fetch_all($dbLink->query($sql2)),0);
+    //$result = sqlFetchArray(sqlStatement($sql2),0);
+    return ($result) ? $result : '';
+}
+
 //========================================================================
 // getting table name based on category
 
 function get_db_table_name($pc_catid)
 {
+    $folderList = array();
+
+    $formList = getFormsTables();
+
+    foreach($formList as $form){
+        $folder = str_replace("form_", "", $form);
+        if( strlen($folder) > 5 ){
+            $folderList[] = $folder;
+        }        
+    }
+
+    /*
     $folderList = array('cbrs_progress_notes', 'cbrs_treatment_plan','cm_progress_note','cm_treatment_plan','counselor_progress_note','counselor_treatment_plan','peer_support_progress_note','peer_support_txt_plan','respite_care_progress_note','youth_support_progress_note');
+    */
 
     $tablename = array();
     if(empty($pc_catid)){
