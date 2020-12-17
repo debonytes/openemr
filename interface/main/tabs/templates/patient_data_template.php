@@ -74,6 +74,8 @@ if ($search_any_type == 'dual') {
                 </form>
             </div>
         </span>
+        
+        
         <span class="patientDataColumn">
         <!-- ko if: patient -->
         <!-- ko with: patient -->
@@ -125,6 +127,7 @@ if ($search_any_type == 'dual') {
         <!-- /ko -->
         <!-- /ko -->
         </span>
+
         <!-- ko if: user -->
         <!-- ko with: user -->
         <!-- ko if:messages() -->

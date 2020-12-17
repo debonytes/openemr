@@ -628,12 +628,19 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                             </div>  
                             <div class="clearfix"></div> <!-- end of Problem 3 -->
 
-                            <div class="col-md-12 margin-top-20">
+                            <div class="col-md-12 margin-top-20" style="margin-top: 30px">
                                 <div class="form-group">
                                     <label for="individual_included" class="col-sm-5"><?php echo xlt('Individuals included in initial treatment planning or review:'); ?></label>
                                     <div class="col-sm-7">
                                         <input type="text" name="individual_included" id="individual_included" class="form-control" autocomplete="off" value="<?php echo text($check_res['individual_included']); ?>">
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 margin-top-20" style="margin-top: 30px">
+                                <div class="form-group">
+                                    <input type="checkbox" name="status" id="status" value="completed">
+                                    <label for="status" class=""><?php echo xlt('Mark as Complete'); ?></label>                                    
                                 </div>
                             </div>
 

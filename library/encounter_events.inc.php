@@ -470,6 +470,9 @@ function InsertFormCategory($args, $pc_eid)
                     } elseif($field === 'encounter'){
                         array_push($oldData, $encounter);
                         $oldSet .= ',?';
+                    } elseif($field === 'status'){
+                        array_push($oldData, 'ongoing');
+                        $oldSet .= ',?';                    
                     }else {
                         array_push($oldData, $lastRecord[$field]);
                         $oldSet .= ',?';
