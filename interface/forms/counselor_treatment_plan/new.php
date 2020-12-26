@@ -1168,6 +1168,14 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                             </div>
 
 
+                            <div class="col-md-12 margin-top-20" style="margin-top: 30px">
+                                <div class="form-group">
+                                    <input type="checkbox" name="status" id="status" value="completed">
+                                    <label for="status" class=""><?php echo xlt('Mark as Complete'); ?></label>                                    
+                                </div>
+                            </div>
+
+
 
                             <div class="clearfix">&nbsp;</div>
                             
