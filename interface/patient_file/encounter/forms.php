@@ -25,6 +25,7 @@ use OpenEMR\Common\Csrf\CsrfUtils;
 use OpenEMR\Core\Header;
 
 $reviewMode = false;
+$_SESSION['locked_formID'] = false;
 if (!empty($_REQUEST['review_id'])) {
     $reviewMode = true;
     $encounter=sanitizeNumber($_REQUEST['review_id']);
@@ -1106,7 +1107,20 @@ if ($pass_sens_squad &&
 
         // If the form is locked, it is no longer editable
         if ($esign->isLocked()) {
-                 echo "<a href=# class='css_button_small form-edit-button-locked' id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "'><span>" . xlt('Locked') . "</span></a>";
+                  $formID_Session = 'formID_' . attr($iter['form_id']);
+                  $_SESSION[$formID_Session] = true;
+                  $_SESSION['formID'] = true;
+                 //echo "<a href=# class='css_button_small form-edit-button-locked' id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "'><span>" . xlt('Locked') . "</span></a>";
+
+                 //echo "<a ef=# class='css_button_small form-edit-readonly-button'><span>". xlt('View') ."</span></a>";
+                  //echo '<pre>' . print_r($_SESSION, TRUE) . '</pre>';
+                 echo "<a class='css_button_small form-edit-button' " .
+                    "id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "' " .
+                    "href='#' " .
+                    "title='" . xla('View this form') . "' " .
+                    "onclick=\"return openEncounterForm(" . attr_js($formdir) . ", " .
+                    attr_js($form_name) . ", " . attr_js($iter['form_id']) . ")\">";
+                echo "<span>" . xlt('View') . "</span></a>";
         } else {
             if ((!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write') and $is_group == 0 and $authPostCalendarCategoryWrite)
             or (((!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write')) and $is_group and acl_check("groups", "glog", false, 'write')) and $authPostCalendarCategoryWrite)) {
