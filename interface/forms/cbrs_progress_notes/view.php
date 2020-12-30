@@ -10,10 +10,7 @@ session_start();
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
-//echo '<pre>' . print_r($_SESSION, TRUE) . '</pre>';
-//echo 'formID = ' . $formid ;
-
-if($_SESSION['locked'] && $_SESSION['formID_' . $formid ]){
+if(isset($_SESSION['formID_' . $formid ])){
     require("readonly.php");
 } else {
     require("new.php");

@@ -184,7 +184,7 @@ if ($postCalendarCategoryACO) {
             }
             
             ?>
-            <form method=post <?php echo "name='my_form' " . "action='$rootdir/forms/$folderName/save.php?id=" . attr_url($formid) . "'\n"; ?>>
+            <form method=post >
               <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
               <input type="hidden" name="date" value="<?php echo $datetime; ?>">
               <input type="hidden" name="pid" value="<?php echo $patient_id; ?>">
@@ -227,7 +227,7 @@ if ($postCalendarCategoryACO) {
                         //$date_service_format = ($dateofservice) ? date('d/m/Y',strtotime($dateofservice)) : '';
                         ?>
                         <label>Date of Service:</label>
-                        <input type="text" id="dateofservice" class="form-control datepicker" name="dateofservice" value="<?php echo text($dateofservice); ?>" autocomplete="off">
+                        <input type="text" id="dateofservice" class="form-control " name="dateofservice" value="<?php echo text($dateofservice); ?>" autocomplete="off" readonly disabled>
                       </div>
 
                       <div class="row">
@@ -238,7 +238,7 @@ if ($postCalendarCategoryACO) {
                               //$start_time_format = ($starttime) ? date('h:i A',strtotime($starttime)) : '';
                             ?>
                             <label>Start Time:</label>
-                            <input type="text" id="starttime" class="form-control timepicker" name="starttime" value="<?php echo $starttime; ?>" autocomplete="off">
+                            <input type="text" id="starttime" class="form-control " name="starttime" value="<?php echo $starttime; ?>" autocomplete="off" readonly disabled>
                           </div>
                         </div>
 
@@ -249,7 +249,7 @@ if ($postCalendarCategoryACO) {
                               //$end_time_format = ($endtime) ? date('h:i A',strtotime($endtime)) : '';
                             ?>
                             <label>End Time:</label>
-                            <input type="text" id="endtime" class="form-control timepicker" name="endtime" value="<?php echo $endtime; ?>" autocomplete="off">
+                            <input type="text" id="endtime" class="form-control " name="endtime" value="<?php echo $endtime; ?>" autocomplete="off" readonly disabled>
                           </div>
                         </div>
                       </div>
@@ -259,7 +259,7 @@ if ($postCalendarCategoryACO) {
                           $duration =  ( $check_res['duration'] ) ? text($check_res['duration']) : '' ; 
                         ?>
                         <label>Duration:</label>
-                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo $duration; ?>" autocomplete="off">
+                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo $duration; ?>" autocomplete="off" readonly disabled>
                       </div>
 
                     </div>
@@ -275,26 +275,23 @@ if ($postCalendarCategoryACO) {
                         <?php
                           $service_locations = array("Home","Community");
                           $selected_service_loc = ( $check_res['service_local'] ) ? $check_res['service_local'] : '';
-                        ?>       
-                          <div class="col-sm-4">
-                            <strong>State where the services took place:</strong>
-                          </div>                 
-                          
-                          <div class="col-sm-8" style="display: block;">
+                        ?>
+                        <label style="margin-bottom:15px">
+                          <strong>State where the services took place:</strong>
+                          <span class="span-field-group">
                             <?php foreach ($service_locations as $loc) { 
                               $is_selected_service_loc = ($loc == $selected_service_loc) ? ' checked':'';
                               ?>
-                              <label class="radio-inline" style="width: 20%; display: inline-block;" >
-                                <input type="radio" name="service_local" value="<?php echo $loc; ?>"<?php echo $is_selected_service_loc; ?>> <?php echo $loc; ?>
-                              </label> 
+                              <span class="option-field">
+                                <input type="radio" name="service_local" value="<?php echo $loc; ?>"<?php echo $is_selected_service_loc; ?> disabled>
+                                <span class="field-text"><?php echo $loc; ?></span>
+                              </span>
                             <?php } ?>
-                          </div>
-                        
+                          </span>
+                        </label> 
                       </div>
 
-                      <div class="clearfix"></div>
-
-                      <div class="form-group" style="margin-top: 20px">
+                      <div class="form-group">
                         <p>
                           <strong>Objective(s) Addressed and Targeted Skill Area:</strong> Provide relief and de-escalation of stressful situations for the caregiver(s) as evidenced by child spending at least 5 hours per month with Respite Provider for the next 3 months.
                         </p>
@@ -305,7 +302,7 @@ if ($postCalendarCategoryACO) {
                           $intervention_type =  ( $check_res['intervention_type'] ) ? text($check_res['intervention_type']) : '' ; 
                         ?>
                         <label>Type of Intervention:</label>
-                        <textarea name="intervention_type" class="form-control" rows="4"><?php echo $intervention_type ?></textarea>
+                        <textarea name="intervention_type" class="form-control" rows="4" readonly disabled><?php echo $intervention_type ?></textarea>
                       </div>
 
                       <div class="form-group">
@@ -320,7 +317,7 @@ if ($postCalendarCategoryACO) {
                           $progress_narrative =  ( $check_res['progress_narrative'] ) ? text($check_res['progress_narrative']) : '' ; 
                         ?>
                         <label>Narrative:</label>
-                        <textarea name="progress_narrative" class="form-control" rows="4"><?php echo $progress_narrative ?></textarea>
+                        <textarea name="progress_narrative" class="form-control" rows="4" readonly disabled><?php echo $progress_narrative ?></textarea>
                       </div>
 
                       <div class="form-group " style="margin-top:20px;">
@@ -337,7 +334,7 @@ if ($postCalendarCategoryACO) {
                               //$is_selected_crit_incidents = ($val === $crit_incidents) ? ' checked':'';
                               ?>
                               <label class="radio-inline" style="width: 50px">                              
-                                <input type="radio" name="crit_incidents" value="<?php echo $val; ?>" <?php echo ($val == $check_res['crit_incidents']) ? ' checked' : ''; ?> >
+                                <input type="radio" name="crit_incidents" value="<?php echo $val; ?>" <?php echo ($val == $check_res['crit_incidents']) ? ' checked' : ''; ?> disabled>
                                 <?php echo $label; ?>                              
                               </label> 
                             <?php } ?>
@@ -350,7 +347,7 @@ if ($postCalendarCategoryACO) {
                           $critical_incidents_explan =  ( $check_res['critical_incidents_explan'] ) ? text($check_res['critical_incidents_explan']) : '';
                         ?>
                         <label>If yes please explain:</label>
-                        <textarea name="critical_incidents_explan" class="form-control" rows="4"><?php echo $critical_incidents_explan ?></textarea>
+                        <textarea name="critical_incidents_explan" class="form-control" rows="4" readonly disabled><?php echo $critical_incidents_explan ?></textarea>
                       </div>
 
                     </div>
@@ -364,15 +361,7 @@ if ($postCalendarCategoryACO) {
               <div class="form-group clearfix">
                   <div class="col-sm-offset-1 col-sm-12 position-override">
                       <div class="btn-group btn-pinch" role="group">
-                          <?php                                    
-                                    if (($esign->isButtonViewable() and $is_group == 0 and $authPostCalendarCategoryWrite) or ($esign->isButtonViewable() and $is_group and acl_check("groups", "glog", false, 'write') and $authPostCalendarCategoryWrite)) {
-                                        if (!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write')) {
-                                            echo $esign->buttonHtml();
-                                        }
-                                    }
-                          ?>
-                          <!-- Save/Cancel buttons -->
-                          <button type="submit" class="btn btn-default btn-save save"> <?php echo xla('Save'); ?></button>
+                          
                           <button type="button"
                                   class="dontsave btn btn-link btn-cancel btn-separate-left"><?php echo xla('Cancel'); ?></button>
                       </div>

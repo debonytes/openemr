@@ -381,19 +381,14 @@ if ($postCalendarCategoryACO) {
                     <div class="form-group clearfix">
                         <div class="col-sm-12 col-sm-offset-1 position-override">
                             <div class="btn-group oe-opt-btn-group-pinch" role="group">
-                                <?php
-                                    // ESign for entire encounter
-                                    /*$esign = $esignApi->createEncounterESign($encounter);
-                                    if ($esign->isButtonViewable()) {
-                                        echo $esign->buttonHtml();
-                                    }*/
+                                <?php                                    
                                     if (($esign->isButtonViewable() and $is_group == 0 and $authPostCalendarCategoryWrite) or ($esign->isButtonViewable() and $is_group and acl_check("groups", "glog", false, 'write') and $authPostCalendarCategoryWrite)) {
                                         if (!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write')) {
                                             echo $esign->buttonHtml();
                                         }
                                     }
                                 ?>
-                                <!--<button type="button" class="btn btn-default btn-sign" name="digitally_sign_progress_notes" style="margin-right: 20px !important"><?php echo xlt('Digitally Sign'); ?></button>-->
+                                
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
                             </div>

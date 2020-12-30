@@ -14,4 +14,10 @@
  * @copyright Copyright (C) 2017 Stephen Waite <stephen.waite@cmsvt.com>
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
-require("new.php");
+$formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
+if(isset($_SESSION['formID_' . $formid ])){
+    require("readonly.php");
+} else {
+    require("new.php");
+}
+
