@@ -1109,11 +1109,7 @@ if ($pass_sens_squad &&
         if ($esign->isLocked()) {
                   $formID_Session = 'formID_' . attr($iter['form_id']);
                   $_SESSION[$formID_Session] = true;
-                  $_SESSION['formID'] = true;
-                 //echo "<a href=# class='css_button_small form-edit-button-locked' id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "'><span>" . xlt('Locked') . "</span></a>";
-
-                 //echo "<a ef=# class='css_button_small form-edit-readonly-button'><span>". xlt('View') ."</span></a>";
-                  //echo '<pre>' . print_r($_SESSION, TRUE) . '</pre>';
+                  $_SESSION['formID'] = true;                 
                  echo "<a class='css_button_small form-edit-button' " .
                     "id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "' " .
                     "href='#' " .
