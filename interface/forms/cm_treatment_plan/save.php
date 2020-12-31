@@ -80,13 +80,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         /* INSERT FIELDS */
 
-        if( isset($_REQUEST) && $_REQUEST ) {
+        if( isset($_POST) && $_POST ) {
 
             if( $encounter ) {
 
                 // areas_to_be_addressed, dsm_diagnoses
 
-                $i=0; foreach( $_REQUEST as $field=>$val ) {
+                $i=0; foreach( $_POST as $field=>$val ) {
                     if( in_array($field, $table_fields) ) {
                         if($val && !empty($val)) {
                             if(($field == 'areas_to_be_addressed') || ($field == 'dsm_diagnoses') ){

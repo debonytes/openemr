@@ -63,7 +63,7 @@ if ($postCalendarCategoryACO) {
     <head>
         <title><?php echo xlt("Case Management Progress Note"); ?></title>
 
-        <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
+        <?php Header::setupHeader(['datetime-picker', 'opener', 'esign']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
     </head>
     <body class="body_top">
@@ -124,17 +124,7 @@ if ($postCalendarCategoryACO) {
                     <input type="hidden" name="activity" value="1">
 
                     <fieldset style="padding-top: 20px!important;">
-                       <!--  <legend class=""><?php //echo xlt('Case Management Progress Note'); ?></legend> -->
-                            <!--
-                            <div class="form-group">
-                                <div class="col-sm-10 col-sm-offset-1">
-                                    <textarea name="services_place" id ="services_place"  class="form-control" cols="80" rows="5" ><?php //echo text($check_res['services_place']); ?></textarea>
-                                </div>
-                            </div>
-                            -->
-                           
-                            
-
+                       
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-3 "><?php echo xlt('Client Name'); ?></label>
@@ -200,7 +190,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="duration" class="col-sm-3 "><?php echo xlt('Duration'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo text($check_res['duration']); ?>">
+                                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo ($check_res['duration']) ? text($check_res['duration']) : ''; ?>">
                                         <small class="text-danger duration_error"></small>
                                     </div>                                    
                                 </div>
@@ -438,7 +428,9 @@ if ($postCalendarCategoryACO) {
                   var endTime = e.replace(/\s+/g, '').trim();
                   if(startTime && endTime) {
                     
-                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate() + 1)).slice(-2);
+                    //console.log('Start: ' + startTime + ' | End: ' + endTime);
+                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate())).slice(-2);
+                    //console.log('Date Today: ' + date_today);
                     var date1 = new Date( date_today + " " + s ).getTime();
                     var date2 = new Date( date_today + " " + e ).getTime();
                     var msec = date2 - date1;
@@ -449,6 +441,8 @@ if ($postCalendarCategoryACO) {
                     var yrs = Math.floor(days / 365);
                     var hours_text = '';
                     var hour_and_mins = '';
+
+                   // console.log('Date1: ' + date1 + ' | date2: ' + date2);
 
                     mins = mins % 60;
                     if(mins>1) {

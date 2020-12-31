@@ -45,8 +45,8 @@ $sets = '';
 $exclude_fields = array('id');
 $fieldValues = array();
 $encounter = ( isset($_REQUEST['encounter']) && $_REQUEST['encounter'] ) ? $_REQUEST['encounter'] : '';
-
-
+//echo "<pre>". print_r($_POST) ."</pre>";
+//die();
 /* UPDATE FIELDS */
 if ($id) {
 
@@ -74,11 +74,11 @@ if ($id) {
 } else {
 	/* INSERT FIELDS */
 
-	if( isset($_REQUEST) && $_REQUEST ) {
+	if( isset($_POST) && $_POST ) {
 
 		if( $encounter ) {
 
-			$i=0; foreach( $_REQUEST as $field=>$val ) {
+			$i=0; foreach( $_POST as $field => $val ) {
 
 				if( $field != 'id' ){
 					if( in_array($field, $table_fields) ) {

@@ -186,7 +186,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                         <label for="date" class="col-sm-2"><?php echo xlt('Date'); ?></label>
                                         <div class="col-sm-10">
-                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo text($check_res['date']); ?>">
+                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo text($check_res['date']); ?>" autocomplete="off">
                                           <small class="text-danger date_error"></small>
                                         </div>
                                     </div>
@@ -631,13 +631,14 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 </div>
                             </div>
 
-
+                            <!--
                             <div class="col-md-12 margin-top-20" style="margin-top: 30px">
                                 <div class="form-group">
                                     <input type="checkbox" name="status" id="status" value="completed">
                                     <label for="status" class=""><?php echo xlt('Mark as Complete'); ?></label>                                    
                                 </div>
                             </div>
+                            -->
 
 
                             <div class="clearfix">&nbsp;</div>

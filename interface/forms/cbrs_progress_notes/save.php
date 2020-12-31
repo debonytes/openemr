@@ -73,11 +73,11 @@ if ($id) {
 } else {
 	/* INSERT FIELDS */
 
-	if( isset($_REQUEST) && $_REQUEST ) {
+	if( isset($_POST) && $_POST ) {
 
 		if( $encounter ) {
 
-			$i=0; foreach( $_REQUEST as $field=>$val ) {
+			$i=0; foreach( $_POST as $field => $val ) {
 				if( in_array($field, $table_fields) ) {
 					if($val) {
 						if( is_numeric($val) ) {
