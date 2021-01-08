@@ -1,5 +1,4 @@
 <?php
-//session_start();
 /**
  * Patient Tracker (Patient Flow Board)
  *
@@ -27,17 +26,12 @@ require_once "$srcdir/MedEx/API.php";
 
 use OpenEMR\Common\Csrf\CsrfUtils;
 use OpenEMR\Core\Header;
-use OpenEMR\OeUI\OemrUI;
 
 if (!empty($_POST)) {
     if (!CsrfUtils::verifyCsrfToken($_POST["csrf_token_form"])) {
         CsrfUtils::csrfNotVerified();
     }
 }
-
-$_SESSION['dashboard_datatables'] = '';
-$_SESSION['from_dashboard'] = false;
-$_SESSION['from_dashboard_referer'] = '';
 
 // These settings are sticky user preferences linked to a given page.
 // mdsupport - user_settings prefix
@@ -152,20 +146,14 @@ if (!$_REQUEST['flb_table']) {
     <!-- <title><?php echo xlt('Flow Board'); ?></title> -->
     <title><?php echo xlt('Dashboard'); ?></title>
 
-    <?php Header::setupHeader(['datetime-picker', 'jquery-ui', 'jquery-ui-cupertino', 'opener', 'pure', 'datatables', 'datatables-colreorder', 'datatables-dt', 'datatables-bs']); ?>
+    <?php Header::setupHeader(['datetime-picker', 'jquery-ui', 'jquery-ui-cupertino', 'opener', 'pure']); ?>
 
     <script type="text/javascript">
         <?php require_once "$srcdir/restoreSession.php"; ?>
     </script>
 
     <link rel="stylesheet" href="<?php echo $GLOBALS['web_root']; ?>/library/css/bootstrap_navbar.css?v=<?php echo $v_js_includes; ?>" type="text/css">
-
-    <link rel="stylesheet" href="<?php echo $GLOBALS['web_root']; ?>/public/assets/datatables.net-bs/css/dataTables.bootstrap.css" type="text/css">
-
     <script type="text/javascript" src="<?php echo $GLOBALS['web_root']; ?>/interface/main/messages/js/reminder_appts.js?v=<?php echo $v_js_includes; ?>"></script>
-
-    <script type="text/javascript" src="<?php echo $GLOBALS['web_root']; ?>/public/assets/datatables.net/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="<?php echo $GLOBALS['web_root']; ?>/public/assets/datatables.net-bs/js/dataTables.bootstrap.js"></script>
 
     <link rel="shortcut icon" href="<?php echo $webroot; ?>/sites/default/favicon.ico" />
 
@@ -236,10 +224,6 @@ if (!$_REQUEST['flb_table']) {
             color:black;
             text-decoration:none;
         }
-
-        #table_esign tbody tr:hover {           
-           cursor: pointer;
-       }
     </style>
 
 </head>
@@ -251,11 +235,6 @@ if (!$_REQUEST['flb_table']) {
     }
     ?>
     <div class="container-fluid" style="margin-top: 20px;">
-
-        
-
-
-
     <div class="row-fluid" id="flb_selectors" style="display:<?php echo attr($setting_selectors); ?>;">
         <div class="col-sm-12">
             <div class="showRFlow" id="show_flows" style="text-align:center;margin:20px auto;" name="kiosk_hide">
@@ -429,8 +408,6 @@ if (!$_REQUEST['flb_table']) {
             </form>
         </div>
     </div>
-
-
 
     <div class="row-fluid">
         <div class="col-md-12">
@@ -934,88 +911,6 @@ if (!$_REQUEST['flb_table']) { ?>
                 </div>
             </div>
         </div>
-
-        <!-- forms need to be signed in -->
-        <div class="row-fluid">
-            <div class="col-md-12">
-                <div class="text-center row divTable" style="width: 85%; padding: 10px; margin: 10px auto">
-                    <div>
-                        <h2>Forms need to be e-signed</h2>
-                        
-                        <table class="table table-hover table-bordered" id="table_esign">
-                            <thead>
-                                <tr>
-                                    <th class="text-center"><?php  echo text('ID'); ?></th>
-                                    <th class="text-center"><?php  echo text('Patient'); ?></th>
-                                    <th class="text-center"><?php  echo text('Form Category'); ?></th>
-                                    <th class="text-center"><?php  echo text('Form ID'); ?></th>
-                                    <th class="text-center"><?php  echo text('Encounter'); ?></th>
-                                    <th class="text-center"><?php  echo text('Form Directory'); ?></th>
-                                    <th class="text-center"><?php  echo text('Date Created'); ?></th>
-                                    <th class="text-center"><?php  echo text('Created By'); ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php 
-                                $esign_ids = array();
-                                $esign_query = "SELECT tid FROM esign_signatures";                             
-                                $esign_result = sqlStatement($esign_query);
-                                while( $esign_row = sqlFetchArray($esign_result)){
-                                    $esign_ids[] = $esign_row['tid'];
-                                }
-
-                                $form_names = getFormsTables();  // array for forms
-                                $forms = array();
-
-                                $form_query = "SELECT * FROM forms";
-                                $form_stmt = sqlStatement($form_query);
-
-                                while($form_row = sqlFetchArray($form_stmt)){
-                                    $sql_form = "form_" . $form_row['formdir'];
-                                    if( in_array($sql_form, $form_names) ){
-                                        if( !in_array($form_row['id'], $esign_ids) ){
-                                            $forms[] = $form_row;
-                                        }
-                                    }
-                                }
-
-
-                                ?>
-                                <?php 
-                                foreach($forms as $form): 
-                                    $patient_full_name = '';
-                                    $patient = getPatientData($form['pid']);
-                                      $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-                                      $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-                                      $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
-                                      $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
-                                      if($patientInfo && array_filter($patientInfo)) {
-                                        $patient_full_name = implode( ' ', array_filter($patientInfo) );
-                                      }
-
-                                 ?>
-                                <tr>
-                                    <td class="text-center ">
-                                        <?php echo $form['id']; ?>
-                                        <input type="hidden" class="pid" value="<?php echo $form['pid']; ?>">
-                                    </td>
-                                    <td><?php echo $patient_full_name; ?></td>
-                                    <td class="formname"><?php echo attr($form['form_name']); ?></td>
-                                    <td class="formid"><?php echo attr($form['form_id']); ?></td>
-                                    <td class="encounter"><?php echo attr($form['encounter']); ?></td>
-                                    <td class="formdir"><?php echo attr($form['formdir']); ?></td>
-                                    <td class="text-center"><?php echo attr($form['date']); ?></td>
-                                    <td class="text-center"><?php echo attr($form['user']); ?></td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- forms need to be signed in -->
-
     </div><?php //end container ?>
     <!-- form used to open a new top level window when a patient row is clicked -->
     <form name='fnew' method='post' target='_blank'
@@ -1046,13 +941,6 @@ function myLocalJS()
         } else {
              $(this).attr('allowFullscreen', 'true');
         }
-
-        window.top.onbeforeunload = function() {
-           return ;
-        };
-
-        
-
         <?php
         if ($_REQUEST['kiosk'] == '1') { ?>
             $("[name='kiosk_hide']").hide();
@@ -1262,42 +1150,6 @@ function myLocalJS()
             $("[name='kiosk_hide']").show();
             $("[name='kiosk_show']").hide();
 
-            var table = $('#table_esign').DataTable();
-
-           $('#table_esign tbody').on( 'click', 'tr', function () {
-                <?php $_SESSION['from_dashboard_referer'] = $_SERVER['HTTP_REFERER']; ?>
-                var formname    = $(this).find('td.formname').html();
-                var formid      = $(this).find('td.formid').html();
-                var formdir     = $(this).find('td.formdir').html();
-                var pid         = $(this).find('input:hidden.pid').val();
-                var encounter   = $(this).find('td.encounter').html();
-
-                <?php $referrer = ($_SESSION['from_dashboard_referer']) ? text($_SESSION['from_dashboard_referer']) : 'none';  ?>
-                console.log( 'Formname: ' + formname + '| formid: ' + formid + '| formdir: ' +  formdir + '| pid: ' + pid );
-                //$.get("patient_info.php", { set_encounter: encounter, pid: pid });
-                $.ajax({
-                    method: 'GET',
-                    url: 'patient_info.php',
-                    data: {
-                        set_encounter: encounter,
-                        set_pid: pid,
-                        formname: formname
-                    },
-                    success: function(response){
-                        console.log('Success:');
-                        console.log(response);
-                    }, 
-                    error: function(response){
-                        console.log('Error:');
-                        console.log(response);
-                    }
-                  });
-                openEncounterForm(formdir, formname, formid);
-            } );
-
-            var dash_sess = '<?php echo isset($_SESSION['dashboard_datatables']) ?  $_SESSION['dashboard_datatables'] : ''; ?>';
-            console.log('Dashboard Session 2: ' + dash_sess);
-
             onresize = function () {
                 var state = 1 >= outerHeight - innerHeight ? "fullscreen" : "windowed";
                 if (window.state === state) return;
@@ -1402,99 +1254,5 @@ function myLocalJS()
 
         initTableButtons();
 
-        // This avoids excessive pollution of the window's name space.
-        var twObject = {};
-
-        // Call this to initialize a tab set.
-        // tabsid is a unique identifier usable as a DOM element ID.
-        function twSetup(tabsid) {
-          var tabs = $('#' + tabsid).tabs({
-            heightStyle: "content"
-          });
-          twObject[tabsid] = {};
-          twObject[tabsid].tabs = tabs;
-          twObject[tabsid].counter = 100;
-          // Close icon: removing the tab on click
-          tabs.on("click", "span.ui-icon-close", function() {
-            var mytabsid = $(this).closest("div").attr("id");
-            var panelId = $(this).prev().attr("href").substring(1);
-            top.restoreSession();
-            twCloseTab(mytabsid, panelId);
-          });
-        }
-
-
-
-
-        // Called to open the data entry form a specified encounter form instance.
-        function openEncounterForm(formdir, formname, formid) {
-          var url = '/interface/patient_file/encounter/view_form.php?formname=' +
-              encodeURIComponent(formdir) + '&id=' + encodeURIComponent(formid);
-          //if (formdir == 'newpatient' || !parent.twAddFrameTab) {
-          <?php $_SESSION['dashboard_datatables'] = 'dashboard'; ?>
-
-          top.restoreSession();
-
-          var session_dashboard = "<?php echo $_SESSION['dashboard_datatables']; ?>";
-            console.log('Session Dashboard: ' + session_dashboard);
-
-          location.href = url;
-          //}
-          //else {
-          //twSetup(formdir + '_' +formid);
-
-           // twAddFrameTab('enctabs', formname, url);
-            
-          //}
-          return false;
-        }
-
-        // Add a new tab using an iframe loading a specified URL.
-        function twAddFrameTab(tabsid, label, url) {
-          var panelId = twNextTabId(tabsid);
-          top.restoreSession();
-          twAddTab(
-            tabsid,
-            label,
-            "<iframe name='" + label + "' frameborder='0' style='height:95.3%;width:100%;' src='" + url + "'>Oops</iframe>"
-          );
-          return panelId;
-        }
-
-        // Get the ID that will be used for the next added tab. Nothing is changed.
-        // This may be useful as an iframe's name so it can later call twCloseTab().
-        function twNextTabId(tabsid) {
-          return tabsid + '-' + (twObject[tabsid].counter + 1);
-        }
-
-        // Add a new tab to the specified tab set and make it the selected tab.
-        function twAddTab(tabsid, label, content) {
-          var oldcount = twObject[tabsid].tabs.find(".ui-tabs-nav li").length;
-          var panelId = tabsid + '-' + (++twObject[tabsid].counter);
-          var li = "<li><a href='#" + panelId + "'>" + label + "</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>";
-          twObject[tabsid].tabs.find(".ui-tabs-nav").append(li);
-          top.restoreSession();
-          twObject[tabsid].tabs.append("<div id='" + panelId + "'>" + content + "</div>");
-          twObject[tabsid].tabs.tabs("refresh");
-          twObject[tabsid].tabs.tabs("option", "active", oldcount);
-          return panelId;
-        }
-
     </script>
 <?php } ?>
-
-
-
-    
-
-
-<?php/*
-echo "<a class='css_button_small form-edit-button' " .
-                    "id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "' " .
-                    "href='#' " .
-                    "title='" . xla('Edit this form') . "' " .
-                    "onclick=\"return openEncounterForm(" . attr_js($formdir) . ", " .
-                    attr_js($form_name) . ", " . attr_js($iter['form_id']) . ")\">";
-                echo "<span>" . xlt('Edit') . "</span></a>"; */
-
-?>

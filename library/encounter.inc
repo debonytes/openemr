@@ -1,6 +1,6 @@
 <?php
 include_once("../../globals.php");
-include_once("$srcdir/forms.inc");
+include_once("forms.inc");
 
 //function called to set the global session variable for encounter number
 function setencounter($enc)

@@ -1,4 +1,5 @@
 <?php
+//session_start();
 /*
  * This program saves data from the respite_care_progress_note
  *
@@ -107,6 +108,19 @@ if ($id) {
 }
 
 formHeader("Redirecting....");
-formJump();
+if($_SESSION['from_dashboard']){
+	//$token = $_SESSION['token_main_php'];
+	//$url = $_SESSION['from_dashboard_referer'];
+	//header('Window-target: _top');
+	//header("Location: {$url}");
+	//exit;
+	echo "<script>\n";
+	
+	echo "window.top.location.href = window.top.location.href";
+
+	echo "</script>";
+} else {
+	formJump();
+}
 formFooter();
 

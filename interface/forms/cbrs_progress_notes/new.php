@@ -1,4 +1,5 @@
 <?php
+//session_start();
 /**
  * Clinical instructions form.
  *
@@ -31,12 +32,17 @@ $tableName = 'form_' . $folderName;
 
 $returnurl = 'encounter_top.php';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
+
+$formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
+$form = sqlQuery($formStmt, array($formid, $folderName));
+
+$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
+
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
-$formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
-$form = sqlQuery($formStmt, array($formid, $folderName));
+
 
 $esignApi = new Api();
 // Create the ESign instance for this form
@@ -65,13 +71,19 @@ if ($postCalendarCategoryACO) {
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
     </head>
-    <body class="body_top">
+    <body class="body_top"  onbeforeunload="return myFunction()">
         <div class="container">
             <div class="row">
                 <div class="page-header">
                     <h2><?php echo xlt('CBRS Progress Notes'); ?></h2>
                 </div>
             </div>
+
+            <?php
+                /*echo "<pre>";
+                print_r($_SESSION);
+                echo '</pre>';*/
+            ?>
             <?php
             $current_date = date('Y-m-d');
 
@@ -85,6 +97,8 @@ if ($postCalendarCategoryACO) {
               $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
               if($patientInfo && array_filter($patientInfo)) {
                 $patient_full_name = implode( ' ', array_filter($patientInfo) );
+              } else {
+                $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
               }
             }
 
@@ -124,16 +138,7 @@ if ($postCalendarCategoryACO) {
 
                     <fieldset>
                         <legend class=""><?php echo xlt('CBRS Progress Notes'); ?></legend>
-                            <!--
-                            <div class="form-group">
-                                <div class="col-sm-10 col-sm-offset-1">
-                                    <textarea name="services_place" id ="services_place"  class="form-control" cols="80" rows="5" ><?php //echo text($check_res['services_place']); ?></textarea>
-                                </div>
-                            </div>
-                            -->
-                           
                             
-
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-3 "><?php echo xlt('Client Name'); ?></label>
@@ -390,7 +395,7 @@ if ($postCalendarCategoryACO) {
                                 ?>
                                 
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
-                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
+                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
                             </div>
                         </div>
                     </div>
@@ -400,6 +405,13 @@ if ($postCalendarCategoryACO) {
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
         <script language="javascript">
+            function myFunction(){
+                return;
+            }
+            window.top.onbeforeunload = function() {
+                       return ;
+            };
+
             $(document).ready(function(){
 
                 $('.timepicker').timepicker({
@@ -516,6 +528,20 @@ if ($postCalendarCategoryACO) {
                  //$('.css_button_small span').css({"font-size":"12px !important"});
 
             });
+
+
+            function form_close_tab()
+            {
+                var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
+                console.log('Session Dashboard: ' + session_dashboard);
+                if(session_dashboard) {
+                    //window.top.location.reload();
+                    window.top.location.href = window.top.location;
+                } else {
+                   top.restoreSession(); 
+                    parent.closeTab(window.name, false);
+                }                
+            }
 
 
         </script>

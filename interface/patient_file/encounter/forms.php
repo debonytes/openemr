@@ -26,6 +26,7 @@ use OpenEMR\Core\Header;
 
 $reviewMode = false;
 $_SESSION['locked_formID'] = false;
+
 if (!empty($_REQUEST['review_id'])) {
     $reviewMode = true;
     $encounter=sanitizeNumber($_REQUEST['review_id']);
@@ -632,6 +633,7 @@ function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
 
 $reg = myGetRegistered();
 $old_category = '';
+//$_SESSION['from_dashboard_referer'] = '';
 
   $DivId=1;
 
