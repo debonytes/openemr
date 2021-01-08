@@ -965,6 +965,14 @@ if (!$_REQUEST['flb_table']) { ?>
                                 }
 
                                 $form_names = getFormsTables();  // array for forms
+
+                                $form_notes = array();
+
+                                foreach($form_names as $name){
+                                    if(strpos($name, 'progress_note')){
+                                        $form_notes[] = $name;
+                                    }
+                                }
                                 $forms = array();
 
                                 $form_query = "SELECT * FROM forms";
@@ -972,7 +980,7 @@ if (!$_REQUEST['flb_table']) { ?>
 
                                 while($form_row = sqlFetchArray($form_stmt)){
                                     $sql_form = "form_" . $form_row['formdir'];
-                                    if( in_array($sql_form, $form_names) ){
+                                    if( in_array($sql_form, $form_notes) ){
                                         if( !in_array($form_row['id'], $esign_ids) ){
                                             $forms[] = $form_row;
                                         }
