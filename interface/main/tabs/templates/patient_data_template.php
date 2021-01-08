@@ -105,7 +105,7 @@ if ($search_any_type == 'dual') {
                         data-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded="true">
-                    <?php echo xlt("View Past Encounters"); ?>&nbsp;
+                    <?php echo xlt("View Notes"); ?>&nbsp;
                     (<span data-bind="text:encounterArray().length"></span>)
                     <span class="caret"></span>
                 </button>
