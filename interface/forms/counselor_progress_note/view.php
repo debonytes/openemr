@@ -1,4 +1,5 @@
 <?php
+session_start();
 /**
  * Progress Note form view.php
  *
@@ -9,5 +10,10 @@
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
 
+$formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
+if(isset($_SESSION['formID_' . $formid ])){
+    require("readonly.php");
+} else {
+    require("new.php");
+}
 
-require("new.php");

@@ -75,7 +75,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                     <fieldset>
                         <legend class=""><?php echo xlt('Counselor Treatment Plan'); ?></legend>
                             
-                            <div class="col-md-12" style="margin-top: 0; margin-bottom: 20px">
+                            <div class="col-md-12" style="margin-top: 20px">
                                 <div class="col-sm-2">
                                     <div class="radio">
                                         <label>
@@ -105,7 +105,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
-                                    <div class="radio">
+                                    <div class="form-group">
                                         <label for="" class="col-sm-8"><?php echo xlt('If update/review initial plan date:'); ?></label>
                                         <div class="col-sm-4">
                                             <input type="text" name="initial_plan_date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['initial_plan_date']) && $check_res['initial_plan_date'] ) ? date('m/d/Y', strtotime($check_res['initial_plan_date'])):''; ?>" autocomplete="off">
@@ -1167,14 +1167,13 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 </div>
                             </div>
 
-                            <!--
+
                             <div class="col-md-12 margin-top-20" style="margin-top: 30px">
                                 <div class="form-group">
                                     <input type="checkbox" name="status" id="status" value="completed">
                                     <label for="status" class=""><?php echo xlt('Mark as Complete'); ?></label>                                    
                                 </div>
                             </div>
-                            -->
 
 
 
