@@ -618,7 +618,7 @@ if ($postCalendarCategoryACO) {
                                                 <label class="">
                                                   <input type="checkbox" id="symptoms_other_other" name="symptoms_other[]" value="Other" <?php echo (in_array('Other', $symptoms_other)) ? 'checked': '';  ?> > <?php echo xlt('Other'); ?>
                                                 </label>
-                                                <input type="text" name="symptoms_other_other" value="<?php echo text($check_res['symptoms_other_other']); ?>">
+                                                <input type="text" name="symptoms_other_other" value="<?php echo ($check_res['symptoms_other_other']) ? text($check_res['symptoms_other_other']) : text($last_record['symptoms_other_other']); ?>">
                                             </li>
                                         </ul>
                                     </div>
@@ -764,7 +764,7 @@ if ($postCalendarCategoryACO) {
             function form_close_tab()
             {
                 var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
-                //console.log('Session Dashboard: ' + session_dashboard);
+                console.log('Session Dashboard: ' + session_dashboard);
                 if(session_dashboard) {
                     //window.top.location.reload();
                     window.top.location.href = window.top.location;
