@@ -39,6 +39,10 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+/* checking the last record */
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
+$last_record = sqlQuery($last_record_query, array($pid));
+
 $is_group = ($attendant_type == 'gid') ? true : false;
 
 
@@ -76,6 +80,7 @@ if ($postCalendarCategoryACO) {
                     <h2><?php echo xlt('Counselor Progress Note'); ?></h2>
                 </div>
             </div>
+            
             <?php
             $current_date = date('Y-m-d');
 
@@ -121,14 +126,14 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="counselor" class="col-sm-3 "><?php echo xlt('Counselor'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="counselor" id="counselor" class="form-control" value="<?php echo text($check_res['counselor']); ?>" readonly disabled>
+                                        <input type="text" name="counselor" id="counselor" class="form-control" value="<?php echo text($check_res['counselor']) ; ?>" disabled>
                                         <small class="text-danger counselor_error"></small>
                                     </div>                                    
                                 </div>
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 "><?php echo xlt('Location'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="location" id="location" class="form-control" value="<?php echo text($check_res['location']); ?>" readonly disabled>
+                                        <input type="text" name="location" id="location" class="form-control" value="<?php echo text($check_res['location']); ?>" disabled>
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
@@ -137,7 +142,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 "><?php echo xlt('Date'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="date" id="date" class="form-control " value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off" readonly disabled>
+                                        <input type="text" name="date" id="date" class="form-control " value="<?php echo date('m/d/Y', strtotime($check_res['date'])); ?>" autocomplete="off" disabled>
                                         <small class="text-danger date_error"></small>
                                     </div>                                    
                                 </div>
@@ -145,7 +150,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="starttime" class="col-sm-3 "><?php echo xlt('Start Time'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="starttime" id="starttime" class="form-control " value="<?php echo text($check_res['starttime']); ?>" autocomplete="off" readonly disabled>
+                                        <input type="text" name="starttime" id="starttime" class="form-control " value="<?php echo text($check_res['starttime']); ?>" autocomplete="off" disabled>
                                         <small class="text-danger starttime_error"></small>
                                     </div>                                    
                                 </div>
@@ -153,7 +158,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="endtime" class="col-sm-3 "><?php echo xlt('End Time'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="endtime" id="endtime" class="form-control " value="<?php echo text($check_res['endtime']); ?>" autocomplete="off" readonly disabled>
+                                        <input type="text" name="endtime" id="endtime" class="form-control" value="<?php echo text($check_res['endtime']); ?>" autocomplete="off" disabled>
                                         <small class="text-danger endtime_error"></small>
                                     </div>                                    
                                 </div>
@@ -161,7 +166,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="session_number" class="col-sm-3 "><?php echo xlt('Session Number'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" id="session_number" class="form-control" name="session_number" value="<?php echo text($check_res['session_number']); ?>" readonly disabled>
+                                        <input type="text" id="session_number" class="form-control" name="session_number" value="<?php echo text($check_res['session_number']); ?>" disabled>
                                         <small class="text-danger session_number_error"></small>
                                     </div>                                    
                                 </div>
@@ -189,124 +194,124 @@ if ($postCalendarCategoryACO) {
                                         <tr>
                                             <td width="4%">1</td>
                                             <td width="46%">                             
-                                                <input type="text" name="goal_1" class="form-control" value="<?php echo text($check_res['goal_1']); ?>" readonly disabled>
+                                                <input type="text" name="goal_1" class="form-control" value="<?php echo text($check_res['goal_1']); ?>" disabled>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_1" value="1" <?php echo ($check_res['goal_1_answer'] == 1) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_1" value="1" <?php echo ($check_res['goal_1_answer'] == 1) ? 'checked': '';  ?> disabled>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_2" value="2" <?php echo ($check_res['goal_1_answer'] == 2) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_2" value="2" <?php echo ($check_res['goal_1_answer'] == 2) ? 'checked': '';  ?> disabled>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_3" value="3" <?php echo ($check_res['goal_1_answer'] == 3) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_3" value="3" <?php echo ($check_res['goal_1_answer'] == 3) ? 'checked': '';  ?> disabled>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_4" value="4" <?php echo ($check_res['goal_1_answer'] == 4) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_4" value="4" <?php echo ($check_res['goal_1_answer'] == 4) ? 'checked': ''  ;  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_5" value="5" <?php echo ($check_res['goal_1_answer'] == 5) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_5" value="5" <?php echo ($check_res['goal_1_answer'] == 5) ? 'checked': '' ;  ?>  disabled >
                                                 </label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>2</td>
                                             <td>
-                                                <input type="text" name="goal_2" class="form-control" value="<?php echo text($check_res['goal_2']); ?>" readonly disabled>
+                                                <input type="text" name="goal_2" class="form-control" value="<?php echo text($check_res['goal_2']); ?>" disabled>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_1" value="1" <?php echo ($check_res['goal_2_answer'] == 1) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_1" value="1" <?php echo ($check_res['goal_2_answer'] == 1) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_2" value="2" <?php echo ($check_res['goal_2_answer'] == 2) ? 'checked': '';  ?>  readonly disabled>
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_2" value="2" <?php echo ($check_res['goal_2_answer'] == 2) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_3" value="3" <?php echo ($check_res['goal_2_answer'] == 3) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_3" value="3" <?php echo ($check_res['goal_2_answer'] == 3) ? 'checked': '' ;  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_4" value="4" <?php echo ($check_res['goal_2_answer'] == 4) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_4" value="4" <?php echo  ($check_res['goal_2_answer'] == 4) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_5" value="5" <?php echo ($check_res['goal_2_answer'] == 5) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_5" value="5" <?php echo ($check_res['goal_2_answer'] == 5) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>3</td>
                                             <td>
-                                                <input type="text" name="goal_3" class="form-control" value="<?php echo text($check_res['goal_3']); ?>" readonly disabled>
+                                                <input type="text" name="goal_3" class="form-control" value="<?php echo text($check_res['goal_3']); ?>" disabled>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_1" value="1" <?php echo ($check_res['goal_3_answer'] == 1) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_1" value="1" <?php echo ($check_res['goal_3_answer'] == 1) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_2" value="2" <?php echo ($check_res['goal_3_answer'] == 2) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_2" value="2" <?php echo ($check_res['goal_3_answer'] == 2) ? 'checked': '';  ?> disabled>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_3" value="3"  <?php echo ($check_res['goal_3_answer'] == 3) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_3" value="3"  <?php echo ($check_res['goal_3_answer'] == 3) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_4" value="4" <?php echo ($check_res['goal_3_answer'] == 4) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_4" value="4" <?php echo ($check_res['goal_3_answer'] == 4) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_5" value="5" <?php echo ($check_res['goal_3_answer'] == 5) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_5" value="5" <?php echo ($check_res['goal_3_answer'] == 5) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>4</td>
                                             <td>
-                                                <input type="text" name="goal_4" class="form-control" value="<?php echo text($check_res['goal_4']); ?>" readonly disabled>
+                                                <input type="text" name="goal_4" class="form-control" value="<?php echo text($check_res['goal_4']); ?>" disabled >
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_1" value="1" <?php echo ($check_res['goal_4_answer'] == 1) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_1" value="1" <?php echo ($check_res['goal_4_answer'] == 1) ? 'checked': '';  ?>  disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_2" value="2" <?php echo ($check_res['goal_4_answer'] == 2) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_2" value="2" <?php echo ($check_res['goal_4_answer'] == 2) ? 'checked': '' ;  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_3" value="3" <?php echo ($check_res['goal_4_answer'] == 3) ? 'checked': '';  ?>  readonly disabled>
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_3" value="3" <?php echo ($check_res['goal_4_answer'] == 3) ? 'checked': '';  ?>  disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_4" value="4"  <?php echo ($check_res['goal_4_answer'] == 4) ? 'checked': '';  ?> readonly disabled >
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_4" value="4"  <?php echo ($check_res['goal_4_answer'] == 4) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_5" value="5" <?php echo ($check_res['goal_4_answer'] == 5) ? 'checked': '';  ?> readonly disabled>
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_5" value="5" <?php echo ($check_res['goal_4_answer'] == 5) ? 'checked': '';  ?> disabled >
                                                 </label>
                                             </td>
                                         </tr>                                        
@@ -323,7 +328,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="icd_code" class="col-sm-4 control-label"><?php echo xlt('ICD-10 Code (s):'); ?> </label>                         
                                         <div class="col-sm-8">
-                                          <input type="text" class="form-control" name="icd_code" id="icd_code" value="<?php echo text($check_res['icd_code']); ?>" readonly disabled>
+                                          <input type="text" class="form-control" name="icd_code" id="icd_code" value="<?php echo text($check_res['icd_code']); ?>" disabled>
                                         </div>
                                     </div>
                                     
@@ -331,14 +336,14 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="session_type" class="col-sm-4 control-label"><?php echo xlt('Session Type:'); ?> </label>                         
                                         <div class="col-sm-8">
-                                          <input type="text" class="form-control" name="session_type" id="session_type" value="<?php echo text($check_res['session_type']); ?>" readonly disabled>
+                                          <input type="text" class="form-control" name="session_type" id="session_type" value="<?php echo text($check_res['session_type']); ?>" disabled>
                                         </div>
                                     </div>
                                    <div class="clearfix"></div>
                                     <div class="form-group">
                                             <label for="diagnosis" class="col-sm-4 control-label"><?php echo xlt('Diagnosis:'); ?> </label>                         
                                             <div class="col-sm-8">
-                                              <input type="text" class="form-control" name="diagnosis" id="diagnosis" value="<?php echo text($check_res['diagnosis']); ?>" readonly disabled>
+                                              <input type="text" class="form-control" name="diagnosis" id="diagnosis" value="<?php echo text($check_res['diagnosis']); ?>" disabled>
                                             </div>
                                     </div>
                                     <div class="clearfix"></div>
@@ -347,21 +352,21 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                             <label for="plan_review_90" class="col-sm-2 control-label"><?php echo xlt('90 Day:'); ?> </label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo text($check_res['plan_review_90']); ?>" readonly disabled>
+                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo text($check_res['plan_review_90']); ?>" disabled >
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_180" class="col-sm-2 control-label"><?php echo xlt('180 Day: '); ?></label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo text($check_res['plan_review_180']); ?>" readonly disabled>
+                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo text($check_res['plan_review_180']); ?>" disabled>
                                             </div>
                                     </div>
 
                                     <div class="form-group">
-                                            <label for="plan_review_270" class="col-sm-2 control-label"><?php echo xlt(''); ?>270 Day: </label>
+                                            <label for="plan_review_270" class="col-sm-2 control-label"><?php echo xlt('270 Day:'); ?></label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo text($check_res['plan_review_270']); ?>" readonly disabled>
+                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo text($check_res['plan_review_270']); ?>" disabled>
                                             </div>
                                     </div>
 
@@ -371,105 +376,51 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-sm-4">
                                         <?php $risk_self_harm = explode('|', $check_res['risk_self_harm']); ?>
                                         <h4><?php echo xlt('SELF-HARM'); ?></h4>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="client_denies" name="risk_self_harm[]" <?php echo (in_array('client_denies', $risk_self_harm)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Client Denies'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="ideation" name="risk_self_harm[]" <?php echo (in_array('ideation', $risk_self_harm)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Ideation'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="intent" name="risk_self_harm[]" <?php echo (in_array('intent', $risk_self_harm)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Intent'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="without_injury" name="risk_self_harm[]" <?php echo (in_array('without_injury', $risk_self_harm)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Reported Without Injury'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="with_injury" name="risk_self_harm[]" <?php echo (in_array('with_injury', $risk_self_harm)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Reported With Injury'); ?>
-                                          </label>
-                                        </div>
+                                        <?php  
+                                            $self_harm_arr = array('Client Denies', 'Ideation', 'Intent', 'Reported Without Injury', 'Reported With Injury');
+
+                                            foreach($self_harm_arr as $self_harm ):
+                                        ?>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="<?php echo text($self_harm); ?>" name="risk_self_harm[]" <?php echo (in_array($self_harm, $risk_self_harm)) ? 'checked': ''; ?> disabled>
+                                                <?php echo xlt($self_harm); ?>
+                                              </label>
+                                            </div>
+                                        <?php endforeach; ?>                                        
 
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('SUICIDALITY'); ?></h4>
-                                        <?php $risk_suicidality = explode('|', $check_res['risk_suicidality']); ?>
+                                        <?php $risk_suicidality = explode('|', $check_res['risk_suicidality']) ; ?>
+                                        <?php
+                                            $sucidality_arr = array('Cient Denies', 'Ideation', 'Plan', 'Means', 'Prior Attempt');
+                                            foreach($sucidality_arr as $suicidal):
+                                        ?>
                                         <div class="checkbox">
                                           <label>
-                                            <input type="checkbox" value="client_denies" name="risk_suicidality[]"  <?php echo (in_array('client_denies', $risk_suicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Cient Denies'); ?>
+                                            <input type="checkbox" value="<?php echo text($suicidal); ?>" name="risk_suicidality[]"  <?php echo (in_array($suicidal, $risk_suicidality)) ? 'checked': ''; ?> disabled>
+                                            <?php echo xlt($suicidal); ?>
                                           </label>
                                         </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="ideation" name="risk_suicidality[]" <?php echo (in_array('ideation', $risk_suicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Ideation'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="plan" name="risk_suicidality[]" <?php echo (in_array('plan', $risk_suicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Plan'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="means" name="risk_suicidality[]" <?php echo (in_array('means', $risk_suicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Means'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="prior_attempt" name="risk_suicidality[]"  <?php echo (in_array('prior_attempt', $risk_suicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Prior Attempt'); ?>
-                                          </label>
-                                        </div>
+                                        <?php endforeach; ?>
+                                        
+
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('HOMICIDALITY'); ?></h4>
-                                        <?php $risk_homicidality = explode('|', $check_res['risk_homicidality']);  ?>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="client_denies" name="risk_homicidality[]" <?php echo (in_array('client_denies', $risk_homicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Cient Denies'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="ideation" name="risk_homicidality[]" <?php echo (in_array('ideation', $risk_homicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Ideation'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="plan" name="risk_homicidality[]" <?php echo (in_array('plan', $risk_homicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Plan'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="means" name="risk_homicidality[]" <?php echo (in_array('means', $risk_homicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Means'); ?>
-                                          </label>
-                                        </div>
-                                        <div class="checkbox">
-                                          <label>
-                                            <input type="checkbox" value="prior_attempt" name="risk_homicidality[]" <?php echo (in_array('prior_attempt', $risk_homicidality)) ? 'checked': ''; ?> readonly disabled>
-                                            <?php echo xlt('Prior Attempt'); ?>
-                                          </label>
-                                        </div>
+                                        <?php $risk_homicidality = explode('|', $check_res['risk_homicidality']);  
+
+                                            $homidical_arr = array('Cient Denies', 'Ideation', 'Plan', 'Means', 'Prior Attempt');
+                                            foreach($homidical_arr as $homicidal):
+                                        ?>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="<?php echo text($homicidal); ?>" name="risk_homicidality[]" <?php echo (in_array($homicidal, $risk_homicidality)) ? 'checked': ''; ?> disabled>
+                                                <?php echo xlt($homicidal); ?>
+                                              </label>
+                                            </div>
+                                        <?php endforeach; ?>                                        
                                     </div>
                                 </div>
                             </div>
@@ -483,26 +434,17 @@ if ($postCalendarCategoryACO) {
                                         <h4><?php echo xlt('Orientation'); ?></h4>
                                         <?php $symptoms_orientation = explode('|', $check_res['symptoms_orientation']); ?>
                                         <ul style="list-style-type: none; padding: 0">
+                                            <?php  
+                                                $orientation_arr = array('Time', 'Person', 'Place', 'Situation');
+                                                foreach($orientation_arr as $orientation):
+                                            ?>
                                             <li>
                                                 <label class="">
-                                                  <input type="checkbox" id="symptoms_orientation_time" name="symptoms_orientation[]" value="time" <?php echo (in_array('time', $symptoms_orientation)) ? 'checked':''; ?>  readonly disabled> <?php echo xlt('Time'); ?>
+                                                  <input type="checkbox" id="symptoms_orientation_<?php echo $orientation; ?>" name="symptoms_orientation[]" value="<?php echo $orientation; ?>" <?php echo (in_array($orientation, $symptoms_orientation)) ? 'checked':''; ?> disabled > <?php echo xlt(ucwords($orientation)); ?>
                                                 </label>
                                             </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_orientation_person" name="symptoms_orientation[]" value="person" <?php echo (in_array('person', $symptoms_orientation)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Person'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_orientation_place" name="symptoms_orientation[]" value="place" <?php echo (in_array('place', $symptoms_orientation)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Place'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_orientation_situation" name="symptoms_orientation[]" value="situation" <?php echo (in_array('situation', $symptoms_orientation)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Situation'); ?>
-                                                </label>
-                                            </li>
+                                            <?php endforeach; ?>
+
                                         </ul>
                                     </div>
                                     <div class="col-sm-4">
@@ -510,143 +452,51 @@ if ($postCalendarCategoryACO) {
                                         <?php $symptoms_speech =  explode('|', $check_res['symptoms_speech']); ?>
 
                                         <ul style="list-style-type: none; padding: 0">
+                                            <?php 
+                                                $speech_arr = array('Slow', 'Rapid', 'Loud', 'Soft', 'Pauses', 'WNL');
+                                                foreach($speech_arr as $speech):
+                                             ?>
                                             <li>
                                                 <label >
-                                                  <input type="checkbox" id="symptoms_speech_slow" name="symptoms_speech[]" value="slow" <?php echo (in_array('slow', $symptoms_speech)) ? 'checked': ''; ?>  readonly disabled> <?php echo xlt('Slow'); ?>
+                                                  <input type="checkbox" id="symptoms_speech_<?php echo $speech; ?>" name="symptoms_speech[]" value="<?php echo $speech; ?>" <?php echo (in_array($speech, $symptoms_speech)) ? 'checked': ''; ?> disabled > <?php echo xlt($speech); ?>
                                                 </label>
                                             </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_speech_rapid" name="symptoms_speech[]" value="rapid" <?php echo (in_array('slow', $symptoms_speech)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Rapid'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_speech_loud" name="symptoms_speech[]" value="loud" <?php echo (in_array('loud', $symptoms_speech)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Loud'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_speech_soft" name="symptoms_speech[]" value="soft" <?php echo (in_array('soft', $symptoms_speech)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Soft'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_speech_pauses" name="symptoms_speech[]" value="pauses" <?php echo (in_array('pauses', $symptoms_speech)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Pauses'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_speech_wnl" name="symptoms_speech[]" value="WNL" <?php echo (in_array('WNL', $symptoms_speech)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('WNL'); ?>
-                                                </label>
-                                            </li>
+                                            <?php endforeach; ?>                                            
                                         </ul>
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('Mood'); ?></h4>
-                                        <?php $symptoms_mood = explode('|', $check_res['symptoms_mood']); ?>
+                                        <?php 
+                                            $symptoms_mood = explode('|', $check_res['symptoms_mood']); 
+                                            $mood_arr = array('Calm', 'Apathetic', 'Anxious', 'Angry', 'Distraught', 'Cheerful', 'Despodent/Sad', 'Irritable', 'Hopeless', 'Other:');
+                                            foreach($mood_arr as $mood):
+                                        ?>
                                         <label class="">
-                                          <input type="checkbox" id="symptoms_mood_calm" name="symptoms_mood[]" value="calm" <?php echo (in_array('calm', $symptoms_mood)) ? 'checked': '';  ?>  readonly disabled> <?php echo xlt('Calm'); ?>
+                                          <input type="checkbox"  name="symptoms_mood[]" value="<?php echo $mood; ?>" <?php echo (in_array($mood, $symptoms_mood)) ? 'checked': '';  ?>  disabled> <?php echo xlt($mood); ?>
                                         </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_apathetic" name="symptoms_mood[]" value="apathetic" <?php echo (in_array('apathetic', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Apathetic'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_anxious" name="symptoms_mood[]" value="anxious" <?php echo (in_array('anxious', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Anxious'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_angry" name="symptoms_mood[]" value="angry" <?php echo (in_array('angry', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Angry'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_distraught" name="symptoms_mood[]" value="distraught" <?php echo (in_array('distraught', $symptoms_mood)) ? 'checked': '';  ?>  readonly disabled> <?php echo xlt('Distraught'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_cheerful" name="symptoms_mood[]" value="cheerful" <?php echo (in_array('cheerful', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Cheerful'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_sad" name="symptoms_mood[]" value="sad" <?php echo (in_array('sad', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Despodent/Sad'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_irritable" name="symptoms_mood[]" value="irritable" <?php echo (in_array('irritable', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Irritable'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_hopeless" name="symptoms_mood[]" value="hopeless" <?php echo (in_array('hopeless', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Hopeless'); ?>
-                                        </label>
-                                        <label class="">
-                                          <input type="checkbox" id="symptoms_mood_other" name="symptoms_mood[]" value="other" <?php echo (in_array('other', $symptoms_mood)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Other:'); ?>
-                                        </label>
-                                        <input type="text" name="symptoms_mood_other" value="<?php echo text($check_res['symptoms_mood_other']); ?>" readonly disabled>
+                                        <?php endforeach; ?>                                        
+                                        <input type="text" name="symptoms_mood_other" value="<?php echo  text($check_res['symptoms_mood_other']); ?>" disabled>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <h4><?php echo xlt('Thought Content'); ?></h4>
                                     <?php $symptoms_thought_content = explode('|', $check_res['symptoms_thought_content']); ?>
                                     <ul style="list-style-type: none; columns: 2;-webkit-columns: 2;  -moz-columns: 2;">
+                                        <?php  
+                                            $thought_arr = array('Appropriate', 'Ruminating', 'Worry', 'Self-Harm', 'Irrational', 'Guilt', 'Shame', 'Obsessions/Compulsions', 'Self-Worth', 'Fears/Phobias', 'Self-Confidence', 'Self-Esteem');
+                                            foreach($thought_arr as $thought):
+                                        ?>
                                         <li>
                                             <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_appropriate" name="symptoms_thought_content[]" value="Appropriate" <?php echo (in_array('Appropriate', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Appropriate'); ?>
+                                              <input type="checkbox"  name="symptoms_thought_content[]" value="<?php echo $thought; ?>" <?php echo (in_array($thought, $symptoms_thought_content)) ? 'checked': ''; ?> disabled> <?php echo xlt($thought); ?>
                                             </label>
                                         </li>
+                                        <?php endforeach; ?>                                        
                                         <li>
                                             <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_ruminating" name="symptoms_thought_content[]" value="Ruminating" <?php echo (in_array('Ruminating', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Ruminating'); ?>
+                                              <input type="checkbox" id="symptoms_thought_content_other" name="symptoms_thought_content[]" value="Other" <?php echo (in_array('Other', $symptoms_thought_content)) ? 'checked': ''; ?> disabled> <?php echo xlt('Other'); ?>
                                             </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_worry" name="symptoms_thought_content[]" value="Worry" <?php echo (in_array('Worry', $symptoms_thought_content)) ? 'checked': ''; ?>  readonly disabled> <?php echo xlt('Worry'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_self_harm" name="symptoms_thought_content[]" value="Self-Harm" <?php echo (in_array('Self-Harm', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled > <?php echo xlt('Self-Harm'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_irrational" name="symptoms_thought_content[]" value="Irrational" <?php echo (in_array('Irrational', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Irrational'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_guilt" name="symptoms_thought_content[]" value="Guilt" <?php echo (in_array('Guilt', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled > <?php echo xlt('Guilt'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_shame" name="symptoms_thought_content[]" value="Shame" <?php echo (in_array('Shame', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Shame'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_obsessions" name="symptoms_thought_content[]" value="Obsessions" <?php echo (in_array('Obsessions', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Obsessions/Compulsions'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_self_worth" name="symptoms_thought_content[]" value="Self-Worth" <?php echo (in_array('Self-Worth', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Self-Worth'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_fears" name="symptoms_thought_content[]" value="Fears" <?php echo (in_array('Fears', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Fears/Phobias'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_self_confidence" name="symptoms_thought_content[]" value="Self-Confidence" <?php echo (in_array('Self-Confidence', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Self-Confidence'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_self_esteem" name="symptoms_thought_content[]" value="Self-Esteem" <?php echo (in_array('Self-Esteem', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Self-Esteem'); ?>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="">
-                                              <input type="checkbox" id="symptoms_thought_content_other" name="symptoms_thought_content[]" value="Other" <?php echo (in_array('Other', $symptoms_thought_content)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Other'); ?>
-                                            </label>
-                                            <input type="text" name="symptoms_thought_content_other" value="<?php echo text($check_res['symptoms_thought_content_other']); ?>" readonly disabled >
+                                            <input type="text" name="symptoms_thought_content_other" value="<?php echo text($check_res['symptoms_thought_content_other']); ?>" disabled>
                                         </li>
                                     </ul>
                                 </div>
@@ -658,108 +508,53 @@ if ($postCalendarCategoryACO) {
                                         <h4><?php echo xlt('Hygiene/Grooming'); ?></h4>
                                         <?php $symptoms_hygiene = explode('|', $check_res['symptoms_hygiene']); ?>
                                         <ul style="list-style-type: none; padding: 0">
+                                            <?php
+                                                $hygiene_arr = array('Dishelved', 'Poor Hygiene', 'Appropriate', 'Neat');
+                                                foreach($hygiene_arr as $hygiene):
+                                            ?>
                                             <li>
                                                 <label class="">
-                                                  <input type="checkbox" id="symptoms_hygiene_dishelved" name="symptoms_hygiene[]" value="Dishelved" <?php echo (in_array('Dishelved', $symptoms_hygiene)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Dishelved'); ?>
+                                                  <input type="checkbox" name="symptoms_hygiene[]" value="<?php echo text($hygiene); ?>" <?php echo (in_array($hygiene, $symptoms_hygiene)) ? 'checked':''; ?> disabled> <?php echo xlt($hygiene); ?>
                                                 </label>
                                             </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_hygiene_poor_hygiene" name="symptoms_hygiene[]" value="Poor-Hygiene" <?php echo (in_array('Poor-Hygiene', $symptoms_hygiene)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Poor Hygiene'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_hygiene_appropriate" name="symptoms_hygiene[]" value="Appropriate" <?php echo (in_array('Appropriate', $symptoms_hygiene)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Appropriate'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_hygiene_neat" name="symptoms_hygiene[]" value="Neat" <?php echo (in_array('Neat', $symptoms_hygiene)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Neat'); ?>
-                                                </label>
-                                            </li>
+                                            <?php endforeach; ?>                                            
                                         </ul>
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('Motor Activity'); ?></h4>
                                         <?php $symptoms_motor  = explode('|', $check_res['symptoms_motor']); ?>
                                         <ul style="list-style-type: none; padding: 0">
+                                            <?php
+                                                $motor_arr = array('Normal', 'Decreased', 'Increased', 'Restless');
+                                                foreach($motor_arr as $motor):
+                                            ?>
                                             <li>
                                                 <label class="">
-                                                  <input type="checkbox" id="symptoms_motor_normal" name="symptoms_motor[]" value="Normal" <?php echo (in_array('Normal', $symptoms_motor)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Normal'); ?>
+                                                  <input type="checkbox"  name="symptoms_motor[]" value="<?php echo text($motor); ?>" <?php echo (in_array($motor, $symptoms_motor)) ? 'checked': ''; ?> disabled> <?php echo xlt($motor); ?>
                                                 </label>
                                             </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_motor_decreased" name="symptoms_motor[]" value="Decreased" <?php echo (in_array('Decreased', $symptoms_motor)) ? 'checked': ''; ?>  readonly disabled > <?php echo xlt('Decreased'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_motor_increased" name="symptoms_motor[]" value="Increased" <?php echo (in_array('Increased', $symptoms_motor)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Increased'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_motor_restless" name="symptoms_motor[]" value="Restless" <?php echo (in_array('Restless', $symptoms_motor)) ? 'checked': ''; ?> readonly disabled> <?php echo xlt('Restless'); ?>
-                                                </label>
-                                            </li>
+                                            <?php endforeach; ?>                                            
                                         </ul>
                                     </div>
                                     <div class="col-sm-4" style="padding-left: 5px; padding-right: 5px">
                                         <h4><?php echo xlt('Affect'); ?></h4>
                                         <?php $symptoms_affect  = explode('|', $check_res['symptoms_affect']); ?>
                                         <ul style="list-style-type: none; padding: 0">
+                                            <?php
+                                                $affect_arr = array('Congruent to Mood', 'Hostile', 'Agitated', 'Labile', 'Inappropriate', 'Blunted', 'Expansive', 'Tearful', 'Flat');
+                                                foreach($affect_arr as $affect):
+                                            ?>
+                                                <li>
+                                                    <label class="">
+                                                      <input type="checkbox"  name="symptoms_affect[]" value="<?php echo text($affect); ?>" <?php echo (in_array($affect, $symptoms_affect)) ? 'checked' : ''; ?> disabled> <?php echo xlt($affect); ?>
+                                                    </label>
+                                                </li>
+                                            <?php endforeach; ?>                                            
                                             <li>
                                                 <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_congruent" name="symptoms_affect[]" value="Congruent" <?php echo (in_array('Congruent', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Congruent to Mood'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_hostile" name="symptoms_affect[]" value="Hostile" <?php echo (in_array('Hostile', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Hostile'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_agitated" name="symptoms_affect[]" value="Agitated" <?php echo (in_array('Agitated', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Agitated'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_labile" name="symptoms_affect[]" value="Labile" <?php echo (in_array('Labile', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Labile'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_inappropriate" name="symptoms_affect[]" value="Inappropriate" <?php echo (in_array('Inappropriate', $symptoms_affect)) ? 'checked' : ''; ?>  readonly disabled> <?php echo xlt('Inappropriate'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_blunted" name="symptoms_affect[]" value="Blunted" <?php echo (in_array('Blunted', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Blunted'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_expansive" name="symptoms_affect[]" value="Expansive" <?php echo (in_array('Expansive', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Expansive'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_tearful" name="symptoms_affect[]" value="Tearful" <?php echo (in_array('Tearful', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Tearful'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_flat" name="symptoms_affect[]" value="Flat" <?php echo (in_array('Flat', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Flat'); ?>
-                                                </label>                                                
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_affect_other" name="symptoms_affect[]" value="Other" <?php echo (in_array('Other', $symptoms_affect)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Other'); ?>
+                                                  <input type="checkbox" id="symptoms_affect_other" name="symptoms_affect[]" value="Other" <?php echo (in_array('Other', $symptoms_affect)) ? 'checked' : ''; ?> disabled> <?php echo xlt('Other'); ?>
                                                 </label>    
-                                                <input type="text" name="symptoms_affect_other" value="<?php echo xlt($check_res['symptoms_affect_other']); ?>" readonly disabled>                                            
+                                                <input type="text" name="symptoms_affect_other" value="<?php echo text($check_res['symptoms_affect_other']); ?>" disabled>                                            
                                             </li>
                                         </ul>
                                     </div>
@@ -769,102 +564,32 @@ if ($postCalendarCategoryACO) {
                                         <h4><?php echo xlt('Perception'); ?></h4>
                                         <?php $symptoms_perception  = explode('|', $check_res['symptoms_perception']); ?>
                                         <ul style="list-style-type: none; padding: 0">
+                                            <?php
+                                                $perception_arr = array('Appropriate', 'Distorted', 'Delusions', 'Paranoid', 'Grandiose', 'Bizarre', 'Hallucinations', 'Auditory', 'Visual', 'Olfactory');
+                                                foreach($perception_arr as $perception):
+                                            ?>
                                             <li>
                                                 <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_appropriate" name="symptoms_perception[]" value="Appropriate" <?php echo (in_array('Appropriate', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Appropriate'); ?>
+                                                  <input type="checkbox"  name="symptoms_perception[]" value="<?php echo text($perception); ?>" <?php echo (in_array($perception, $symptoms_perception)) ? 'checked' : ''; ?> disabled> <?php echo xlt($perception); ?>
                                                 </label>
                                             </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_distorted" name="symptoms_perception[]" value="Distorted" <?php echo (in_array('Distorted', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Distorted'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_delusions" name="symptoms_perception[]" value="Delusions" <?php echo (in_array('Delusions', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled > <?php echo xlt('Delusions'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_paranoid" name="symptoms_perception[]" value="Paranoid" <?php echo (in_array('Paranoid', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Paranoid'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_grandiose" name="symptoms_perception[]" value="Grandiose" <?php echo (in_array('Grandiose', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Grandiose'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_bizarre" name="symptoms_perception[]" value="Bizarre" <?php echo (in_array('Bizarre', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Bizarre'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_hallucinations" name="symptoms_perception[]" value="Hallucinations" <?php echo (in_array('Hallucinations', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Hallucinations'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_auditory" name="symptoms_perception[]" value="Auditory" <?php echo (in_array('Auditory', $symptoms_perception)) ? 'checked' : ''; ?>  readonly disabled> <?php echo xlt('Auditory'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_visual" name="symptoms_perception[]" value="Visual" <?php echo (in_array('Visual', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Visual'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_perception_olfactory" name="symptoms_perception[]" value="Olfactory" <?php echo (in_array('Olfactory', $symptoms_perception)) ? 'checked' : ''; ?> readonly disabled> <?php echo xlt('Olfactory'); ?>
-                                                </label>
-                                            </li>
+                                            <?php endforeach; ?>                                           
                                         </ul>
                                     </div>
                                     <div class="col-sm-6">
                                         <h4><?php echo xlt('Thought Process'); ?></h4>
                                         <?php $symptoms_thought_process  = explode('|', $check_res['symptoms_thought_process']); ?>
                                         <ul style="list-style-type: none; padding: 0">
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_logical" name="symptoms_thought_process[]" value="Logical" <?php echo (in_array('Logical', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Logical/Coherent'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_vague" name="symptoms_thought_process[]" value="Vague" <?php echo (in_array('Vague', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Vague'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_disorganized" name="symptoms_thought_process[]" value="Disorganized" <?php echo (in_array('Disorganized', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Disorganized'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_incoherent" name="symptoms_thought_process[]" value="Incoherent" <?php echo (in_array('Incoherent', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Incoherent'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_repeated_thought" name="symptoms_thought_process[]" value="Repeated Thought" <?php echo (in_array('Repeated Thought', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Repeated Thought'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_bizarre" name="symptoms_thought_process[]" value="Bizarre" <?php echo (in_array('Bizarre', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Bizarre'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_delayed" name="symptoms_thought_process[]" value="Delayed" <?php echo (in_array('Delayed', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Delayed'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_thought_process_tangential" name="symptoms_thought_process[]" value="Tangential" <?php echo (in_array('Tangential', $symptoms_thought_process)) ? 'checked':''; ?> readonly disabled> <?php echo xlt('Tangential'); ?>
-                                                </label>
-                                            </li>
+                                            <?php
+                                                $thought_process_arr = array('Logical/Coherent', 'Vague', 'Disorganized', 'Incoherent', 'Repeated Thought', 'Bizarre', 'Delayed', 'Tangential');
+                                                foreach($thought_process_arr as $thought_process):
+                                            ?>
+                                                <li>
+                                                    <label class="">
+                                                      <input type="checkbox"  name="symptoms_thought_process[]" value="<?php echo text($thought_process); ?>" <?php echo (in_array($thought_process, $symptoms_thought_process)) ? 'checked':''; ?> disabled> <?php echo xlt($thought_process); ?>
+                                                    </label>
+                                                </li>
+                                            <?php endforeach; ?>                                            
                                         </ul>
                                     </div>
 
@@ -877,111 +602,23 @@ if ($postCalendarCategoryACO) {
                                         <h4><?php echo xlt('Other'); ?></h4>
                                         <?php $symptoms_other  = explode('|', $check_res['symptoms_other']); ?>
                                         <ul style="list-style-type: none; columns: 4;-webkit-columns: 4;  -moz-columns: 4;">
+                                            <?php 
+                                                $others_arr = array('Appetite Change', 'Insomnia', 'Hypersomnia', 'Energy', 'Nightmares', 'Motivation', 'Mania', 'Disordered Eating', 'Physical Pain', 'Flashbacks', 'Poor Impulse Control', 'Substance Use', 'Illegal Conduct', 'Relationship Problems', 'Vocational/School Problems', 'Sexual Concerns', 'Concentration', 'Social Problems', 'Memory Loss/Problems', 'Medical Problems');
+
+                                                foreach($others_arr as $others):
+                                             ?>
                                             <li>
                                                 <label class="">
-                                                  <input type="checkbox" id="symptoms_other_appetite_change" name="symptoms_other[]" value="Appetite Change" <?php echo (in_array('Appetite Change', $symptoms_other)) ? 'checked': '';  ?> readonly disabled > <?php echo xlt('Appetite Change'); ?>
+                                                  <input type="checkbox" name="symptoms_other[]" value="<?php echo text($others); ?>" <?php echo (in_array($others, $symptoms_other)) ? 'checked': '';  ?> disabled> <?php echo xlt($others); ?>
                                                 </label>
                                             </li>
+                                            <?php endforeach; ?>
+
                                             <li>
                                                 <label class="">
-                                                  <input type="checkbox" id="symptoms_other_insomnia" name="symptoms_other[]" value="Insomnia" <?php echo (in_array('Insomnia', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Insomnia'); ?>
+                                                  <input type="checkbox" id="symptoms_other_other" name="symptoms_other[]" value="Other" <?php echo (in_array('Other', $symptoms_other)) ? 'checked': '';  ?> disabled> <?php echo xlt('Other'); ?>
                                                 </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_hypersomia" name="symptoms_other[]" value="Hypersomnia"  <?php echo (in_array('Hypersomnia', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Hypersomnia'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_energy" name="symptoms_other[]" value="Energy" <?php echo (in_array('Energy', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Energy'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_nightmares" name="symptoms_other[]" value="Nightmares" <?php echo (in_array('Nightmares', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Nightmares'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_motivation" name="symptoms_other[]" value="Motivation" <?php echo (in_array('Motivation', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Motivation'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_mania" name="symptoms_other[]" value="Mania" <?php echo (in_array('Mania', $symptoms_other)) ? 'checked': '';  ?> readonly disabled > <?php echo xlt('Mania'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_disordered_eating" name="symptoms_other[]" value="Disordered Eating" <?php echo (in_array('Disordered Eating', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Disordered Eating'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_physical_pain" name="symptoms_other[]" value="Physical Pain" <?php echo (in_array('Physical Pain', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Physical Pain'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_flashbacks" name="symptoms_other[]" value="Flashbacks" <?php echo (in_array('Flashbacks', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Flashbacks'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_poor_impulse" name="symptoms_other[]" value="Poor Impulse Control" <?php echo (in_array('Poor Impulse Control', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Poor Impulse Control'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_substance_use" name="symptoms_other[]" value="Substance Use" <?php echo (in_array('Substance Use', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Substance Use'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_illegal_conduct" name="symptoms_other[]" value="Illegal Conduct" <?php echo (in_array('Illegal Conduct', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Illegal Conduct'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_relationship_problem" name="symptoms_other[]" value="Relationship Problems" <?php echo (in_array('Relationship Problems', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Relationship Problems'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_vocational_problem" name="symptoms_other[]" value="Vocational Problems" <?php echo (in_array('Vocational Problems', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Vocational/School Problems'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_sexual_concerns" name="symptoms_other[]" value="Sexual Concerns" <?php echo (in_array('Sexual Concerns', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Sexual Concerns'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_concentration" name="symptoms_other[]" value="Concentration" <?php echo (in_array('Concentration', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Concentration'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_social_problems" name="symptoms_other[]" value="Social Problems" <?php echo (in_array('Social Problems', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Social Problems'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_memory_loss" name="symptoms_other[]" value="Memory Loss" <?php echo (in_array('Memory Loss', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Memory Loss/Problems'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_medical_problems" name="symptoms_other[]" value="Medical Problems" <?php echo (in_array('Medical Problems', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Medical Problems'); ?>
-                                                </label>
-                                            </li>
-                                            <li>
-                                                <label class="">
-                                                  <input type="checkbox" id="symptoms_other_other" name="symptoms_other[]" value="Other" <?php echo (in_array('Other', $symptoms_other)) ? 'checked': '';  ?> readonly disabled> <?php echo xlt('Other'); ?>
-                                                </label>
-                                                <input type="text" name="symptoms_other_other" value="<?php echo text($check_res['symptoms_other_other']); ?>" readonly disabled>
+                                                <input type="text" name="symptoms_other_other" value="<?php echo  text($check_res['symptoms_other_other']); ?>" disabled>
                                             </li>
                                         </ul>
                                     </div>
@@ -996,7 +633,7 @@ if ($postCalendarCategoryACO) {
                             <div class="col-md-12 margin-top-20" style="margin-top: 30px">
                                 <h3><?php echo xlt('Session Focus and Interventions'); ?></h3>
                                 <p><?php echo xlt('(clinical assessment, session focus, treatment interventions; collateral contact, psycho-educational activities, homework assignments, treatment plan update and review, other):'); ?></p>
-                                <textarea name="session_focus" id="session_focus" rows="4" class="form-control" readonly disabled><?php echo text($check_res['session_focus']); ?></textarea>
+                                <textarea name="session_focus" id="session_focus" rows="4" class="form-control" disabled><?php echo text($check_res['session_focus']); ?></textarea>
                                 <small class="text-danger session_focus_error"></small>
                             </div>
 
@@ -1008,7 +645,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-sm-3">
                                         <span class="col-sm-3"><?php echo xlt('Date:'); ?> </span>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control " name="meet_again_date" id="meet_again_date" value="<?php echo ( isset($check_res['meet_again_date']) && $check_res['meet_again_date'] ) ? date('m/d/Y', strtotime($check_res['meet_again_date'])):''; ?>" autocomplete="off" readonly disabled>
+                                            <input type="text" class="form-control " name="meet_again_date" id="meet_again_date" value="<?php echo ( isset($check_res['meet_again_date']) && $check_res['meet_again_date'] ) ? date('m/d/Y', strtotime($check_res['meet_again_date'])):''; ?>" autocomplete="off" disabled>
                                             <small class="text-danger meet_again_date_error"></small>
                                         </div>                                        
                                     </div>
@@ -1016,7 +653,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-sm-3">
                                         <span class="col-sm-3"><?php echo xlt('Time:'); ?> </span>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control " name="meet_again_time" id="meet_again_time" value="<?php echo text($check_res['meet_again_time']); ?>" autocomplete="off" readonly disabled>
+                                            <input type="text" class="form-control " name="meet_again_time" id="meet_again_time" value="<?php echo text($check_res['meet_again_time']); ?>" autocomplete="off" disabled>
                                             <small class="text-danger meet_again_time_error"></small>
                                         </div>
                                     </div>                                     
@@ -1031,11 +668,13 @@ if ($postCalendarCategoryACO) {
 
                     <div class="form-group clearfix">
                         <div class="col-sm-12 col-sm-offset-1 position-override">
-                            <div class="btn-group oe-opt-btn-group-pinch" role="group">                                
+                            <div class="btn-group oe-opt-btn-group-pinch" role="group">
+                                
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
                             </div>
                         </div>
                     </div>
+                    <div class="clearfix">&nbsp;</div>
                 </form>
             </div>
         </div>
@@ -1117,10 +756,15 @@ if ($postCalendarCategoryACO) {
 
             function form_close_tab()
             {
-                
+                var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
+                console.log('Session Dashboard: ' + session_dashboard);
+                if(session_dashboard) {
+                    //window.top.location.reload();
+                    window.top.location.href = window.top.location;
+                } else {
                    top.restoreSession(); 
                     parent.closeTab(window.name, false);
-                               
+                }                
             }
         </script>
     </body>
