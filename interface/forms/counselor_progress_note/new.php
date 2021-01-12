@@ -39,6 +39,10 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+/* checking the last record */
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
+$last_record = sqlQuery($last_record_query, array($pid));
+
 $is_group = ($attendant_type == 'gid') ? true : false;
 
 
@@ -76,6 +80,7 @@ if ($postCalendarCategoryACO) {
                     <h2><?php echo xlt('Counselor Progress Note'); ?></h2>
                 </div>
             </div>
+            
             <?php
             $current_date = date('Y-m-d');
 
@@ -121,14 +126,14 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="counselor" class="col-sm-3 "><?php echo xlt('Counselor'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="counselor" id="counselor" class="form-control" value="<?php echo text($check_res['counselor']); ?>">
+                                        <input type="text" name="counselor" id="counselor" class="form-control" value="<?php echo ($check_res['counselor']) ? text($check_res['counselor']) : text($last_record['counselor']) ; ?>">
                                         <small class="text-danger counselor_error"></small>
                                     </div>                                    
                                 </div>
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 "><?php echo xlt('Location'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="location" id="location" class="form-control" value="<?php echo text($check_res['location']); ?>">
+                                        <input type="text" name="location" id="location" class="form-control" value="<?php echo ($check_res['location']) ? text($check_res['location']) : text($last_record['location']); ?>">
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
@@ -137,7 +142,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 "><?php echo xlt('Date'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="date" id="date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
+                                        <input type="text" name="date" id="date" class="form-control newDatePicker" value="<?php echo ( $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])): date('m/d/Y') ; ?>" autocomplete="off">
                                         <small class="text-danger date_error"></small>
                                     </div>                                    
                                 </div>
@@ -189,124 +194,124 @@ if ($postCalendarCategoryACO) {
                                         <tr>
                                             <td width="4%">1</td>
                                             <td width="46%">                             
-                                                <input type="text" name="goal_1" class="form-control" value="<?php echo text($check_res['goal_1']); ?>">
+                                                <input type="text" name="goal_1" class="form-control" value="<?php echo ($check_res['goal_1']) ? text($check_res['goal_1']) : text($last_record['goal_1']) ; ?>">
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_1" value="1" <?php echo ($check_res['goal_1_answer'] == 1) ? 'checked': '';  ?>>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_1" value="1" <?php echo ($check_res['goal_1_answer'] == 1) ? ($check_res['goal_1_answer'] == 1) ? 'checked': '' : ($last_record['goal_1_answer'] == 1) ? 'checked': '';  ?>>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_2" value="2" <?php echo ($check_res['goal_1_answer'] == 2) ? 'checked': '';  ?>>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_2" value="2" <?php echo ($check_res['goal_1_answer']) ? ($check_res['goal_1_answer'] == 2) ? 'checked': ''  :  ($last_record['goal_1_answer'] == 2) ? 'checked': '' ;  ?>>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_3" value="3" <?php echo ($check_res['goal_1_answer'] == 3) ? 'checked': '';  ?>>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_3" value="3" <?php echo ($check_res['goal_1_answer']) ? ($check_res['goal_1_answer'] == 3) ? 'checked': '' :  ($last_record['goal_1_answer'] == 3) ? 'checked': '' ;  ?>>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_4" value="4" <?php echo ($check_res['goal_1_answer'] == 4) ? 'checked': '';  ?>>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_4" value="4" <?php echo ($check_res['goal_1_answer']) ? ($check_res['goal_1_answer'] == 4) ? 'checked': ''  : ($last_record['goal_1_answer'] == 4) ? 'checked': ''  ;  ?>>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label class="text-center">
-                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_5" value="5" <?php echo ($check_res['goal_1_answer'] == 5) ? 'checked': '';  ?>>
+                                                  <input type="radio" name="goal_1_answer" id="goal_1_answer_radio_5" value="5" <?php echo ($check_res['goal_1_answer']) ?  ($check_res['goal_1_answer'] == 5) ? 'checked': '' :   ($last_record['goal_1_answer'] == 5) ? 'checked': ''  ;  ?>>
                                                 </label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>2</td>
                                             <td>
-                                                <input type="text" name="goal_2" class="form-control" value="<?php echo text($check_res['goal_2']); ?>">
+                                                <input type="text" name="goal_2" class="form-control" value="<?php echo ($check_res['goal_2']) ? text($check_res['goal_2']) : text($last_record['goal_2']) ; ?>">
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_1" value="1" <?php echo ($check_res['goal_2_answer'] == 1) ? 'checked': '';  ?>>
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_1" value="1" <?php echo ($check_res['goal_2_answer']) ? ($check_res['goal_2_answer'] == 1) ? 'checked': '' :  ($last_record['goal_2_answer'] == 1) ? 'checked': '' ;  ?>>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_2" value="2" <?php echo ($check_res['goal_2_answer'] == 2) ? 'checked': '';  ?>  >
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_2" value="2" <?php echo ($check_res['goal_2_answer']) ? ($check_res['goal_2_answer'] == 2) ? 'checked': '' :  ($last_record['goal_2_answer'] == 2) ? 'checked': '' ;  ?>  >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_3" value="3" <?php echo ($check_res['goal_2_answer'] == 3) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_3" value="3" <?php echo ($check_res['goal_2_answer']) ?  ($check_res['goal_2_answer'] == 3) ? 'checked': ''  : ($last_record['goal_2_answer'] == 3) ? 'checked': ''  ;  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_4" value="4" <?php echo ($check_res['goal_2_answer'] == 4) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_4" value="4" <?php echo  ($check_res['goal_2_answer']) ? ($check_res['goal_2_answer'] == 4) ? 'checked': ''  :  ($last_record['goal_2_answer'] == 4) ? 'checked': '' ;  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_5" value="5" <?php echo ($check_res['goal_2_answer'] == 5) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_2_answer" id="goal_2_answer_radio_5" value="5" <?php echo ($check_res['goal_2_answer']) ?  ($check_res['goal_2_answer'] == 5) ? 'checked': ''  :  ($last_record['goal_2_answer'] == 5) ? 'checked': '' ;  ?> >
                                                 </label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>3</td>
                                             <td>
-                                                <input type="text" name="goal_3" class="form-control" value="<?php echo text($check_res['goal_3']); ?>">
+                                                <input type="text" name="goal_3" class="form-control" value="<?php echo ($check_res['goal_3']) ? text($check_res['goal_3']) : text($last_record['goal_3']) ; ?>">
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_1" value="1" <?php echo ($check_res['goal_3_answer'] == 1) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_1" value="1" <?php echo ($check_res['goal_3_answer']) ? ($check_res['goal_3_answer'] == 1) ? 'checked': ''  :  ($last_record['goal_3_answer'] == 1) ? 'checked': '' ;  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_2" value="2" <?php echo ($check_res['goal_3_answer'] == 2) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_2" value="2" <?php echo ($check_res['goal_3_answer']) ? ($check_res['goal_3_answer'] == 2) ? 'checked': ''  :  ($last_record['goal_3_answer'] == 2) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_3" value="3"  <?php echo ($check_res['goal_3_answer'] == 3) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_3" value="3"  <?php echo ($check_res['goal_3_answer']) ? ($check_res['goal_3_answer'] == 3) ? 'checked': ''  :  ($last_record['goal_3_answer'] == 3) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_4" value="4" <?php echo ($check_res['goal_3_answer'] == 4) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_4" value="4" <?php echo ($check_res['goal_3_answer']) ? ($check_res['goal_3_answer'] == 4) ? 'checked': ''  :  ($last_record['goal_3_answer'] == 4) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_5" value="5" <?php echo ($check_res['goal_3_answer'] == 5) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_3_answer" id="goal_3_answer_radio_5" value="5" <?php echo ($check_res['goal_3_answer']) ? ($check_res['goal_3_answer'] == 5) ? 'checked': ''  :  ($last_record['goal_3_answer'] == 5) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>4</td>
                                             <td>
-                                                <input type="text" name="goal_4" class="form-control" value="<?php echo text($check_res['goal_4']); ?>">
+                                                <input type="text" name="goal_4" class="form-control" value="<?php echo ($check_res['goal_4']) ? text($check_res['goal_4']) : text($last_record['goal_4']); ?>">
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_1" value="1" <?php echo ($check_res['goal_4_answer'] == 1) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_1" value="1" <?php echo ($check_res['goal_4_answer']) ? ($check_res['goal_4_answer'] == 1) ? 'checked': '' : ($last_record['goal_4_answer'] == 1) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_2" value="2" <?php echo ($check_res['goal_4_answer'] == 2) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_2" value="2" <?php echo ($check_res['goal_4_answer']) ? ($check_res['goal_4_answer'] == 2) ? 'checked': ''  :  ($last_record['goal_4_answer'] == 2) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_3" value="3" <?php echo ($check_res['goal_4_answer'] == 3) ? 'checked': '';  ?>  >
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_3" value="3" <?php echo ($check_res['goal_4_answer']) ? ($check_res['goal_4_answer'] == 3) ? 'checked': ''  :  ($last_record['goal_4_answer'] == 3) ? 'checked': '';  ?>  >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_4" value="4"  <?php echo ($check_res['goal_4_answer'] == 4) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_4" value="4"  <?php echo ($check_res['goal_4_answer']) ? ($check_res['goal_4_answer'] == 4) ? 'checked': ''  :  ($last_record['goal_4_answer'] == 4) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 <label >
-                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_5" value="5" <?php echo ($check_res['goal_4_answer'] == 5) ? 'checked': '';  ?> >
+                                                  <input type="radio" name="goal_4_answer" id="goal_4_answer_radio_5" value="5" <?php echo ($check_res['goal_4_answer']) ? ($check_res['goal_4_answer'] == 5) ? 'checked': ''  : ($last_record['goal_4_answer'] == 5) ? 'checked': '';  ?> >
                                                 </label>
                                             </td>
                                         </tr>                                        
@@ -323,7 +328,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="icd_code" class="col-sm-4 control-label"><?php echo xlt('ICD-10 Code (s):'); ?> </label>                         
                                         <div class="col-sm-8">
-                                          <input type="text" class="form-control" name="icd_code" id="icd_code" value="<?php echo text($check_res['icd_code']); ?>">
+                                          <input type="text" class="form-control" name="icd_code" id="icd_code" value="<?php echo ($check_res['icd_code']) ? text($check_res['icd_code']) : text($last_record['icd_code']); ?>">
                                         </div>
                                     </div>
                                     
@@ -331,14 +336,14 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="session_type" class="col-sm-4 control-label"><?php echo xlt('Session Type:'); ?> </label>                         
                                         <div class="col-sm-8">
-                                          <input type="text" class="form-control" name="session_type" id="session_type" value="<?php echo text($check_res['session_type']); ?>">
+                                          <input type="text" class="form-control" name="session_type" id="session_type" value="<?php echo ($check_res['session_type']) ? text($check_res['session_type']) : text($last_record['session_type']); ?>">
                                         </div>
                                     </div>
                                    <div class="clearfix"></div>
                                     <div class="form-group">
                                             <label for="diagnosis" class="col-sm-4 control-label"><?php echo xlt('Diagnosis:'); ?> </label>                         
                                             <div class="col-sm-8">
-                                              <input type="text" class="form-control" name="diagnosis" id="diagnosis" value="<?php echo text($check_res['diagnosis']); ?>">
+                                              <input type="text" class="form-control" name="diagnosis" id="diagnosis" value="<?php echo ($check_res['diagnosis']) ? text($check_res['diagnosis']) : text($last_record['diagnosis']); ?>">
                                             </div>
                                     </div>
                                     <div class="clearfix"></div>
@@ -347,21 +352,21 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                             <label for="plan_review_90" class="col-sm-2 control-label"><?php echo xlt('90 Day:'); ?> </label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo text($check_res['plan_review_90']); ?>">
+                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo ($check_res['plan_review_90']) ? text($check_res['plan_review_90']) : text($last_record['plan_review_90']); ?>">
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_180" class="col-sm-2 control-label"><?php echo xlt('180 Day: '); ?></label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo text($check_res['plan_review_180']); ?>">
+                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo ($check_res['plan_review_180']) ? text($check_res['plan_review_180']) : text($last_record['plan_review_180']); ?>">
                                             </div>
                                     </div>
 
                                     <div class="form-group">
-                                            <label for="plan_review_270" class="col-sm-2 control-label"><?php echo xlt(''); ?>270 Day: </label>
+                                            <label for="plan_review_270" class="col-sm-2 control-label"><?php echo xlt('270 Day:'); ?></label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo text($check_res['plan_review_270']); ?>">
+                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo ($check_res['plan_review_270']) ? text($check_res['plan_review_270']) : text($last_record['plan_review_270']); ?>">
                                             </div>
                                     </div>
 
@@ -369,7 +374,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-md-6">
                                     <h3><?php echo xlt('RISK ASSESSMENT '); ?><small><?php echo xlt('(mark all that apply)'); ?></small></h3>
                                     <div class="col-sm-4">
-                                        <?php $risk_self_harm = explode('|', $check_res['risk_self_harm']); ?>
+                                        <?php $risk_self_harm = !empty($check_res['risk_self_harm']) ? explode('|', $check_res['risk_self_harm']) : explode('|', $last_record['risk_self_harm']) ; ?>
                                         <h4><?php echo xlt('SELF-HARM'); ?></h4>
                                         <?php  
                                             $self_harm_arr = array('Client Denies', 'Ideation', 'Intent', 'Reported Without Injury', 'Reported With Injury');
@@ -387,7 +392,7 @@ if ($postCalendarCategoryACO) {
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('SUICIDALITY'); ?></h4>
-                                        <?php $risk_suicidality = explode('|', $check_res['risk_suicidality']); ?>
+                                        <?php $risk_suicidality = !empty($check_res['risk_suicidality']) ? explode('|', $check_res['risk_suicidality']) : explode('|', $last_record['risk_suicidality']); ?>
                                         <?php
                                             $sucidality_arr = array('Cient Denies', 'Ideation', 'Plan', 'Means', 'Prior Attempt');
                                             foreach($sucidality_arr as $suicidal):
@@ -404,7 +409,7 @@ if ($postCalendarCategoryACO) {
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('HOMICIDALITY'); ?></h4>
-                                        <?php $risk_homicidality = explode('|', $check_res['risk_homicidality']);  
+                                        <?php $risk_homicidality = !empty($check_res['risk_homicidality']) ? explode('|', $check_res['risk_homicidality']) : explode('|', $last_record['risk_homicidality']);  
 
                                             $homidical_arr = array('Cient Denies', 'Ideation', 'Plan', 'Means', 'Prior Attempt');
                                             foreach($homidical_arr as $homicidal):
@@ -427,7 +432,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-6">
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('Orientation'); ?></h4>
-                                        <?php $symptoms_orientation = explode('|', $check_res['symptoms_orientation']); ?>
+                                        <?php $symptoms_orientation = !empty($check_res['symptoms_orientation']) ? explode('|', $check_res['symptoms_orientation']) : explode('|', $last_record['symptoms_orientation']); ?>
                                         <ul style="list-style-type: none; padding: 0">
                                             <?php  
                                                 $orientation_arr = array('Time', 'Person', 'Place', 'Situation');
@@ -444,7 +449,7 @@ if ($postCalendarCategoryACO) {
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('Speech Rate / Volume'); ?></h4>
-                                        <?php $symptoms_speech =  explode('|', $check_res['symptoms_speech']); ?>
+                                        <?php $symptoms_speech =  !empty($check_res['symptoms_speech']) ? explode('|', $check_res['symptoms_speech']) : explode('|', $last_record['symptoms_speech']); ?>
 
                                         <ul style="list-style-type: none; padding: 0">
                                             <?php 
@@ -462,7 +467,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('Mood'); ?></h4>
                                         <?php 
-                                            $symptoms_mood = explode('|', $check_res['symptoms_mood']); 
+                                            $symptoms_mood = !empty($check_res['symptoms_mood']) ? explode('|', $check_res['symptoms_mood']) : explode('|', $last_record['symptoms_mood']); 
                                             $mood_arr = array('Calm', 'Apathetic', 'Anxious', 'Angry', 'Distraught', 'Cheerful', 'Despodent/Sad', 'Irritable', 'Hopeless', 'Other:');
                                             foreach($mood_arr as $mood):
                                         ?>
@@ -470,12 +475,12 @@ if ($postCalendarCategoryACO) {
                                           <input type="checkbox"  name="symptoms_mood[]" value="<?php echo $mood; ?>" <?php echo (in_array($mood, $symptoms_mood)) ? 'checked': '';  ?>  > <?php echo xlt($mood); ?>
                                         </label>
                                         <?php endforeach; ?>                                        
-                                        <input type="text" name="symptoms_mood_other" value="<?php echo text($check_res['symptoms_mood_other']); ?>">
+                                        <input type="text" name="symptoms_mood_other" value="<?php echo ($check_res['symptoms_mood_other']) ? text($check_res['symptoms_mood_other']) : text($last_record['symptoms_mood_other']); ?>">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <h4><?php echo xlt('Thought Content'); ?></h4>
-                                    <?php $symptoms_thought_content = explode('|', $check_res['symptoms_thought_content']); ?>
+                                    <?php $symptoms_thought_content = !empty($check_res['symptoms_thought_content']) ? explode('|', $check_res['symptoms_thought_content']) : explode('|', $last_record['symptoms_thought_content']); ?>
                                     <ul style="list-style-type: none; columns: 2;-webkit-columns: 2;  -moz-columns: 2;">
                                         <?php  
                                             $thought_arr = array('Appropriate', 'Ruminating', 'Worry', 'Self-Harm', 'Irrational', 'Guilt', 'Shame', 'Obsessions/Compulsions', 'Self-Worth', 'Fears/Phobias', 'Self-Confidence', 'Self-Esteem');
@@ -491,7 +496,7 @@ if ($postCalendarCategoryACO) {
                                             <label class="">
                                               <input type="checkbox" id="symptoms_thought_content_other" name="symptoms_thought_content[]" value="Other" <?php echo (in_array('Other', $symptoms_thought_content)) ? 'checked': ''; ?> > <?php echo xlt('Other'); ?>
                                             </label>
-                                            <input type="text" name="symptoms_thought_content_other" value="<?php echo text($check_res['symptoms_thought_content_other']); ?>" >
+                                            <input type="text" name="symptoms_thought_content_other" value="<?php echo ($check_res['symptoms_thought_content_other']) ? text($check_res['symptoms_thought_content_other']) : text($last_record['symptoms_thought_content_other']); ?>" >
                                         </li>
                                     </ul>
                                 </div>
@@ -501,7 +506,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-6">
                                     <div class="col-sm-4" style="padding-left:5px; padding-right: 5px">
                                         <h4><?php echo xlt('Hygiene/Grooming'); ?></h4>
-                                        <?php $symptoms_hygiene = explode('|', $check_res['symptoms_hygiene']); ?>
+                                        <?php $symptoms_hygiene = !empty($check_res['symptoms_hygiene']) ? explode('|', $check_res['symptoms_hygiene']) : explode('|', $last_record['symptoms_hygiene']); ?>
                                         <ul style="list-style-type: none; padding: 0">
                                             <?php
                                                 $hygiene_arr = array('Dishelved', 'Poor Hygiene', 'Appropriate', 'Neat');
@@ -517,7 +522,7 @@ if ($postCalendarCategoryACO) {
                                     </div>
                                     <div class="col-sm-4">
                                         <h4><?php echo xlt('Motor Activity'); ?></h4>
-                                        <?php $symptoms_motor  = explode('|', $check_res['symptoms_motor']); ?>
+                                        <?php $symptoms_motor  = !empty($check_res['symptoms_motor']) ? explode('|', $check_res['symptoms_motor']) : explode('|', $last_record['symptoms_motor']); ?>
                                         <ul style="list-style-type: none; padding: 0">
                                             <?php
                                                 $motor_arr = array('Normal', 'Decreased', 'Increased', 'Restless');
@@ -533,7 +538,7 @@ if ($postCalendarCategoryACO) {
                                     </div>
                                     <div class="col-sm-4" style="padding-left: 5px; padding-right: 5px">
                                         <h4><?php echo xlt('Affect'); ?></h4>
-                                        <?php $symptoms_affect  = explode('|', $check_res['symptoms_affect']); ?>
+                                        <?php $symptoms_affect  = !empty($check_res['symptoms_affect']) ? explode('|', $check_res['symptoms_affect']) : explode('|', $last_record['symptoms_affect']); ?>
                                         <ul style="list-style-type: none; padding: 0">
                                             <?php
                                                 $affect_arr = array('Congruent to Mood', 'Hostile', 'Agitated', 'Labile', 'Inappropriate', 'Blunted', 'Expansive', 'Tearful', 'Flat');
@@ -549,7 +554,7 @@ if ($postCalendarCategoryACO) {
                                                 <label class="">
                                                   <input type="checkbox" id="symptoms_affect_other" name="symptoms_affect[]" value="Other" <?php echo (in_array('Other', $symptoms_affect)) ? 'checked' : ''; ?> > <?php echo xlt('Other'); ?>
                                                 </label>    
-                                                <input type="text" name="symptoms_affect_other" value="<?php echo xlt($check_res['symptoms_affect_other']); ?>" >                                            
+                                                <input type="text" name="symptoms_affect_other" value="<?php echo ($check_res['symptoms_affect_other']) ? text($check_res['symptoms_affect_other']) : text($last_record['symptoms_affect_other']); ?>" >                                            
                                             </li>
                                         </ul>
                                     </div>
@@ -557,7 +562,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-6">
                                     <div class="col-sm-6">
                                         <h4><?php echo xlt('Perception'); ?></h4>
-                                        <?php $symptoms_perception  = explode('|', $check_res['symptoms_perception']); ?>
+                                        <?php $symptoms_perception  = ($check_res['symptoms_perception']) ? explode('|', $check_res['symptoms_perception']) : explode('|', $last_record['symptoms_perception']); ?>
                                         <ul style="list-style-type: none; padding: 0">
                                             <?php
                                                 $perception_arr = array('Appropriate', 'Distorted', 'Delusions', 'Paranoid', 'Grandiose', 'Bizarre', 'Hallucinations', 'Auditory', 'Visual', 'Olfactory');
@@ -573,7 +578,7 @@ if ($postCalendarCategoryACO) {
                                     </div>
                                     <div class="col-sm-6">
                                         <h4><?php echo xlt('Thought Process'); ?></h4>
-                                        <?php $symptoms_thought_process  = explode('|', $check_res['symptoms_thought_process']); ?>
+                                        <?php $symptoms_thought_process  = ($check_res['symptoms_thought_process']) ? explode('|', $check_res['symptoms_thought_process']) : explode('|', $last_record['symptoms_thought_process']); ?>
                                         <ul style="list-style-type: none; padding: 0">
                                             <?php
                                                 $thought_process_arr = array('Logical/Coherent', 'Vague', 'Disorganized', 'Incoherent', 'Repeated Thought', 'Bizarre', 'Delayed', 'Tangential');
@@ -595,7 +600,7 @@ if ($postCalendarCategoryACO) {
 
                                 <div class="col-sm-12">
                                         <h4><?php echo xlt('Other'); ?></h4>
-                                        <?php $symptoms_other  = explode('|', $check_res['symptoms_other']); ?>
+                                        <?php $symptoms_other  = ($check_res['symptoms_other']) ? explode('|', $check_res['symptoms_other']) : explode('|', $last_record['symptoms_other']); ?>
                                         <ul style="list-style-type: none; columns: 4;-webkit-columns: 4;  -moz-columns: 4;">
                                             <?php 
                                                 $others_arr = array('Appetite Change', 'Insomnia', 'Hypersomnia', 'Energy', 'Nightmares', 'Motivation', 'Mania', 'Disordered Eating', 'Physical Pain', 'Flashbacks', 'Poor Impulse Control', 'Substance Use', 'Illegal Conduct', 'Relationship Problems', 'Vocational/School Problems', 'Sexual Concerns', 'Concentration', 'Social Problems', 'Memory Loss/Problems', 'Medical Problems');
