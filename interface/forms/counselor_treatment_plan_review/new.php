@@ -24,7 +24,7 @@ use OpenEMR\Common\Csrf\CsrfUtils;
 use OpenEMR\Core\Header;
 use ESign\Api;
 
-$folderName = 'counselor_treatment_plan';
+$folderName = 'counselor_treatment_plan_review';
 $tableName = 'form_' . $folderName;
 
 

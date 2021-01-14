@@ -12,17 +12,12 @@
  */
 
 require_once("../../globals.php");
-require_once("$srcdir/encounter.inc");
-require_once("$srcdir/group.inc");
 require_once("$srcdir/api.inc");
-require_once("$srcdir/acl.inc");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/options.inc.php");
-require_once $GLOBALS['srcdir'].'/ESign/Api.php';
 
 use OpenEMR\Common\Csrf\CsrfUtils;
 use OpenEMR\Core\Header;
-use ESign\Api;
 
 $folderName = 'counselor_treatment_plan';
 $tableName = 'form_' . $folderName;
@@ -30,37 +25,13 @@ $tableName = 'form_' . $folderName;
 
 $returnurl = 'encounter_top.php';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
-
-$formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
-$form = sqlQuery($formStmt, array($formid, $folderName));
-
-$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
-
 $check_res = $formid ? formFetch($tableName, $formid) : array();
-
-$is_group = ($attendant_type == 'gid') ? true : false;
-
-$esignApi = new Api();
-// Create the ESign instance for this form
-$esign = $esignApi->createFormESign($form['id'], $folderName, $encounter);
-
-//fetch acl for category of given encounter
-$pc_catid = fetchCategoryIdByEncounter($encounter);
-$postCalendarCategoryACO = fetchPostCalendarCategoryACO($pc_catid);
-if ($postCalendarCategoryACO) {
-    $postCalendarCategoryACO = explode('|', $postCalendarCategoryACO);
-    $authPostCalendarCategory = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1]);
-    $authPostCalendarCategoryWrite = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1], '', 'write');
-} else { // if no aco is set for category
-    $authPostCalendarCategory = true;
-    $authPostCalendarCategoryWrite = true;
-}
 ?>
 <html>
     <head>
         <title><?php echo xlt("Counselor Treatment Plan"); ?></title>
 
-        <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
+        <?php Header::setupHeader(['datetime-picker', 'opener']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
     </head>
@@ -104,7 +75,7 @@ if ($postCalendarCategoryACO) {
                     <fieldset>
                         <legend class=""><?php echo xlt('Counselor Treatment Plan'); ?></legend>
                             
-                            <div class="col-md-12" style="margin-top: 0; margin-bottom: 20px">
+                            <div class="col-md-12" style="margin-top: 20px">
                                 <div class="col-sm-2">
                                     <div class="radio">
                                         <label>
@@ -134,7 +105,7 @@ if ($postCalendarCategoryACO) {
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
-                                    <div class="radio">
+                                    <div class="form-group">
                                         <label for="" class="col-sm-8"><?php echo xlt('If update/review initial plan date:'); ?></label>
                                         <div class="col-sm-4">
                                             <input type="text" name="initial_plan_date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['initial_plan_date']) && $check_res['initial_plan_date'] ) ? date('m/d/Y', strtotime($check_res['initial_plan_date'])):''; ?>" autocomplete="off">
@@ -1196,14 +1167,13 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
 
-                            <!--
+
                             <div class="col-md-12 margin-top-20" style="margin-top: 30px">
                                 <div class="form-group">
                                     <input type="checkbox" name="status" id="status" value="completed">
                                     <label for="status" class=""><?php echo xlt('Mark as Complete'); ?></label>                                    
                                 </div>
                             </div>
-                            -->
 
 
 
@@ -1216,15 +1186,8 @@ if ($postCalendarCategoryACO) {
                     <div class="form-group clearfix">
                         <div class="col-sm-12 col-sm-offset-1 position-override">
                             <div class="btn-group oe-opt-btn-group-pinch" role="group">
-                                <?php                                    
-                                    if (($esign->isButtonViewable() and $is_group == 0 and $authPostCalendarCategoryWrite) or ($esign->isButtonViewable() and $is_group and acl_check("groups", "glog", false, 'write') and $authPostCalendarCategoryWrite)) {
-                                        if (!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write')) {
-                                            echo $esign->buttonHtml();
-                                        }
-                                    }
-                                ?>
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
-                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
+                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
                             </div>
                         </div>
                     </div>
@@ -1254,69 +1217,9 @@ if ($postCalendarCategoryACO) {
                     format:'m/d/Y'
                 });
 
-                // esign API
-                var formConfig = <?php echo $esignApi->formConfigToJson(); ?>;
-                $(".esign-button-form").esign(
-                    formConfig,
-                    {
-                        afterFormSuccess : function( response ) {
-                            if ( response.locked ) {
-                                var editButtonId = "form-edit-button-"+response.formDir+"-"+response.formId;
-                                $("#"+editButtonId).replaceWith( response.editButtonHtml );
-                            }
-
-                            var logId = "esign-signature-log-"+response.formDir+"-"+response.formId;
-                            $.post( formConfig.logViewAction, response, function( html ) {
-                                $("#"+logId).replaceWith( html );
-                            });
-                        }
-                    }
-                );
-
-                var encounterConfig = <?php echo $esignApi->encounterConfigToJson(); ?>;
-                $(".esign-button-encounter").esign(
-                    encounterConfig,
-                    {
-                        afterFormSuccess : function( response ) {
-                            // If the response indicates a locked encounter, replace all
-                            // form edit buttons with a "disabled" button, and "disable" left
-                            // nav visit form links
-                            if ( response.locked ) {
-                                // Lock the form edit buttons
-                                $(".form-edit-button").replaceWith( response.editButtonHtml );
-                                // Disable the new-form capabilities in left nav
-                                top.window.parent.left_nav.syncRadios();
-                                // Disable the new-form capabilities in top nav of the encounter
-                                $(".encounter-form-category-li").remove();
-                            }
-
-                            var logId = "esign-signature-log-encounter-"+response.encounterId;
-                            $.post( encounterConfig.logViewAction, response, function( html ) {
-                                $("#"+logId).replaceWith( html );
-                            });
-                        }
-                    }
-                );
-
-
-                $('.esign-button-form').css({"width": "110px", "height":"25px", "line-height":"20px", "vertical-align":"middle", "margin-right":"25px"});
-
-                $('.esign-button-form span').html('Digitally Sign');
+                
 
             });
-
-            function form_close_tab()
-            {
-                var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
-                console.log('Session Dashboard: ' + session_dashboard);
-                if(session_dashboard) {
-                    //window.top.location.reload();
-                    window.top.location.href = window.top.location;
-                } else {
-                   top.restoreSession(); 
-                    parent.closeTab(window.name, false);
-                }                
-            }
         </script>
     </body>
 </html>
