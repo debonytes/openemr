@@ -79,6 +79,7 @@ if ($search_any_type == 'dual') {
         <span class="patientDataColumn">
         <!-- ko if: patient -->
         <!-- ko with: patient -->
+        <!--
             <a class="btn btn-xs btn-link" data-bind="click: clickEncounterList" href="#" title="<?php echo xla("Visit History");?>">
                 <i class="fa fa-refresh"></i>
             </a>
@@ -86,18 +87,15 @@ if ($search_any_type == 'dual') {
                 <i class="fa fa-plus"></i>
             </a>
             <div class="patientCurrentEncounter">
-                <span><?php echo xlt("Open Encounter"); ?>:</span>
-                <!-- ko if:selectedEncounter() -->
+                <span><?php echo xlt("Open Encounter"); ?>:</span>                
                     <a data-bind="click: refreshEncounter" href="#">
                         <span data-bind="text:selectedEncounter().date()"></span>
                         (<span data-bind="text:selectedEncounter().id()"></span>)
-                    </a>
-                <!-- /ko -->
-                <!-- ko if:!selectedEncounter() -->
-                    <?php echo xlt("None{{Encounter}}") ?>
-                <!-- /ko -->
-            </div>
-            <!-- ko if: encounterArray().length > 0 -->
+                    </a>               
+                    <?php echo xlt("None{{Encounter}}") ?>                
+            </div>           
+            
+            -->
             <br>
             <div class="btn-group dropdown">
                 <button class="btn btn-default btn-sm dropdown-toggle"
