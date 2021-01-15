@@ -16,4 +16,5 @@ if(isset($_SESSION['formID_' . $formid ])){
 } else {
     require("new.php");
 }
-//require("new.php");
+
+//require("readonly.php");

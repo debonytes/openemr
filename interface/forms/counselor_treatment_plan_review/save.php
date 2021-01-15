@@ -31,7 +31,7 @@ $encounter = ( isset($_SESSION['encounter']) && $_SESSION['encounter'] ) ? true:
 
 $folderName = 'counselor_treatment_plan_review';
 $tableName = 'form_' . $folderName;
-$form_textual_name = 'Counselor Treatment Plan';
+$form_textual_name = 'Counselor Treatment Plan Review';
 
 $table_fields = sqlListFields($tableName); /* An array of the table fields */
 

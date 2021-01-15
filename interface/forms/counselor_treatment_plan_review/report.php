@@ -15,7 +15,7 @@
 require_once(dirname(__FILE__).'/../../globals.php');
 require_once($GLOBALS["srcdir"]."/api.inc");
 
-function counselor_treatment_plan_report($pid, $encounter, $cols, $id)
+function counselor_treatment_plan_review_report($pid, $encounter, $cols, $id)
 {
     $count = 0;
     $data = formFetch("form_counselor_treatment_plan_review", $id);

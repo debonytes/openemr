@@ -26,6 +26,7 @@ use ESign\Api;
 
 $folderName = 'counselor_treatment_plan_review';
 $tableName = 'form_' . $folderName;
+$form_plan = 'form_counselor_treatment_plan';
 
 
 $returnurl = 'encounter_top.php';
@@ -37,6 +38,27 @@ $form = sqlQuery($formStmt, array($formid, $folderName));
 $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
+
+
+/* checking the last record */
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
+$last_record = sqlQuery($last_record_query, array($pid));
+
+$days_review_arr = array('90 Day Review', '180 Day Review', '270 Day Review', 'Other Review');
+
+if( empty($last_record) ){
+    $review_days = $days_review_arr[0];
+    $last_record_query = "SELECT * FROM {$form_plan} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
+    $last_record = sqlQuery($last_record_query, array($pid));
+
+    if( empty($last_record) ){
+        die(xlt('Please create a new Counselor Treatment Plan for this Client.'));
+    }
+} else {
+    $key = array_search($last_record['day_review'], $days_review_arr);
+    $review_days = $days_review_arr[ $key ];
+}
+
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
@@ -68,7 +90,7 @@ if ($postCalendarCategoryACO) {
         <div class="container">
             <div class="row">
                 <div class="page-header">
-                    <h2><?php echo xlt('Counselor Treatment Plan'); ?></h2>
+                    <h2><?php echo xlt('Counselor Treatment Plan Review'); ?></h2>
                 </div>
             </div>
             <?php
@@ -90,6 +112,8 @@ if ($postCalendarCategoryACO) {
             
             ?>
             <div class="row">
+
+                
                 
                 <form method="post" id="my_counselor_treatment_plan_form" name="my_counselor_treatment_plan_form" action="<?php echo $rootdir; ?>/forms/<?php echo $folderName; ?>/save.php?id=<?php echo attr_url($formid); ?>">          
 
@@ -102,34 +126,34 @@ if ($postCalendarCategoryACO) {
                     <input type="hidden" name="activity" value="1">
 
                     <fieldset>
-                        <legend class=""><?php echo xlt('Counselor Treatment Plan'); ?></legend>
+                        <legend class=""><?php echo xlt('Counselor Treatment Plan Review'); ?></legend>
                             
                             <div class="col-md-12" style="margin-top: 0; margin-bottom: 20px">
                                 <div class="col-sm-2">
                                     <div class="radio">
                                         <label>
-                                          <input type="radio" name="day_review" value="90 Day Review" <?php echo ($check_res['day_review'] == '90 Day Review') ? 'checked': ''; ?>  > <?php echo xlt('90 Day Review'); ?>
+                                          <input type="radio" name="day_review" value="90 Day Review" <?php echo ( ($check_res['day_review'] == '90 Day Review') || ($review_days == '90 Day Review') ) ? 'checked': ''; ?>  <?php echo ($review_days == '90 Day Review') ? '':'disabled'; ?> > <?php echo xlt('90 Day Review'); ?>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="radio">
                                         <label>
-                                          <input type="radio" name="day_review" value="180 Day Review" <?php echo ($check_res['day_review'] == '180 Day Review') ? 'checked': ''; ?>> <?php echo xlt('180 Day Review'); ?>
+                                          <input type="radio" name="day_review" value="180 Day Review" <?php echo ( ($check_res['day_review'] == '180 Day Review') || ($review_days == '180 Day Review') ) ? 'checked': ''; ?>  <?php echo ($review_days == '180 Day Review') ? '':'disabled'; ?> > <?php echo xlt('180 Day Review'); ?>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="radio">
                                         <label>
-                                          <input type="radio" name="day_review" value="270 Day Review" <?php echo ($check_res['day_review'] == '270 Day Review') ? 'checked': ''; ?> > <?php echo xlt('270 Day Review'); ?>
+                                          <input type="radio" name="day_review" value="270 Day Review" <?php echo ( ($check_res['day_review'] == '270 Day Review') || ($review_days == '270 Day Review')  ) ? 'checked': ''; ?> <?php echo ($review_days == '270 Day Review') ? '':'disabled'; ?> > <?php echo xlt('270 Day Review'); ?>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="radio">
                                         <label>
-                                          <input type="radio" name="day_review" value="Other Review" <?php echo ($check_res['day_review'] == 'Other Review') ? 'checked': ''; ?> > <?php echo xlt('Other Review'); ?>
+                                          <input type="radio" name="day_review" value="Other Review" <?php echo ( ($check_res['day_review'] == 'Other Review') || ($review_days == 'Other Review') ) ? 'checked': ''; ?> <?php echo ($review_days == 'Other Review') ? '':'disabled'; ?> > <?php echo xlt('Other Review'); ?>
                                         </label>
                                     </div>
                                 </div>
@@ -137,7 +161,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="radio">
                                         <label for="" class="col-sm-8"><?php echo xlt('If update/review initial plan date:'); ?></label>
                                         <div class="col-sm-4">
-                                            <input type="text" name="initial_plan_date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['initial_plan_date']) && $check_res['initial_plan_date'] ) ? date('m/d/Y', strtotime($check_res['initial_plan_date'])):''; ?>" autocomplete="off">
+                                            <input type="text" name="initial_plan_date" class="form-control newDatePicker" value="<?php echo ( $check_res['initial_plan_date'] ) ? date('m/d/Y', strtotime($check_res['initial_plan_date'])): date('m/d/Y') ; ?>" autocomplete="off">
                                         </div>                                        
                                     </div>
                                 </div>
@@ -158,7 +182,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="medicaid" class="col-sm-4"><?php echo xlt('Medicaid#:'); ?> </label>
                                         <div class="col-sm-8">
-                                            <input type="text" id="medicaid" name="medicaid" class="form-control" value="<?php echo text($check_res['medicaid']); ?>" >
+                                            <input type="text" id="medicaid" name="medicaid" class="form-control" value="<?php echo ($check_res['medicaid']) ? text($check_res['medicaid']) : text($last_record['medicaid']); ?>" >
                                         </div>
                                     </div>
                                 </div>
@@ -166,7 +190,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="diagnosis_code" class="col-sm-5"><?php echo xlt('Diagnosis Code(s):'); ?> </label>
                                         <div class="col-sm-7">
-                                            <input type="text" id="diagnosis_code" name="diagnosis_code" class="form-control" value="<?php echo text($check_res['diagnosis_code']); ?>" >
+                                            <input type="text" id="diagnosis_code" name="diagnosis_code" class="form-control" value="<?php echo ($check_res['diagnosis_code']) ? text($check_res['diagnosis_code']) : text($last_record['diagnosis_code']); ?>" >
                                         </div>
                                     </div>
                                 </div>
@@ -180,8 +204,9 @@ if ($postCalendarCategoryACO) {
                                         <div class="col-sm-8">
                                             <select name="type_service" class="form-group">
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
-                                                <option value="Counseling" <?php echo ($check_res['type_service'] == 'Counseling') ? 'selected': ''; ?> ><?php echo xlt('Counseling'); ?></option>
-                                                <option value="Mental Health Clinic" <?php echo ($check_res['type_service'] == 'Mental Health Clinic') ? 'selected': ''; ?>><?php echo xlt('Mental Health Clinic'); ?></option>
+                                                <?php $type_service = ($check_res['type_service']) ? text($check_res['type_service']) : text($last_record['type_service']); ?>
+                                                <option value="Counseling" <?php echo ($type_service == 'Counseling') ? 'selected': ''; ?> ><?php echo xlt('Counseling'); ?></option>
+                                                <option value="Mental Health Clinic" <?php echo ($type_service == 'Mental Health Clinic') ? 'selected': ''; ?>><?php echo xlt('Mental Health Clinic'); ?></option>
                                             </select>                   
                                         </div>
                                     </div>
@@ -190,8 +215,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="examiner" class="col-sm-3 "><?php echo xlt('Examiner'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $examiner = ($check_res['examiner']) ? text($check_res['examiner']) : text($last_record['examiner']); ?>
                                             <select name="examiner" id="examiner" class="form-control">
-                                                <?php echo get_examiner_name_dregree($check_res['examiner']); ?>
+                                                <?php echo get_examiner_name_dregree($examiner); ?>
                                             </select>                                            
                                             <small class="text-danger examiner_error"></small>
                                         </div>                                    
@@ -201,7 +227,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-2"><?php echo xlt('Date'); ?></label>
                                         <div class="col-sm-10">
-                                            <input type="text" name="date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
+                                            <input type="text" name="date" class="form-control newDatePicker" value="<?php echo ( $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])): date('m/d/Y'); ?>" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -209,7 +235,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="dob" class="col-sm-2"><?php echo xlt('DOB'); ?></label>
                                         <div class="col-sm-10">
-                                            <input type="text" name="dob" class="form-control newDatePicker" value="<?php echo ( isset($check_res['dob']) && $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])):''; ?>" autocomplete="off">
+                                            <input type="text" name="dob" class="form-control newDatePicker" value="<?php echo ( $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])) : date('m/d/Y', strtotime($last_record['dob'])); ?>" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -220,18 +246,22 @@ if ($postCalendarCategoryACO) {
                             <div class="col-md-12" style="margin-top: 30px">
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Problem Area'); ?></label>
-                                    <?php $problem_arr = array('A. Psychiatric/Mental/Emotional', 'B. Medical/Health', 'C. Vocational', 'D. Money Management/Finances', 'E. Social Relationships', 'F. Family', 'G. Basic Living Skills', 'H. Housing', 'I. Community/Legal', 'J. Other'); ?>
+                                    <?php $problem_arr = array('A. Psychiatric/Mental/Emotional', 'B. Medical/Health', 'C. Vocational', 'D. Money Management/Finances', 'E. Social Relationships', 'F. Family', 'G. Basic Living Skills', 'H. Housing', 'I. Community/Legal', 'J. Other'); 
+
+                                        $problem_area = ($check_res['problem_area']) ? text($check_res['problem_area']) : text($last_record['problem_area']);
+
+                                    ?>
                                     <select name="problem_area" >
                                         <option value=""><?php echo xlt('Choose'); ?></option>
                                         <?php foreach($problem_arr as $problem): ?>
-                                            <option value="<?php echo $problem; ?>" <?php echo ($problem == $check_res['problem_area']) ? 'selected': ''; ?> ><?php echo xlt($problem); ?></option>
+                                            <option value="<?php echo $problem; ?>" <?php echo ($problem == $problem_area) ? 'selected': ''; ?> ><?php echo xlt($problem); ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('(Use following space to specifically describe a prioritized list of issues from the Comprehensive Assessment that will be addressed in the following goal including behavior relating and area of impairment)'); ?></label>
-                                    <textarea name="describe_comprehensive_assessment" rows="3" class="form-control"><?php echo text($check_res['describe_comprehensive_assessment']); ?></textarea>
+                                    <textarea name="describe_comprehensive_assessment" rows="3" class="form-control"><?php echo ($check_res['describe_comprehensive_assessment']) ? text($check_res['describe_comprehensive_assessment']) : text($last_record['describe_comprehensive_assessment']); ?></textarea>
                                 </div>
                             </div>
                             <div class="clearfix"></div>
@@ -241,7 +271,7 @@ if ($postCalendarCategoryACO) {
 
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Client\'s statement of overall goal or need (Must be in client\'s own words):'); ?></label>
-                                    <textarea name="overall_goal" rows="3" class="form-control"><?php echo text($check_res['overall_goal']); ?></textarea>
+                                    <textarea name="overall_goal" rows="3" class="form-control"><?php echo ($check_res['overall_goal']) ? text($check_res['overall_goal']) : text($last_record['overall_goal']); ?></textarea>
                                 </div>
                             </div>
 
@@ -257,7 +287,7 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 1:'); ?></label>
-                                    <input type="text" name="overall_obj1" value="<?php echo text($check_res['overall_obj1']); ?>">
+                                    <input type="text" name="overall_obj1" value="<?php echo ($check_res['overall_obj1']) ? text($check_res['overall_obj1']) : text($last_record['overall_obj1']); ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -265,8 +295,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $task_modality_obj1 = ($check_res['overall_obj1_task_modality']) ? text($check_res['overall_obj1_task_modality']) : text($last_record['overall_obj1_task_modality']); ?>
                                             <select name="overall_obj1_task_modality" id="" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj1_task_modality']); ?>
+                                                <?php echo get_task_modality($task_modality_obj1); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -275,8 +306,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_frequency = ($check_res['overall_obj1_frequency']) ? text($check_res['overall_obj1_frequency']) : text($last_record['overall_obj1_frequency']); ?>
                                             <select name="overall_obj1_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj1_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj1_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -285,8 +317,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_duration = ($check_res['overall_obj1_duration']) ? text($check_res['overall_obj1_duration']) : text($last_record['overall_obj1_duration']); ?>
                                             <select name="overall_obj1_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj1_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj1_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -295,8 +328,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj1_place = ($check_res['overall_obj1_place']) ? text($check_res['overall_obj1_place']) : text($last_record['overall_obj1_place']); ?>
                                             <select name="overall_obj1_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj1_place']); ?>
+                                                <?php echo get_task_place($overall_obj1_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -309,7 +343,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('90 Day Review:'); ?></label>
-                                    <input type="text" name="overall_obj1_90_review" value="<?php echo text($check_res['overall_obj1_90_review']); ?>">
+                                    <?php $overall_obj1_90_review = ($check_res['overall_obj1_90_review']) ? text($check_res['overall_obj1_90_review']) : text($last_record['overall_obj1_90_review']); ?>
+                                    <input type="text" name="overall_obj1_90_review" value="<?php echo $overall_obj1_90_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -317,8 +352,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $overall_obj1_90_review_task_modality = ($check_res['overall_obj1_90_review_task_modality']) ? text($check_res['overall_obj1_90_review_task_modality']) : text($last_record['overall_obj1_90_review_task_modality']); ?>
                                             <select name="overall_obj1_90_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj1_90_review_task_modality']); ?>
+                                                <?php echo get_task_modality($overall_obj1_90_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -327,8 +363,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_90_review_frequency = ($check_res['overall_obj1_90_review_frequency']) ? text($check_res['overall_obj1_90_review_frequency']) : text($last_record['overall_obj1_90_review_frequency']); ?>
                                             <select name="overall_obj1_90_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj1_90_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj1_90_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -337,8 +374,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_90_review_duration = ($check_res['overall_obj1_90_review_duration']) ? text($check_res['overall_obj1_90_review_duration']) : text($last_record['overall_obj1_90_review_duration']); ?>
                                             <select name="overall_obj1_90_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj1_90_review_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj1_90_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -347,8 +385,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj1_90_review_place = ($check_res['overall_obj1_90_review_place']) ? text($check_res['overall_obj1_90_review_place']) : text($last_record['overall_obj1_90_review_place']); ?>
                                             <select name="overall_obj1_90_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj1_90_review_place']); ?>
+                                                <?php echo get_task_place($overall_obj1_90_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -361,7 +400,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('180 Day Review:'); ?></label>
-                                    <input type="text" name="overall_obj1_180_review" value="<?php echo text($check_res['overall_obj1_180_review']); ?>">
+                                    <?php $overall_obj1_180_review = ($check_res['overall_obj1_180_review']) ? text($check_res['overall_obj1_180_review']) : text($last_record['overall_obj1_180_review']); ?>
+                                    <input type="text" name="overall_obj1_180_review" value="<?php echo $overall_obj1_180_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -369,8 +409,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $overall_obj1_180_review_task_modality = ($check_res['overall_obj1_180_review_task_modality']) ? text($check_res['overall_obj1_180_review_task_modality']) : text($last_record['overall_obj1_180_review_task_modality']); ?>
                                             <select name="overall_obj1_180_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj1_180_review_task_modality']); ?>
+                                                <?php echo get_task_modality($overall_obj1_180_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -379,8 +420,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_180_review_frequency = ($check_res['overall_obj1_180_review_frequency']) ? text($check_res['overall_obj1_180_review_frequency']) : text($last_record['overall_obj1_180_review_frequency']); ?>
                                             <select name="overall_obj1_180_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj1_180_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj1_180_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -389,8 +431,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_180_review_duration = ($check_res['overall_obj1_180_review_duration']) ? text($check_res['overall_obj1_180_review_duration']) : text($last_record['overall_obj1_180_review_duration']); ?>
                                             <select name="overall_obj1_180_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj1_180_review_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj1_180_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -399,8 +442,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj1_180_review_place = ($check_res['overall_obj1_180_review_place']) ? text($check_res['overall_obj1_180_review_place']) : text($last_record['overall_obj1_180_review_place']); ?>
                                             <select name="overall_obj1_180_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj1_180_review_place']); ?>
+                                                <?php echo get_task_place($overall_obj1_180_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -412,7 +456,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('270 Day Review:'); ?></label>
-                                    <input type="text" name="overall_obj1_270_review" value="<?php echo text($check_res['overall_obj1_270_review']); ?>">
+                                    <?php $overall_obj1_270_review = ($check_res['overall_obj1_270_review']) ? text($check_res['overall_obj1_270_review']) : text($last_record['overall_obj1_270_review']); ?>
+                                    <input type="text" name="overall_obj1_270_review" value="<?php echo $overall_obj1_270_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -420,8 +465,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $overall_obj1_270_review_task_modality = ($check_res['overall_obj1_270_review_task_modality']) ? text($check_res['overall_obj1_270_review_task_modality']) : text($last_record['overall_obj1_270_review_task_modality']); ?>
                                             <select name="overall_obj1_270_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj1_270_review_task_modality']); ?>
+                                                <?php echo get_task_modality($overall_obj1_270_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -430,8 +476,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_270_review_frequency = ($check_res['overall_obj1_270_review_frequency']) ? text($check_res['overall_obj1_270_review_frequency']) : text($last_record['overall_obj1_270_review_frequency']); ?>
                                             <select name="overall_obj1_270_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj1_270_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj1_270_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -440,8 +487,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj1_270_review_duration = ($check_res['overall_obj1_270_review_duration']) ? text($check_res['overall_obj1_270_review_duration']) : text($last_record['overall_obj1_270_review_duration']); ?>
                                             <select name="overall_obj1_270_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj1_270_review_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj1_270_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -450,8 +498,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj1_270_review_place = ($check_res['overall_obj1_270_review_place']) ? text($check_res['overall_obj1_270_review_place']) : text($last_record['overall_obj1_270_review_place']); ?>
                                             <select name="overall_obj1_270_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj1_270_review_place']); ?>
+                                                <?php echo get_task_place($overall_obj1_270_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -466,7 +515,8 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 2:'); ?></label>
-                                    <input type="text" name="overall_obj2" value="<?php echo text($check_res['overall_obj2']); ?>">
+                                    <?php $overall_obj2 = ($check_res['overall_obj2']) ? text($check_res['overall_obj2']) : text($last_record['overall_obj2']); ?>
+                                    <input type="text" name="overall_obj2" value="<?php echo $overall_obj2; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -474,8 +524,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $overall_obj2_task_modality = ($check_res['overall_obj2_task_modality']) ? text($check_res['overall_obj2_task_modality']) : text($last_record['overall_obj2_task_modality']); ?>
                                             <select name="overall_obj2_task_modality" id="" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj2_task_modality']); ?>
+                                                <?php echo get_task_modality($overall_obj2_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -484,8 +535,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_frequency = ($check_res['overall_obj2_frequency']) ? text($check_res['overall_obj2_frequency']) : text($last_record['overall_obj2_frequency']); ?>
                                             <select name="overall_obj2_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj2_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj2_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -494,8 +546,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_duration = ($check_res['overall_obj2_duration']) ? text($check_res['overall_obj2_duration']) : text($last_record['overall_obj2_duration']); ?>
                                             <select name="overall_obj2_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj2_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj2_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -504,8 +557,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj2_place = ($check_res['overall_obj2_place']) ? text($check_res['overall_obj2_place']) : text($last_record['overall_obj2_place']); ?>
                                             <select name="overall_obj2_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj2_place']); ?>
+                                                <?php echo get_task_place($overall_obj2_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -518,7 +572,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('90 Day Review:'); ?></label>
-                                    <input type="text" name="overall_obj2_90_review" value="<?php echo text($check_res['overall_obj2_90_review']); ?>">
+                                    <?php $overall_obj2_90_review = ($check_res['overall_obj2_90_review']) ? text($check_res['overall_obj2_90_review']) : text($last_record['overall_obj2_90_review']); ?>
+                                    <input type="text" name="overall_obj2_90_review" value="<?php echo $overall_obj2_90_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -526,8 +581,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $overall_obj2_90_review_task_modality = ($check_res['overall_obj2_90_review_task_modality']) ? text($check_res['overall_obj2_90_review_task_modality']) : text($last_record['overall_obj2_90_review_task_modality']); ?>
                                             <select name="overall_obj2_90_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj2_90_review_task_modality']); ?>
+                                                <?php echo get_task_modality($overall_obj2_90_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -536,8 +592,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_90_review_frequency = ($check_res['overall_obj2_90_review_frequency']) ? text($check_res['overall_obj2_90_review_frequency']) : text($last_record['overall_obj2_90_review_frequency']); ?>
                                             <select name="overall_obj2_90_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj2_90_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj2_90_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -546,8 +603,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_90_review_duration = ($check_res['overall_obj2_90_review_duration']) ? text($check_res['overall_obj2_90_review_duration']) : text($last_record['overall_obj2_90_review_duration']); ?>
                                             <select name="overall_obj2_90_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj2_90_review_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj2_90_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -556,8 +614,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj2_90_review_place = ($check_res['overall_obj2_90_review_place']) ? text($check_res['overall_obj2_90_review_place']) : text($last_record['overall_obj2_90_review_place']); ?>
                                             <select name="overall_obj2_90_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj2_90_review_place']); ?>
+                                                <?php echo get_task_place($overall_obj2_90_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -570,7 +629,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('180 Day Review:'); ?></label>
-                                    <input type="text" name="overall_obj2_180_review" value="<?php echo text($check_res['overall_obj2_180_review']); ?>">
+                                    <?php $overall_obj2_180_review = ($check_res['overall_obj2_180_review']) ? text($check_res['overall_obj2_180_review']) : text($last_record['overall_obj2_180_review']); ?>
+                                    <input type="text" name="overall_obj2_180_review" value="<?php echo $overall_obj2_180_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -578,8 +638,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $overall_obj2_180_review_task_modality = ($check_res['overall_obj2_180_review_task_modality']) ? text($check_res['overall_obj2_180_review_task_modality']) : text($last_record['overall_obj2_180_review_task_modality']); ?>
                                             <select name="overall_obj2_180_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj2_180_review_task_modality']); ?>
+                                                <?php echo get_task_modality($overall_obj2_180_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -588,8 +649,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_180_review_frequency = ($check_res['overall_obj2_180_review_frequency']) ? text($check_res['overall_obj2_180_review_frequency']) : text($last_record['overall_obj2_180_review_frequency']); ?>
                                             <select name="overall_obj2_180_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj2_180_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj2_180_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -598,8 +660,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_180_review_duration = ($check_res['overall_obj2_180_review_duration']) ? text($check_res['overall_obj2_180_review_duration']) : text($last_record['overall_obj2_180_review_duration']); ?>
                                             <select name="overall_obj2_180_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj2_180_review_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj2_180_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -608,8 +671,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj2_180_review_place = ($check_res['overall_obj2_180_review_place']) ? text($check_res['overall_obj2_180_review_place']) : text($last_record['overall_obj2_180_review_place']); ?>
                                             <select name="overall_obj2_180_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj2_180_review_place']); ?>
+                                                <?php echo get_task_place($overall_obj2_180_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -621,7 +685,8 @@ if ($postCalendarCategoryACO) {
                                 <div>&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('270 Day Review:'); ?></label>
-                                    <input type="text" name="overall_obj2_270_review" value="<?php echo text($check_res['overall_obj2_270_review']); ?>">
+                                    <?php $overall_obj2_270_review = ($check_res['overall_obj2_270_review']) ? text($check_res['overall_obj2_270_review']) : text($last_record['overall_obj2_270_review']); ?>
+                                    <input type="text" name="overall_obj2_270_review" value="<?php echo $overall_obj2_270_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -629,8 +694,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $overall_obj2_270_review_task_modality = ($check_res['overall_obj2_270_review_task_modality']) ? text($check_res['overall_obj2_270_review_task_modality']) : text($last_record['overall_obj2_270_review_task_modality']); ?>
                                             <select name="overall_obj2_270_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['overall_obj2_270_review_task_modality']); ?>
+                                                <?php echo get_task_modality($overall_obj2_270_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -639,8 +705,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_270_review_frequency = ($check_res['overall_obj2_270_review_frequency']) ? text($check_res['overall_obj2_270_review_frequency']) : text($last_record['overall_obj2_270_review_frequency']); ?>
                                             <select name="overall_obj2_270_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['overall_obj2_270_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($overall_obj2_270_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -649,8 +716,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $overall_obj2_270_review_duration = ($check_res['overall_obj2_270_review_duration']) ? text($check_res['overall_obj2_270_review_duration']) : text($last_record['overall_obj2_270_review_duration']); ?>
                                             <select name="overall_obj2_270_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['overall_obj2_270_review_duration']); ?>
+                                                <?php echo get_treatment_duration($overall_obj2_270_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -659,8 +727,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $overall_obj2_270_review_place = ($check_res['overall_obj2_270_review_place']) ? text($check_res['overall_obj2_270_review_place']) : text($last_record['overall_obj2_270_review_place']); ?>
                                             <select name="overall_obj2_270_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['overall_obj2_270_review_place']); ?>
+                                                <?php echo get_task_place($overall_obj2_270_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -675,7 +744,8 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Short-term goal for Client:'); ?></label>
-                                    <textarea name="short_term_goal" rows="3" class="form-control"><?php echo text($check_res['short_term_goal']); ?></textarea>
+                                    <?php $short_term_goal = ($check_res['short_term_goal']) ? text($check_res['short_term_goal']) : text($last_record['short_term_goal']); ?>
+                                    <textarea name="short_term_goal" rows="3" class="form-control"><?php echo $short_term_goal; ?></textarea>
                                 </div>                                
                             </div>
 
@@ -684,7 +754,8 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 1:'); ?></label>
-                                    <input type="text" name="short_term_obj1" value="<?php echo text($check_res['short_term_obj1']); ?>">
+                                    <?php $short_term_obj1 = ($check_res['short_term_obj1']) ? text($check_res['short_term_obj1']) : text($last_record['short_term_obj1']); ?>
+                                    <input type="text" name="short_term_obj1" value="<?php echo $short_term_obj1; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -692,8 +763,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj1_task_modality = ($check_res['short_term_obj1_task_modality']) ? text($check_res['short_term_obj1_task_modality']) : text($last_record['short_term_obj1_task_modality']); ?>
                                             <select name="short_term_obj1_task_modality" id="" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj1_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj1_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -702,8 +774,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_frequency = ($check_res['short_term_obj1_frequency']) ? text($check_res['short_term_obj1_frequency']) : text($last_record['short_term_obj1_frequency']); ?>
                                             <select name="short_term_obj1_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj1_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj1_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -712,8 +785,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_duration = ($check_res['short_term_obj1_duration']) ? text($check_res['short_term_obj1_duration']) : text($last_record['short_term_obj1_duration']); ?>
                                             <select name="short_term_obj1_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj1_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj1_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -722,8 +796,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj1_place = ($check_res['short_term_obj1_place']) ? text($check_res['short_term_obj1_place']) : text($last_record['short_term_obj1_place']); ?>
                                             <select name="short_term_obj1_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj1_place']); ?>
+                                                <?php echo get_task_place($short_term_obj1_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -736,7 +811,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('90 Day Review:'); ?></label>
-                                    <input type="text" name="short_term_obj1_90_review" value="<?php echo text($check_res['short_term_obj1_90_review']); ?>">
+                                    <?php $short_term_obj1_90_review = ($check_res['short_term_obj1_90_review']) ? text($check_res['short_term_obj1_90_review']) : text($last_record['short_term_obj1_90_review']); ?>
+                                    <input type="text" name="short_term_obj1_90_review" value="<?php echo $short_term_obj1_90_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -744,8 +820,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj1_90_review_task_modality = ($check_res['short_term_obj1_90_review_task_modality']) ? text($check_res['short_term_obj1_90_review_task_modality']) : text($last_record['short_term_obj1_90_review_task_modality']); ?>
                                             <select name="short_term_obj1_90_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj1_90_review_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj1_90_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -754,8 +831,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_90_review_frequency = ($check_res['short_term_obj1_90_review_frequency']) ? text($check_res['short_term_obj1_90_review_frequency']) : text($last_record['short_term_obj1_90_review_frequency']); ?>
                                             <select name="short_term_obj1_90_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj1_90_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj1_90_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -764,8 +842,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_90_review_duration = ($check_res['short_term_obj1_90_review_duration']) ? text($check_res['short_term_obj1_90_review_duration']) : text($last_record['short_term_obj1_90_review_duration']); ?>
                                             <select name="short_term_obj1_90_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj1_90_review_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj1_90_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -774,8 +853,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj1_90_review_place = ($check_res['short_term_obj1_90_review_place']) ? text($check_res['short_term_obj1_90_review_place']) : text($last_record['short_term_obj1_90_review_place']); ?>
                                             <select name="short_term_obj1_90_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj1_90_review_place']); ?>
+                                                <?php echo get_task_place($short_term_obj1_90_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -788,7 +868,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('180 Day Review:'); ?></label>
-                                    <input type="text" name="short_term_obj1_180_review" value="<?php echo text($check_res['short_term_obj1_180_review']); ?>">
+                                    <?php $short_term_obj1_180_review = ($check_res['short_term_obj1_180_review']) ? text($check_res['short_term_obj1_180_review']) : text($last_record['short_term_obj1_180_review']); ?>
+                                    <input type="text" name="short_term_obj1_180_review" value="<?php echo $short_term_obj1_180_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -796,8 +877,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj1_180_review_task_modality = ($check_res['short_term_obj1_180_review_task_modality']) ? text($check_res['short_term_obj1_180_review_task_modality']) : text($last_record['short_term_obj1_180_review_task_modality']); ?>
                                             <select name="short_term_obj1_180_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj1_180_review_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj1_180_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -806,8 +888,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_180_review_frequency = ($check_res['short_term_obj1_180_review_frequency']) ? text($check_res['short_term_obj1_180_review_frequency']) : text($last_record['short_term_obj1_180_review_frequency']); ?>
                                             <select name="short_term_obj1_180_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj1_180_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj1_180_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -816,8 +899,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_180_review_duration = ($check_res['short_term_obj1_180_review_duration']) ? text($check_res['short_term_obj1_180_review_duration']) : text($last_record['short_term_obj1_180_review_duration']); ?>
                                             <select name="short_term_obj1_180_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj1_180_review_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj1_180_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -826,8 +910,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj1_180_review_place = ($check_res['short_term_obj1_180_review_place']) ? text($check_res['short_term_obj1_180_review_place']) : text($last_record['short_term_obj1_180_review_place']); ?>
                                             <select name="short_term_obj1_180_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj1_180_review_place']); ?>
+                                                <?php echo get_task_place($short_term_obj1_180_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -839,7 +924,8 @@ if ($postCalendarCategoryACO) {
                                 <div>&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('270 Day Review:'); ?></label>
-                                    <input type="text" name="short_term_obj1_270_review" value="<?php echo text($check_res['short_term_obj1_270_review']); ?>">
+                                    <?php $short_term_obj1_270_review = ($check_res['short_term_obj1_270_review']) ? text($check_res['short_term_obj1_270_review']) : text($last_record['short_term_obj1_270_review']); ?>
+                                    <input type="text" name="short_term_obj1_270_review" value="<?php echo $short_term_obj1_270_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -847,8 +933,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj1_270_review_task_modality = ($check_res['short_term_obj1_270_review_task_modality']) ? text($check_res['short_term_obj1_270_review_task_modality']) : text($last_record['short_term_obj1_270_review_task_modality']); ?>
                                             <select name="short_term_obj1_270_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj1_270_review_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj1_270_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -857,8 +944,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_270_review_frequency = ($check_res['short_term_obj1_270_review_frequency']) ? text($check_res['short_term_obj1_270_review_frequency']) : text($last_record['short_term_obj1_270_review_frequency']); ?>
                                             <select name="short_term_obj1_270_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj1_270_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj1_270_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -867,8 +955,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj1_270_review_duration = ($check_res['short_term_obj1_270_review_duration']) ? text($check_res['short_term_obj1_270_review_duration']) : text($last_record['short_term_obj1_270_review_duration']); ?>
                                             <select name="short_term_obj1_270_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj1_270_review_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj1_270_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -877,8 +966,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj1_270_review_place = ($check_res['short_term_obj1_270_review_place']) ? text($check_res['short_term_obj1_270_review_place']) : text($last_record['short_term_obj1_270_review_place']); ?>
                                             <select name="short_term_obj1_270_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj1_270_review_place']); ?>
+                                                <?php echo get_task_place($short_term_obj1_270_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -892,7 +982,8 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 2:'); ?></label>
-                                    <input type="text" name="short_term_obj2" value="<?php echo text($check_res['short_term_obj2']); ?>">
+                                    <?php $short_term_obj2 = ($check_res['short_term_obj2']) ? text($check_res['short_term_obj2']) : text($last_record['short_term_obj2']); ?>
+                                    <input type="text" name="short_term_obj2" value="<?php echo $short_term_obj2; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -900,8 +991,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj2_task_modality = ($check_res['short_term_obj2_task_modality']) ? text($check_res['short_term_obj2_task_modality']) : text($last_record['short_term_obj2_task_modality']); ?>
                                             <select name="short_term_obj2_task_modality" id="" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj2_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj2_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -910,8 +1002,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_frequency = ($check_res['short_term_obj2_frequency']) ? text($check_res['short_term_obj2_frequency']) : text($last_record['short_term_obj2_frequency']); ?>
                                             <select name="short_term_obj2_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj2_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj2_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -920,8 +1013,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_duration = ($check_res['short_term_obj2_duration']) ? text($check_res['short_term_obj2_duration']) : text($last_record['short_term_obj2_duration']); ?>
                                             <select name="short_term_obj2_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj2_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj2_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -930,8 +1024,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj2_place = ($check_res['short_term_obj2_place']) ? text($check_res['short_term_obj2_place']) : text($last_record['short_term_obj2_place']); ?>
                                             <select name="short_term_obj2_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj2_place']); ?>
+                                                <?php echo get_task_place($short_term_obj2_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -944,7 +1039,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('90 Day Review:'); ?></label>
-                                    <input type="text" name="short_term_obj2_90_review" value="<?php echo text($check_res['short_term_obj2_90_review']); ?>">
+                                    <?php $short_term_obj2_90_review = ($check_res['short_term_obj2_90_review']) ? text($check_res['short_term_obj2_90_review']) : text($last_record['short_term_obj2_90_review']); ?>
+                                    <input type="text" name="short_term_obj2_90_review" value="<?php echo $short_term_obj2_90_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -952,8 +1048,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj2_90_review_task_modality = ($check_res['short_term_obj2_90_review_task_modality']) ? text($check_res['short_term_obj2_90_review_task_modality']) : text($last_record['short_term_obj2_90_review_task_modality']); ?>
                                             <select name="short_term_obj2_90_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj2_90_review_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj2_90_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -962,8 +1059,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_90_review_frequency = ($check_res['short_term_obj2_90_review_frequency']) ? text($check_res['short_term_obj2_90_review_frequency']) : text($last_record['short_term_obj2_90_review_frequency']); ?>
                                             <select name="short_term_obj2_90_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj2_90_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj2_90_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -972,8 +1070,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_90_review_duration = ($check_res['short_term_obj2_90_review_duration']) ? text($check_res['short_term_obj2_90_review_duration']) : text($last_record['short_term_obj2_90_review_duration']); ?>
                                             <select name="short_term_obj2_90_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj2_90_review_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj2_90_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -982,8 +1081,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj2_90_review_place = ($check_res['short_term_obj2_90_review_place']) ? text($check_res['short_term_obj2_90_review_place']) : text($last_record['short_term_obj2_90_review_place']); ?>
                                             <select name="short_term_obj2_90_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj2_90_review_place']); ?>
+                                                <?php echo get_task_place($short_term_obj2_90_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -996,7 +1096,8 @@ if ($postCalendarCategoryACO) {
                                 <div >&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('180 Day Review:'); ?></label>
-                                    <input type="text" name="short_term_obj2_180_review" value="<?php echo text($check_res['short_term_obj2_180_review']); ?>">
+                                    <?php $short_term_obj2_180_review = ($check_res['short_term_obj2_180_review']) ? text($check_res['short_term_obj2_180_review']) : text($last_record['short_term_obj2_180_review']); ?>
+                                    <input type="text" name="short_term_obj2_180_review" value="<?php echo $short_term_obj2_180_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -1004,8 +1105,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj2_180_review_task_modality = ($check_res['short_term_obj2_180_review_task_modality']) ? text($check_res['short_term_obj2_180_review_task_modality']) : text($last_record['short_term_obj2_180_review_task_modality']); ?>
                                             <select name="short_term_obj2_180_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj2_180_review_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj2_180_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1014,8 +1116,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_180_review_frequency = ($check_res['short_term_obj2_180_review_frequency']) ? text($check_res['short_term_obj2_180_review_frequency']) : text($last_record['short_term_obj2_180_review_frequency']); ?>
                                             <select name="short_term_obj2_180_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj2_180_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj2_180_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1024,8 +1127,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_180_review_duration = ($check_res['short_term_obj2_180_review_duration']) ? text($check_res['short_term_obj2_180_review_duration']) : text($last_record['short_term_obj2_180_review_duration']); ?>
                                             <select name="short_term_obj2_180_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj2_180_review_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj2_180_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1034,8 +1138,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj2_180_review_place = ($check_res['short_term_obj2_180_review_place']) ? text($check_res['short_term_obj2_180_review_place']) : text($last_record['short_term_obj2_180_review_place']); ?>
                                             <select name="short_term_obj2_180_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj2_180_review_place']); ?>
+                                                <?php echo get_task_place($short_term_obj2_180_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1047,7 +1152,8 @@ if ($postCalendarCategoryACO) {
                                 <div>&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('270 Day Review:'); ?></label>
-                                    <input type="text" name="short_term_obj2_270_review" value="<?php echo text($check_res['short_term_obj2_270_review']); ?>">
+                                    <?php $short_term_obj2_270_review = ($check_res['short_term_obj2_270_review']) ? text($check_res['short_term_obj2_270_review']) : text($last_record['short_term_obj2_270_review']); ?>
+                                    <input type="text" name="short_term_obj2_270_review" value="<?php echo $short_term_obj2_270_review; ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -1055,8 +1161,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
                                         <div class="col-sm-7">
+                                            <?php $short_term_obj2_270_review_task_modality = ($check_res['short_term_obj2_270_review_task_modality']) ? text($check_res['short_term_obj2_270_review_task_modality']) : text($last_record['short_term_obj2_270_review_task_modality']); ?>
                                             <select name="short_term_obj2_270_review_task_modality" class="form-control">
-                                                <?php echo get_task_modality($check_res['short_term_obj2_270_review_task_modality']); ?>
+                                                <?php echo get_task_modality($short_term_obj2_270_review_task_modality); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1065,8 +1172,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_270_review_frequency = ($check_res['short_term_obj2_270_review_frequency']) ? text($check_res['short_term_obj2_270_review_frequency']) : text($last_record['short_term_obj2_270_review_frequency']); ?>
                                             <select name="short_term_obj2_270_review_frequency" class="form-control">
-                                                <?php echo get_weekly_frequency($check_res['short_term_obj2_270_review_frequency']); ?>
+                                                <?php echo get_weekly_frequency($short_term_obj2_270_review_frequency); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1075,8 +1183,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
                                         <div class="col-sm-8">
+                                            <?php $short_term_obj2_270_review_duration = ($check_res['short_term_obj2_270_review_duration']) ? text($check_res['short_term_obj2_270_review_duration']) : text($last_record['short_term_obj2_270_review_duration']); ?>
                                             <select name="short_term_obj2_270_review_duration" id="" class="form-control">
-                                                <?php echo get_treatment_duration($check_res['short_term_obj2_270_review_duration']); ?>
+                                                <?php echo get_treatment_duration($short_term_obj2_270_review_duration); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1085,8 +1194,9 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
                                         <div class="col-sm-9">
+                                            <?php $short_term_obj2_270_review_place = ($check_res['short_term_obj2_270_review_place']) ? text($check_res['short_term_obj2_270_review_place']) : text($last_record['short_term_obj2_270_review_place']); ?>
                                             <select name="short_term_obj2_270_review_place" id="" class="form-control">
-                                                <?php echo get_task_place($check_res['short_term_obj2_270_review_place']); ?>
+                                                <?php echo get_task_place($short_term_obj2_270_review_place); ?>
                                             </select>
                                         </div>                                        
                                     </div>
@@ -1099,7 +1209,8 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-6"><?php echo xlt('Target Date for Attainment of Goals:'); ?></label>
                                         <div class="col-sm-6">
-                                            <input type="text" name="target_date_goal" value="<?php echo text($check_res['target_date_goal']); ?>" class="form-control datepicker" autocomplete="off">
+                                            <?php $target_date_goal = ($check_res['target_date_goal']) ? text($check_res['target_date_goal']) : text($last_record['target_date_goal']); ?>
+                                            <input type="text" name="target_date_goal" value="<?php echo $target_date_goal; ?>" class="form-control datepicker" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
@@ -1108,17 +1219,19 @@ if ($postCalendarCategoryACO) {
                                         <label class="radio-inline">
                                           <strong><?php echo xlt('Who is responsible: '); ?></strong>
                                         </label>
+                                        <?php $who_responsible = ($check_res['who_responsible']) ? text($check_res['who_responsible']) : text($last_record['who_responsible']); ?>
                                         <label class="radio-inline">
-                                          <input type="radio" name="who_responsible"  value="Client" <?php echo ($check_res['who_responsible'] == 'Client') ? 'checked':''; ?> > <?php echo xlt('Client'); ?>
+                                          <input type="radio" name="who_responsible"  value="Client" <?php echo ($who_responsible == 'Client') ? 'checked':''; ?> > <?php echo xlt('Client'); ?>
                                         </label>
                                         <label class="radio-inline">
-                                          <input type="radio" name="who_responsible"  value="Therapist" <?php echo ($check_res['who_responsible'] == 'Therapist') ? 'checked':''; ?> > <?php echo xlt('Therapist'); ?>
+                                          <input type="radio" name="who_responsible"  value="Therapist" <?php echo ($who_responsible == 'Therapist') ? 'checked':''; ?> > <?php echo xlt('Therapist'); ?>
                                         </label>
                                         <label class="radio-inline">
                                           <strong><?php echo xlt('Other:'); ?></strong>
                                         </label>
                                         <label class="radio-inline">
-                                          <input type="text" name="who_responsible_other"  value="<?php echo text($check_res['who_responsible_other']); ?>">
+                                            <?php $who_responsible_other = ($check_res['who_responsible_other']) ? text($check_res['who_responsible_other']) : text($last_record['who_responsible_other']); ?>
+                                          <input type="text" name="who_responsible_other"  value="<?php echo $who_responsible_other; ?>">
                                         </label>
                                     </div>
                                 </div>
@@ -1131,21 +1244,24 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="" class="col-sm-7"><?php echo xlt('Individual present at treatment planning meeting:'); ?></label>
                                     <div class="col-sm-5">
-                                        <input type="text" name="individual_present" class="form-control" value="<?php echo text($check_res['individual_present']); ?>">
+                                        <?php $individual_present = ($check_res['individual_present']) ? text($check_res['individual_present']) : text($last_record['individual_present']); ?>
+                                        <input type="text" name="individual_present" class="form-control" value="<?php echo $individual_present; ?>">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="" class="col-sm-7"><?php echo xlt('How will services be coordinated with those delivered by other providers and agencies?'); ?></label>
                                     <div class="col-sm-5">
-                                        <input type="text" name="services_coordinated" class="form-control" value="<?php echo text($check_res['services_coordinated']); ?>">
+                                        <?php $services_coordinated = ($check_res['services_coordinated']) ? text($check_res['services_coordinated']) : text($last_record['services_coordinated']); ?>
+                                        <input type="text" name="services_coordinated" class="form-control" value="<?php echo $services_coordinated; ?>">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="" class="col-sm-7"><?php echo xlt('Linkages with peer support services and other community resources: '); ?></label>
                                     <div class="col-sm-5">
-                                        <input type="text" name="linkage_service" class="form-control" value="<?php echo text($check_res['linkage_service']); ?>">
+                                        <?php $linkage_service = ($check_res['linkage_service']) ? text($check_res['linkage_service']) : text($last_record['linkage_service']); ?>
+                                        <input type="text" name="linkage_service" class="form-control" value="<?php echo $linkage_service; ?>">
                                     </div>
                                 </div>
 
@@ -1160,30 +1276,36 @@ if ($postCalendarCategoryACO) {
 
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('90 Day Review:'); ?></label>
-                                    <textarea name="progress_90_review"  rows="3" class="form-control"><?php echo text($check_res['progress_90_review']); ?></textarea>
+                                    <?php $progress_90_review = ($check_res['progress_90_review']) ? text($check_res['progress_90_review']) : text($last_record['progress_90_review']); ?>
+                                    <textarea name="progress_90_review"  rows="3" class="form-control"><?php echo $progress_90_review; ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('180 Day Review:'); ?></label>
-                                    <textarea name="progress_180_review"  rows="3" class="form-control"><?php echo text($check_res['progress_180_review']); ?></textarea>
+                                    <?php $progress_180_review = ($check_res['progress_180_review']) ? text($check_res['progress_180_review']) : text($last_record['progress_180_review']); ?>
+                                    <textarea name="progress_180_review"  rows="3" class="form-control"><?php echo $progress_180_review; ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('270 Day Review:'); ?></label>
-                                    <textarea name="progress_270_review"  rows="3" class="form-control"><?php echo text($check_res['progress_270_review']); ?></textarea>
+                                    <?php $progress_270_review = ($check_res['progress_270_review']) ? text($check_res['progress_270_review']) : text($last_record['progress_270_review']); ?>
+                                    <textarea name="progress_270_review"  rows="3" class="form-control"><?php echo $progress_270_review; ?></textarea>
                                 </div>
 
                                 <h4 style="margin-top: 20px"><?php echo xlt('Explain Changes, amendments or deletion to Objectives:'); ?></h4>
 
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('90 Day Review:'); ?></label>
-                                    <textarea name="changes_90_review"  rows="3" class="form-control"><?php echo text($check_res['changes_90_review']); ?></textarea>
+                                    <?php $changes_90_review = ($check_res['changes_90_review']) ? text($check_res['changes_90_review']) : text($last_record['changes_90_review']); ?>
+                                    <textarea name="changes_90_review"  rows="3" class="form-control"><?php echo $changes_90_review; ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('180 Day Review:'); ?></label>
-                                    <textarea name="changes_180_review"  rows="3" class="form-control"><?php echo text($check_res['changes_180_review']); ?></textarea>
+                                    <?php $changes_180_review = ($check_res['changes_180_review']) ? text($check_res['changes_180_review']) : text($last_record['changes_180_review']); ?>
+                                    <textarea name="changes_180_review"  rows="3" class="form-control"><?php echo $changes_180_review; ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('270 Day Review:'); ?></label>
-                                    <textarea name="changes_270_review"  rows="3" class="form-control"><?php echo text($check_res['changes_270_review']); ?></textarea>
+                                    <?php $changes_270_review = ($check_res['changes_270_review']) ? text($check_res['changes_270_review']) : text($last_record['changes_270_review']); ?>
+                                    <textarea name="changes_270_review"  rows="3" class="form-control"><?php echo $changes_270_review; ?></textarea>
                                 </div>
 
                             </div>
@@ -1192,7 +1314,8 @@ if ($postCalendarCategoryACO) {
                             <div class="col-md-12" style="margin-top: 30px">
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('AFTERCARE PLAN FOR CLIENT: (What services or resources you anticipate being able to refer the participant to after the provision of Medicaid services is over; how will the participant maintain without Medicaid services or very minimal services.)'); ?></label>
-                                    <textarea name="aftercare_plan"  rows="3" class="form-control"><?php echo text($check_res['aftercare_plan']); ?></textarea>
+                                    <?php $aftercare_plan = ($check_res['aftercare_plan']) ? text($check_res['aftercare_plan']) : text($last_record['aftercare_plan']); ?>
+                                    <textarea name="aftercare_plan"  rows="3" class="form-control"><?php echo $aftercare_plan; ?></textarea>
                                 </div>
                             </div>
 
