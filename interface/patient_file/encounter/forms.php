@@ -26,6 +26,7 @@ use OpenEMR\Core\Header;
 
 $reviewMode = false;
 $_SESSION['locked_formID'] = false;
+$_SESSION['form_id'] = '';  
 
 if (!empty($_REQUEST['review_id'])) {
     $reviewMode = true;
@@ -1027,6 +1028,11 @@ if ($pass_sens_squad &&
     $divnos = 1;
     foreach ($result as $iter) {
         $formdir = $iter['formdir'];
+        $formID_Session = 'form-edit-button-' . attr($formdir) . "-" . attr($iter['id']);
+        $_SESSION[$formID_Session] = null;
+        $_SESSION['form_id_' . attr($iter['id'])] = null;
+        $_SESSION['formID_' . $formdir.'_' . $iter['form_id']]  = false;
+        
 
         // skip forms whose 'deleted' flag is set to 1
         if ($iter['deleted'] == 1) {
@@ -1106,12 +1112,15 @@ if ($pass_sens_squad &&
 
         // a link to edit the form
         echo "<div class='form_header_controls'>";
-
+        
         // If the form is locked, it is no longer editable
         if ($esign->isLocked()) {
-                  $formID_Session = 'formID_' . attr($iter['form_id']);
+                  //$formID_Session = 'formID_' . attr($iter['form_id']);
+                  
                   $_SESSION[$formID_Session] = true;
-                  $_SESSION['formID'] = true;                 
+                  $_SESSION['formID'] = true;
+                  $_SESSION['formID_' . $formdir.'_' . $iter['form_id']]  = true;    
+                           
                  echo "<a class='css_button_small form-edit-button' " .
                     "id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "' " .
                     "href='#' " .
@@ -1122,6 +1131,9 @@ if ($pass_sens_squad &&
         } else {
             if ((!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write') and $is_group == 0 and $authPostCalendarCategoryWrite)
             or (((!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write')) and $is_group and acl_check("groups", "glog", false, 'write')) and $authPostCalendarCategoryWrite)) {
+                $_SESSION[$formID_Session] = null;
+                $_SESSION['form_id'] = '';   
+                $_SESSION['formID_' . $formdir.'_' . $iter['form_id']]  = false;
                 echo "<a class='css_button_small form-edit-button' " .
                     "id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "' " .
                     "href='#' " .

@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 /**
  * Progress Note form view.php
  *
@@ -10,10 +10,15 @@ session_start();
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
 
+
+$folderName = 'counselor_treatment_plan_review';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
-if(isset($_SESSION['formID_' . $formid ])){
+$form_id = $_SESSION['form_id'];
+$table_id = $_SESSION['formID_' . $formid];
+
+if(!empty($table_id)){
     require("readonly.php");
-} else {
+} else {    
     require("new.php");
 }
 

@@ -40,11 +40,13 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
 
+
 /* checking the last record */
 $last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
 $last_record = sqlQuery($last_record_query, array($pid));
 
 $days_review_arr = array('90 Day Review', '180 Day Review', '270 Day Review', 'Other Review');
+$counter = 0;
 
 if( empty($last_record) ){
     $review_days = $days_review_arr[0];
@@ -55,8 +57,18 @@ if( empty($last_record) ){
         die(xlt('Please create a new Counselor Treatment Plan for this Client.'));
     }
 } else {
-    $key = array_search($last_record['day_review'], $days_review_arr);
-    $review_days = $days_review_arr[ $key ];
+
+    if($check_res){
+        $review_days = $check_res['day_review'];
+    } else {
+        $query = "SELECT COUNT(id) as id FROM {$tableName} WHERE pid=?";
+        $result = sqlQuery($query, array($pid));
+
+        $counter = $result['id'];
+
+        $key = array_search($last_record['day_review'], $days_review_arr);
+        $review_days = $days_review_arr[ $counter ];
+    }    
 }
 
 
@@ -93,6 +105,11 @@ if ($postCalendarCategoryACO) {
                     <h2><?php echo xlt('Counselor Treatment Plan Review'); ?></h2>
                 </div>
             </div>
+            
+            <pre>
+                <?php //echo "Review Days: " . print_r($check_res); ?>
+            </pre>
+            
             <?php
             $current_date = date('Y-m-d');
 
@@ -153,7 +170,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-2">
                                     <div class="radio">
                                         <label>
-                                          <input type="radio" name="day_review" value="Other Review" <?php echo ( ($check_res['day_review'] == 'Other Review') || ($review_days == 'Other Review') ) ? 'checked': ''; ?> <?php echo ($review_days == 'Other Review') ? '':'disabled'; ?> > <?php echo xlt('Other Review'); ?>
+                                          <input type="radio" name="day_review" value="Other Review" <?php echo ( ($check_res['day_review'] == 'Other Review') || ($counter > 3) ) ? 'checked': ''; ?> <?php echo ($review_days == 'Other Review') ? '':'disabled'; ?> > <?php echo xlt('Other Review'); ?>
                                         </label>
                                     </div>
                                 </div>
