@@ -106,10 +106,7 @@ if ($postCalendarCategoryACO) {
                 </div>
             </div>
             
-            <pre>
-                <?php //echo "Review Days: " . print_r($check_res); ?>
-            </pre>
-            
+                      
             <?php
             $current_date = date('Y-m-d');
 

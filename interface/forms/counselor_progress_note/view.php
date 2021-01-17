@@ -10,10 +10,12 @@ session_start();
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
 
+$folderName = 'counselor_progress_note';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
-if(isset($_SESSION['formID_' . $formid ])){
+$table_id = $_SESSION['formID_' . $folderName .'_'. $formid];
+if(!empty($table_id)){
     require("readonly.php");
-} else {
+} else {    
     require("new.php");
 }
 

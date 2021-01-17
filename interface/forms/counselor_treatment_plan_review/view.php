@@ -13,9 +13,7 @@
 
 $folderName = 'counselor_treatment_plan_review';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
-$form_id = $_SESSION['form_id'];
-$table_id = $_SESSION['formID_' . $formid];
-
+$table_id = $_SESSION['formID_' . $folderName .'_'. $formid];
 if(!empty($table_id)){
     require("readonly.php");
 } else {    
