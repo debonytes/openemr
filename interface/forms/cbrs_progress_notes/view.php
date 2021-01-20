@@ -9,10 +9,12 @@ session_start();
  * @copyright Copyright (c) 2015 Z&H Consultancy Services Private Limited <sam@zhservices.com>
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
+$folderName = 'cbrs_progress_notes';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
-if(isset($_SESSION['formID_' . $formid ])){
+$table_id = $_SESSION['formID_' . $folderName .'_'. $formid];
+if(!empty($table_id)){
     require("readonly.php");
-} else {
+} else {    
     require("new.php");
 }
 

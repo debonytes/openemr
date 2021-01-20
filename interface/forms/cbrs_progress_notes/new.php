@@ -45,9 +45,6 @@ $is_group = ($attendant_type == 'gid') ? true : false;
 
 
 $esignApi = new Api();
-// Create the ESign instance for this form
-//$esign = $esignApi->createFormESign($iter['id'], $formdir, $encounter);
-
 $esign = $esignApi->createFormESign($form['id'], $folderName, $encounter);
 
 //fetch acl for category of given encounter
