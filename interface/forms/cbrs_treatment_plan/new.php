@@ -41,7 +41,7 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
 /* checking the last record */
-$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
 $last_record = sqlQuery($last_record_query, array($pid));
 
 
