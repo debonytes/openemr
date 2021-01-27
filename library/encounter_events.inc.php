@@ -371,6 +371,18 @@ function tablePlanOngoing($table, $form_pid)
     return false;
 }
 
+function get_provider_name($userid)
+{
+    $ures = sqlQuery("SELECT fname, lname FROM users WHERE " .
+    "authorized != 0 AND active = 1 AND id = ?", array($userid));
+
+    if(!empty($ures)){
+        return $ures['fname'] . ' ' . $ures['lname'];
+    }
+
+    return null;
+}
+
 //==============================================================================
 // insert form after the InsertEvent
 // $args is mainly filled with content from the POST http var
@@ -499,7 +511,7 @@ function InsertFormCategory($args, $pc_eid)
             } else { // else PID is existing in plan table and status is not completed 
 
                 // pid, name, dateofservice, billing_code
-                $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code', 'user');
+                $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code', 'user', 'counselor');
 
                 $date = date('Y-m-d H:i:s', strtotime($args['event_date']));
 
@@ -535,6 +547,20 @@ function InsertFormCategory($args, $pc_eid)
                 if(in_array('billing_code', $table_fields)){
                     $column_arr .= ', billing_code';
                     array_push($data, $args['form_title']);
+                    $set .= ',?';
+                }
+
+                if(in_array('counselor', $table_fields)){
+                    $counselor = get_provider_name($args['form_provider']);
+                    $column_arr .= ', counselor';
+                    array_push($data, $counselor);
+                    $set .= ',?';
+                }
+
+                if(in_array('examiner', $table_fields)){
+                    $examiner = get_provider_name($args['form_provider']);
+                    $column_arr .= ', examiner';
+                    array_push($data, $examiner);
                     $set .= ',?';
                 }
 

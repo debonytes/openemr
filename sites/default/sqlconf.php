@@ -6,7 +6,7 @@ $host	= 'localhost';
 $port	= '3306';
 $login	= 'root';
 $pass	= '';
-$dbase	= 'openemr4';
+$dbase	= 'openemr5';
 
 
 //$port	= '8080';
