@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 /**
  * CBRS Progress Notes form view.php
  *

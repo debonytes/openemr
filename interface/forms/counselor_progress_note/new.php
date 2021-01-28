@@ -30,14 +30,16 @@ $tableName = 'form_' . $folderName;
 
 
 $returnurl = 'encounter_top.php';
-$formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
+$formid = (isset($_GET['id']) ? $_GET['id'] : 0);
 
 $formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
 $form = sqlQuery($formStmt, array($formid, $folderName));
 
-$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
+//$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
+
+//dd(print_r($check_res));
 
 /* checking the last record */
 $last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
@@ -64,7 +66,10 @@ if ($postCalendarCategoryACO) {
     $authPostCalendarCategory = true;
     $authPostCalendarCategoryWrite = true;
 }
+
+$path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
 ?>
+<!DOCTYPE html>
 <html>
     <head>
         <title><?php echo xlt("Counselor Progress Note"); ?></title>
@@ -72,6 +77,49 @@ if ($postCalendarCategoryACO) {
         <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
+        <style>
+            @media print{
+                .col-sm-2 {
+                    width: 16.66666667%;
+                }
+                .col-sm-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-sm-4 {
+                    width: 33.3333%;
+                }
+                .col-sm-3 {
+                    width: 25%;
+                }
+                .col-sm-8 {
+                    width: 66.66666667%;
+                }
+                .col-sm-9 {
+                    width: 75%;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+            }
+        </style>
     </head>
     <body class="body_top">
         <div class="container">
@@ -80,24 +128,31 @@ if ($postCalendarCategoryACO) {
                     <h2><?php echo xlt('Counselor Progress Note'); ?></h2>
                 </div>
             </div>
-            
+
             <?php
             $current_date = date('Y-m-d');
 
-            $patient_id = ( isset($_SESSION['alert_notify_pid']) && $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
-            $pid = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
-            if($patient_id) {
-              $patient = getPatientData($patient_id);
-              $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-              $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-              $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
-              $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
-              if($patientInfo && array_filter($patientInfo)) {
-                $patient_full_name = implode( ' ', array_filter($patientInfo) );
-              } else {
+            if( $_SESSION['from_dashboard'] ){
                 $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
-              }
-            }
+            } else {
+
+                $patient_id = ( $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
+                $pid = ( $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
+                if($pid) {
+                  $patient = getPatientData($patient_id);
+                  $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
+                  $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
+                  $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+                  $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
+                  if($patientInfo && array_filter($patientInfo)) {
+                    $patient_full_name = implode( ' ', array_filter($patientInfo) );
+                  } else {
+                    $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+                  }
+                }
+
+            }         
+
 
             
 
@@ -114,7 +169,7 @@ if ($postCalendarCategoryACO) {
                     <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
                     <input type="hidden" name="activity" value="1">
 
-                    <fieldset style="padding-top:20px!important">
+                    <fieldset style="padding-top:20px!important" class="form_content">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-3 "><?php echo xlt('Client Name'); ?></label>
@@ -678,6 +733,9 @@ if ($postCalendarCategoryACO) {
                                 ?>
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
+                                <!--
+                                <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
+                            -->
                             </div>
                         </div>
                     </div>
@@ -685,8 +743,11 @@ if ($postCalendarCategoryACO) {
                 </form>
             </div>
         </div>
+
+       
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+        <script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
         <script language="javascript">
             $(document).ready(function(){
 
@@ -757,22 +818,48 @@ if ($postCalendarCategoryACO) {
 
                 $('.esign-button-form span').html('Digitally Sign');
 
-                
+                $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "http://openemr.test/public/assets/bootstrap/dist/css/bootstrap.min.css",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "Counselor Progress Note",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>Counselor Progress Note</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
             });
 
             function form_close_tab()
             {
                 var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
-                console.log('Session Dashboard: ' + session_dashboard);
+                //console.log('Session Dashboard: ' + session_dashboard);
                 if(session_dashboard) {
                     //window.top.location.reload();
+                    <?php //$_SESSION['from_dashboard'] = false; ?>
                     window.top.location.href = window.top.location;
                 } else {
                    top.restoreSession(); 
                     parent.closeTab(window.name, false);
                 }                
             }
+
+            
         </script>
     </body>
 </html>

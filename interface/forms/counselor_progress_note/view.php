@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 /**
  * Progress Note form view.php
  *
@@ -10,6 +10,7 @@ session_start();
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
 
+//dd(print_r($_REQUEST));
 $folderName = 'counselor_progress_note';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
 $table_id = $_SESSION['formID_' . $folderName .'_'. $formid];

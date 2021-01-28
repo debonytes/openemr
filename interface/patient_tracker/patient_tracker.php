@@ -1281,7 +1281,7 @@ function myLocalJS()
                 var encounter   = $(this).find('td.encounter').html();
 
                 <?php $referrer = ($_SESSION['from_dashboard_referer']) ? text($_SESSION['from_dashboard_referer']) : 'none';  ?>
-                console.log( 'Formname: ' + formname + '| formid: ' + formid + '| formdir: ' +  formdir + '| pid: ' + pid );
+                //console.log( 'Formname: ' + formname + '| formid: ' + formid + '| formdir: ' +  formdir + '| pid: ' + pid );
                 //$.get("patient_info.php", { set_encounter: encounter, pid: pid });
                 $.ajax({
                     method: 'GET',
@@ -1293,11 +1293,11 @@ function myLocalJS()
                     },
                     success: function(response){
                         console.log('Success:');
-                        console.log(response);
+                        //console.log(response);
                     }, 
                     error: function(response){
-                        console.log('Error:');
-                        console.log(response);
+                       // console.log('Error:');
+                        //console.log(response);
                     }
                   });
                 openEncounterForm(formdir, formname, formid);
@@ -1444,7 +1444,7 @@ function myLocalJS()
           top.restoreSession();
 
           var session_dashboard = "<?php echo $_SESSION['dashboard_datatables']; ?>";
-            console.log('Session Dashboard: ' + session_dashboard);
+            //console.log('Session Dashboard: ' + session_dashboard);
 
           location.href = url;
           //}
