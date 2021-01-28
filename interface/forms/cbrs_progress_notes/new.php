@@ -84,20 +84,28 @@ if ($postCalendarCategoryACO) {
             <?php
             $current_date = date('Y-m-d');
 
-            $patient_id = ( isset($_SESSION['alert_notify_pid']) && $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
-            $pid = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
-            if($patient_id) {
-              $patient = getPatientData($patient_id);
-              $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-              $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-              $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
-              $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
-              if($patientInfo && array_filter($patientInfo)) {
-                $patient_full_name = implode( ' ', array_filter($patientInfo) );
-              } else {
+            if( $_SESSION['from_dashboard'] ){
                 $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
-              }
+            } else {
+
+                $patient_id = ( $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
+                $pid = ( $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
+                if($patient_id) {
+                  $patient = getPatientData($patient_id);
+                  $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
+                  $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
+                  $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+                  $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
+                  if($patientInfo && array_filter($patientInfo)) {
+                    $patient_full_name = implode( ' ', array_filter($patientInfo) );
+                  } else {
+                    $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+                  }
+                }
+
             }
+
+            
 
             $duration = [
                 0 => 'Select',

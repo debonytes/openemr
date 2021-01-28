@@ -134,35 +134,7 @@ if ($postCalendarCategoryACO) {
     <div class="row">
         <div class="col-sm-12">
 
-            <?php  
-            /* FROM $_SESSION
-              Array
-              (
-                  [site_id] => default
-                  [language_choice] => 1
-                  [language_direction] => ltr
-                  [authUser] => chris
-                  [authPass] => $2a$05$QO2MWl/5j2PcGI16rroNJOTJODnhiDnXVK/wXLGW/K/xweNCqS9m2
-                  [authGroup] => Default
-                  [authUserID] => 15
-                  [authProvider] => Default
-                  [authId] => 15
-                  [userauthorized] => 1
-                  [last_update] => 1600928448
-                  [csrf_private_key] => rC�m����4*iZGSHi�C�wT�`(��
-                  [encounter] => 21
-                  [frame1url] => ../../interface/patient_tracker/patient_tracker.php?skip_timeout_reset=1
-                  [frame1target] => flb
-                  [frame2url] => ../../interface/main/messages/messages.php?form_active=1
-                  [frame2target] => msg
-                  [pid] => 2
-                  [alert_notify_pid] => 2
-              )
-
-              // echo "<pre>";
-              // print_r( $_SESSION );
-              // echo "</pre>";
-            */
+            <?php             
 
             $patient_id = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : '';
             $user_id = ( isset($_SESSION['authUserID']) && $_SESSION['authUserID'] ) ? $_SESSION['authUserID'] : '';
@@ -172,16 +144,26 @@ if ($postCalendarCategoryACO) {
             $datetime = ( isset($obj['date']) && $obj['date'] ) ? $obj['date'] : $current_datetime;
             $patient_full_name = '';
 
-            if($patient_id) {
-              $patient = getPatientData($patient_id);
-              $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-              $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-              $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
-              $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
-              if($patientInfo && array_filter($patientInfo)) {
-                $patient_full_name = implode( ' ', array_filter($patientInfo) );
+            if( $_SESSION['from_dashboard'] ){
+                $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+            } else {
+
+              if($patient_id) {
+                $patient = getPatientData($patient_id);
+                $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
+                $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
+                $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+                $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
+                if($patientInfo && array_filter($patientInfo)) {
+                  $patient_full_name = implode( ' ', array_filter($patientInfo) );
+                } else {
+                  $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+                }
               }
+
             }
+
+
             
             ?>
             <form method=post <?php echo "name='my_form' " . "action='$rootdir/forms/$folderName/save.php?id=" . attr_url($formid) . "'\n"; ?>>
