@@ -55,6 +55,9 @@ if($userArrs && array_filter($userArrs)) {
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
+$last_record = sqlQuery($last_record_query, array($pid));
+
 $data = '';
 $obj = $data;
 if( isset($obj['user']) && $obj['user'] ) {
@@ -131,6 +134,7 @@ if ($postCalendarCategoryACO) {
             </div>
         </div>
     </div>
+   
     <div class="row">
         <div class="col-sm-12">
 
@@ -205,7 +209,7 @@ if ($postCalendarCategoryACO) {
                     <div class="col-md-6">
                       <div class="form-group">
                         <?php 
-                        $dateofservice =  ( $check_res['dateofservice'] ) ? $check_res['dateofservice'] : '' ; 
+                        $dateofservice =  ( $check_res['dateofservice'] ) ? $check_res['dateofservice'] : date('Y-m-d') ; 
                         //$date_service_format = ($dateofservice) ? date('d/m/Y',strtotime($dateofservice)) : '';
                         ?>
                         <label>Date of Service:</label>
@@ -264,7 +268,7 @@ if ($postCalendarCategoryACO) {
                           
                           <div class="col-sm-8" style="display: block;">
                             <?php foreach ($service_locations as $loc) { 
-                              $is_selected_service_loc = ($loc == $selected_service_loc) ? ' checked':'';
+                              $is_selected_service_loc = ($loc == $selected_service_loc) ? ' checked': ($last_record['service_local'] == $loc) ? ' checked ' : '';
                               ?>
                               <label class="radio-inline" style="width: 20%; display: inline-block;" >
                                 <input type="radio" name="service_local" value="<?php echo $loc; ?>"<?php echo $is_selected_service_loc; ?>> <?php echo $loc; ?>
@@ -284,7 +288,7 @@ if ($postCalendarCategoryACO) {
 
                       <div class="form-group">
                         <?php 
-                          $intervention_type =  ( $check_res['intervention_type'] ) ? text($check_res['intervention_type']) : '' ; 
+                          $intervention_type =  ( $check_res['intervention_type'] ) ? text($check_res['intervention_type']) : $last_record['intervention_type'] ; 
                         ?>
                         <label>Type of Intervention:</label>
                         <textarea name="intervention_type" class="form-control" rows="4"><?php echo $intervention_type ?></textarea>
@@ -299,7 +303,7 @@ if ($postCalendarCategoryACO) {
 
                       <div class="form-group">
                         <?php 
-                          $progress_narrative =  ( $check_res['progress_narrative'] ) ? text($check_res['progress_narrative']) : '' ; 
+                          $progress_narrative =  ( $check_res['progress_narrative'] ) ? text($check_res['progress_narrative']) : $last_record['progress_narrative'] ; 
                         ?>
                         <label>Narrative:</label>
                         <textarea name="progress_narrative" class="form-control" rows="4"><?php echo $progress_narrative ?></textarea>
@@ -329,7 +333,7 @@ if ($postCalendarCategoryACO) {
 
                       <div class="form-group">
                         <?php 
-                          $critical_incidents_explan =  ( $check_res['critical_incidents_explan'] ) ? text($check_res['critical_incidents_explan']) : '';
+                          $critical_incidents_explan =  ( $check_res['critical_incidents_explan'] ) ? text($check_res['critical_incidents_explan']) : $last_record['critical_incidents_explan'];
                         ?>
                         <label>If yes please explain:</label>
                         <textarea name="critical_incidents_explan" class="form-control" rows="4"><?php echo $critical_incidents_explan ?></textarea>
