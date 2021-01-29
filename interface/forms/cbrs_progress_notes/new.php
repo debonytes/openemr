@@ -40,6 +40,9 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
+$last_record = sqlQuery($last_record_query, array($pid));
+
 $is_group = ($attendant_type == 'gid') ? true : false;
 
 
@@ -155,7 +158,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="cbrs" class="col-sm-3 "><?php echo xlt('CBRS'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="cbrs" id="cbrs" class="form-control" value="<?php echo text($check_res['cbrs']); ?>">
+                                        <input type="text" name="cbrs" id="cbrs" class="form-control" value="<?php echo ($check_res['cbrs']) ? text($check_res['cbrs']) : text($last_record['cbrs']); ?>">
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    
                                 </div>

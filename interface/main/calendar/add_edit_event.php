@@ -244,6 +244,7 @@ function DOBandEncounter($pc_eid)
     }
 
     // auto create encounter for therapy group
+    
     if (!empty($_POST['form_gid'])) {
         // status Took Place is the check in of therapy group
         if ($GLOBALS['auto_create_new_encounters'] && $event_date == date('Y-m-d') && $_POST['form_apptstatus'] == '=') {
@@ -254,6 +255,7 @@ function DOBandEncounter($pc_eid)
             }
         }
     }
+    
 }
 
 
@@ -718,29 +720,34 @@ if ($_POST['form_action'] == "save") {
                 "WHERE pc_eid = '" . add_escape_custom($eid) . "'");
 
 
-                // =======================================
-                // Insert if change of status
-                // =======================================
-                $args = $_POST;
-                $status_sym = array('@', '~', '>');
-                $status = $args['form_apptstatus'];
-
-                if(!empty($status) || in_array($status, $status_sym) ){
-                    $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
-
-                    if(empty($query)){
-                        $args['event_date'] = $args['form_date'];
-                        InsertFormCategory($args, $eid);
-                    }            
-                }
-
+                
+                
 
             }
+
+            // =======================================
+            // Insert if change of status
+            // =======================================
+            
+            $args = $_POST;
+            $status_sym = array('@', '~', '>');
+            $status = $args['form_apptstatus'];
+
+            if(!empty($status) || in_array($status, $status_sym) ){
+                $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
+
+                if(empty($query)){
+                    $args['event_date'] = $args['form_date'];
+                    InsertFormCategory($args, $eid);
+                }            
+            }
+
+            // =======================================
+            // Insert if change of status
+            // =======================================
+
+
         }
-
-        
-
-
 
         // =======================================
         // end Update Multi providers case
@@ -758,7 +765,7 @@ if ($_POST['form_action'] == "save") {
 
         // done with EVENT insert/update statements
 
-        DOBandEncounter(isset($eid) ? $eid : null);
+        //DOBandEncounter(isset($eid) ? $eid : null);
 } else if ($_POST['form_action'] == "delete") { //    DELETE EVENT(s)
     // =======================================
     //  multi providers event

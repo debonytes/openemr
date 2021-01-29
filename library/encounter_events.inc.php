@@ -403,8 +403,7 @@ function InsertFormCategory($args, $pc_eid)
     $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($pc_eid));
 
     if(empty($query)){
-        $form_pid = empty($args['form_pid']) ? '' : $args['form_pid'];
-        //$encounter = empty($_SESSION['encounter']) ? 0 : $_SESSION['encounter'];
+        $form_pid = empty($args['form_pid']) ? '' : $args['form_pid'];       
              
         $userauthorized = empty($_SESSION['userauthorized']) ? 0 : $_SESSION['userauthorized'];
         $groupname = empty($_SESSION['authProvider']) ? 0 : $_SESSION['authProvider'];
@@ -464,7 +463,7 @@ function InsertFormCategory($args, $pc_eid)
                 $isTablePlan = true;
             }
 
-            if( $isTablePlan && tablePlanOngoing($table, $form_pid)  ) { // PID is existing in plan table and status is not completed
+           // if( $isTablePlan && tablePlanOngoing($table, $form_pid)  ) { // PID is existing in plan table and status is not completed
 
                 //$customFields = unset($table_fields['date']);
                 $customFields = implode(',', $table_fields);
@@ -508,7 +507,7 @@ function InsertFormCategory($args, $pc_eid)
 
                 addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
 
-            } else { // else PID is existing in plan table and status is not completed 
+            /*} else { // else PID is existing in plan table and status is not completed 
 
                 // pid, name, dateofservice, billing_code
                 $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code', 'user', 'counselor');
@@ -595,6 +594,7 @@ function InsertFormCategory($args, $pc_eid)
                 addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
 
             } // endif PID is existing in plan table and status is not completed
+            */
         } // if(!empty($folderName))
         
     }  // if(empty($query))
@@ -719,7 +719,7 @@ function InsertEvent($args, $from = 'general')
 
             $GLOBALS['temporary-eid-for-manage-tracker'] = $pc_eid; //used by manage tracker module to set correct encounter in tracker when check in
 
-            InsertFormCategory($args, $pc_eid);
+            //InsertFormCategory($args, $pc_eid);
 
             return $pc_eid;
     } elseif ($from == 'payment') {

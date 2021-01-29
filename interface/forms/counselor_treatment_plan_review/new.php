@@ -54,7 +54,7 @@ if( empty($last_record) ){
     $last_record = sqlQuery($last_record_query, array($pid));
 
     if( empty($last_record) ){
-        die(xlt('Please create a new Counselor Treatment Plan for this Client.'));
+        die(xlt('Counselor Treatment Plan does not exists! Please create a new Counselor Treatment Plan for this Client.'));
     }
 } else {
 

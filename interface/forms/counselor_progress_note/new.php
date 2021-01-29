@@ -42,8 +42,11 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 //dd(print_r($check_res));
 
 /* checking the last record */
-$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
-$last_record = sqlQuery($last_record_query, array($pid));
+if( empty($check_res) ){
+    $last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
+    $last_record = sqlQuery($last_record_query, array($pid));
+} 
+
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
@@ -128,6 +131,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                     <h2><?php echo xlt('Counselor Progress Note'); ?></h2>
                 </div>
             </div>
+           
 
             <?php
             $current_date = date('Y-m-d');
