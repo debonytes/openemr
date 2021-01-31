@@ -121,7 +121,24 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                 .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
                     float: left;
                 }
+                .row_other{
+                    margin-top: 40px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 155px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
             }
+            @page {
+              margin: 2cm;
+            }
+
         </style>
     </head>
     <body class="body_top">
@@ -380,7 +397,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20">
+                            <div class="col-md-12 margin-top-20 treatment_diagnostic_row">
                                 <div class="col-md-6">
                                     <h3><?php echo xlt('TREATMENT & DIAGNOSTIC CODING'); ?></h3>
                                    
@@ -409,22 +426,22 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                     <h4><?php echo xlt('Tx Plan Review:'); ?></h4>
 
                                     <div class="form-group">
-                                            <label for="plan_review_90" class="col-sm-2 control-label"><?php echo xlt('90 Day:'); ?> </label>
-                                            <div class="col-sm-10">
+                                            <label for="plan_review_90" class="col-sm-3 control-label"><?php echo xlt('90 Day:'); ?> </label>
+                                            <div class="col-sm-9">
                                               <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo ($check_res['plan_review_90']) ? text($check_res['plan_review_90']) : text($last_record['plan_review_90']); ?>">
                                             </div>
                                     </div>
 
                                     <div class="form-group">
-                                            <label for="plan_review_180" class="col-sm-2 control-label"><?php echo xlt('180 Day: '); ?></label>
-                                            <div class="col-sm-10">
+                                            <label for="plan_review_180" class="col-sm-3 control-label"><?php echo xlt('180 Day: '); ?></label>
+                                            <div class="col-sm-9">
                                               <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo ($check_res['plan_review_180']) ? text($check_res['plan_review_180']) : text($last_record['plan_review_180']); ?>">
                                             </div>
                                     </div>
 
                                     <div class="form-group">
-                                            <label for="plan_review_270" class="col-sm-2 control-label"><?php echo xlt('270 Day:'); ?></label>
-                                            <div class="col-sm-10">
+                                            <label for="plan_review_270" class="col-sm-3 control-label"><?php echo xlt('270 Day:'); ?></label>
+                                            <div class="col-sm-9">
                                               <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo ($check_res['plan_review_270']) ? text($check_res['plan_review_270']) : text($last_record['plan_review_270']); ?>">
                                             </div>
                                     </div>
@@ -486,7 +503,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
 
                             <div class="clearfix"></div>
                             
-                            <div class="col-md-12">
+                            <div class="col-md-12 brief_mental_status">
                                 <h3><?php echo xlt('Brief Mental Status Exam / Symptoms'); ?> <small><?php echo xlt('(mark all that apply)'); ?></small></h3>
                                 <div class="col-sm-6">
                                     <div class="col-sm-4">
@@ -657,7 +674,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
 
                                 <div class="clearfix"></div>
 
-                                <div class="col-sm-12">
+                                <div class="col-sm-12 row_other">
                                         <h4><?php echo xlt('Other'); ?></h4>
                                         <?php $symptoms_other  = ($check_res['symptoms_other']) ? explode('|', $check_res['symptoms_other']) : explode('|', $last_record['symptoms_other']); ?>
                                         <ul style="list-style-type: none; columns: 4;-webkit-columns: 4;  -moz-columns: 4;">
@@ -737,9 +754,9 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                 ?>
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
-                                <!--
+                                
                                 <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
-                            -->
+                            
                             </div>
                         </div>
                     </div>
