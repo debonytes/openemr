@@ -660,6 +660,13 @@ function get_db_table_name($pc_catid)
         return null;
     }
 
+    $counseling_arr = array(38, 39, 40, 41, 42);
+    if( in_array($pc_catid, $counseling_arr) ){
+        $tablename['directory'] = 'counselor_progress_note';
+        $tablename['name'] = 'Counselor Progress Note';
+        return $tablename;
+    }
+
     $query = sqlQuery("SELECT registry_form_id FROM openemr_postcalendar_categories_extra WHERE pc_catid = ?", array($pc_catid));
 
     if($query){
