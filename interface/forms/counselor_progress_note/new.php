@@ -845,7 +845,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                         importCSS: true,            // import parent page css
                         importStyle: true,         // import style tags
                         printContainer: false,       // print outer container/$.selector
-                        loadCSS: "http://openemr.test/public/assets/bootstrap/dist/css/bootstrap.min.css",                // path to additional css file - use an array [] for multiple
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
                         pageTitle: "Counselor Progress Note",              // add title to print page
                         removeInline: false,        // remove inline styles from print elements
                         removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true

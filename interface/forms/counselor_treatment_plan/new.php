@@ -38,6 +38,12 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+/* checking the last record */
+if( empty($check_res) ){
+    $last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
+    $last_record = sqlQuery($last_record_query, array($pid));
+} 
+
 $is_group = ($attendant_type == 'gid') ? true : false;
 
 $esignApi = new Api();
@@ -63,6 +69,98 @@ if ($postCalendarCategoryACO) {
         <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
+        <style>
+            @media print{
+                .col-sm-2 {
+                    width: 16.66666667%;
+                }
+                .col-sm-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-sm-4 {
+                    width: 33.3333%;
+                }
+                .col-sm-3 {
+                    width: 25%;
+                }
+                .col-sm-8 {
+                    width: 66.66666667%;
+                }
+                .col-sm-9 {
+                    width: 75%;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .col-sm-5 {
+                    width: 41.66666667%;
+                }
+                .col-sm-7 {
+                    width: 58.33333333%;
+                }
+                .nth_day_review{
+                    width: 25%;
+                }
+                .nth_day_review_update{
+                    width: 60%;
+                    text-align: center;
+                    margin: 0 auto;
+                }
+                .clearfix{
+                    position: relative;
+                    clear: both;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .objective_row{
+                    padding-top: 110px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 155px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                .line-block{
+                    display: block;
+                    width: 100%;
+                }
+                .line-block-50{
+                    display: inline-block;
+                    width: 50%;
+                }
+                .no-print{
+                    display: none;
+                }
+            }
+            @page {
+              margin: 2cm;
+            }
+
+        </style>
     </head>
     <body class="body_top">
         <div class="container">
@@ -111,39 +209,39 @@ if ($postCalendarCategoryACO) {
                     <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
                     <input type="hidden" name="activity" value="1">
 
-                    <fieldset>
-                        <legend class=""><?php echo xlt('Counselor Treatment Plan'); ?></legend>
+                    <fieldset class="form_content">
+                        <legend class="no-print"><?php echo xlt('Counselor Treatment Plan'); ?></legend>
                             
                             <div class="col-md-12" style="margin-top: 0; margin-bottom: 20px">
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 nth_day_review">
                                     <div class="radio">
                                         <label>
                                           <input type="radio" name="day_review" value="90 Day Review" <?php echo ($check_res['day_review'] == '90 Day Review') ? 'checked': ''; ?>  > <?php echo xlt('90 Day Review'); ?>
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 nth_day_review">
                                     <div class="radio">
                                         <label>
                                           <input type="radio" name="day_review" value="180 Day Review" <?php echo ($check_res['day_review'] == '180 Day Review') ? 'checked': ''; ?>> <?php echo xlt('180 Day Review'); ?>
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 nth_day_review">
                                     <div class="radio">
                                         <label>
                                           <input type="radio" name="day_review" value="270 Day Review" <?php echo ($check_res['day_review'] == '270 Day Review') ? 'checked': ''; ?> > <?php echo xlt('270 Day Review'); ?>
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 nth_day_review">
                                     <div class="radio">
                                         <label>
                                           <input type="radio" name="day_review" value="Other Review" <?php echo ($check_res['day_review'] == 'Other Review') ? 'checked': ''; ?> > <?php echo xlt('Other Review'); ?>
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-4 nth_day_review_update">
                                     <div class="radio">
                                         <label for="" class="col-sm-8"><?php echo xlt('If update/review initial plan date:'); ?></label>
                                         <div class="col-sm-4">
@@ -157,8 +255,8 @@ if ($postCalendarCategoryACO) {
                             <div class="col-md-12" >
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Participant Name:'); ?> </label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Participant Name:'); ?> </label>
+                                        <div class="col-sm-7 line-block">
                                             <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" readonly>
                                             <input type="hidden" name="name" value="<?php echo text($patient_full_name); ?>" >
                                         </div>
@@ -166,16 +264,16 @@ if ($postCalendarCategoryACO) {
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="medicaid" class="col-sm-4"><?php echo xlt('Medicaid#:'); ?> </label>
-                                        <div class="col-sm-8">
+                                        <label for="medicaid" class="col-sm-4 line-block"><?php echo xlt('Medicaid#:'); ?> </label>
+                                        <div class="col-sm-8 line-block">
                                             <input type="text" id="medicaid" name="medicaid" class="form-control" value="<?php echo text($check_res['medicaid']); ?>" >
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="diagnosis_code" class="col-sm-5"><?php echo xlt('Diagnosis Code(s):'); ?> </label>
-                                        <div class="col-sm-7">
+                                        <label for="diagnosis_code" class="col-sm-5 line-block"><?php echo xlt('Diagnosis Code(s):'); ?> </label>
+                                        <div class="col-sm-7 line-block">
                                             <input type="text" id="diagnosis_code" name="diagnosis_code" class="form-control" value="<?php echo text($check_res['diagnosis_code']); ?>" >
                                         </div>
                                     </div>
@@ -184,11 +282,11 @@ if ($postCalendarCategoryACO) {
                             <div class="clearfix"></div>
 
                             <div class="col-md-12">
-                                <div class="col-sm-4">
+                                <div class="col-sm-4 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Type of Service:'); ?> </label>
-                                        <div class="col-sm-8">
-                                            <select name="type_service" class="form-group">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Type of Service:'); ?> </label>
+                                        <div class="col-sm-8 line-block">
+                                            <select name="type_service" class="form-control">
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="Counseling" <?php echo ($check_res['type_service'] == 'Counseling') ? 'selected': ''; ?> ><?php echo xlt('Counseling'); ?></option>
                                                 <option value="Mental Health Clinic" <?php echo ($check_res['type_service'] == 'Mental Health Clinic') ? 'selected': ''; ?>><?php echo xlt('Mental Health Clinic'); ?></option>
@@ -196,10 +294,10 @@ if ($postCalendarCategoryACO) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-4 line-block-50">
                                     <div class="form-group">
-                                        <label for="examiner" class="col-sm-3 "><?php echo xlt('Examiner'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="examiner" class="col-sm-3 line-block"><?php echo xlt('Examiner'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="examiner" id="examiner" class="form-control">
                                                 <?php echo get_examiner_name_dregree($check_res['examiner']); ?>
                                             </select>                                            
@@ -207,18 +305,18 @@ if ($postCalendarCategoryACO) {
                                         </div>                                    
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-2"><?php echo xlt('Date'); ?></label>
-                                        <div class="col-sm-10">
+                                        <label for="" class="col-sm-2 line-block"><?php echo xlt('Date'); ?></label>
+                                        <div class="col-sm-10 line-block">
                                             <input type="text" name="date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 line-block-50">
                                     <div class="form-group">
-                                        <label for="dob" class="col-sm-2"><?php echo xlt('DOB'); ?></label>
-                                        <div class="col-sm-10">
+                                        <label for="dob" class="col-sm-2 line-block"><?php echo xlt('DOB'); ?></label>
+                                        <div class="col-sm-10 line-block">
                                             <input type="text" name="dob" class="form-control newDatePicker" value="<?php echo ( isset($check_res['dob']) && $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])):''; ?>" autocomplete="off">
                                         </div>
                                     </div>
@@ -231,7 +329,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Problem Area'); ?></label>
                                     <?php $problem_arr = array('A. Psychiatric/Mental/Emotional', 'B. Medical/Health', 'C. Vocational', 'D. Money Management/Finances', 'E. Social Relationships', 'F. Family', 'G. Basic Living Skills', 'H. Housing', 'I. Community/Legal', 'J. Other'); ?>
-                                    <select name="problem_area" >
+                                    <select name="problem_area" class="form-control" style="width: 30%" >
                                         <option value=""><?php echo xlt('Choose'); ?></option>
                                         <?php foreach($problem_arr as $problem): ?>
                                             <option value="<?php echo $problem; ?>" <?php echo ($problem == $check_res['problem_area']) ? 'selected': ''; ?> ><?php echo xlt($problem); ?></option>
@@ -255,7 +353,9 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
 
-                            <div class="col-md-12" style="margin-top: 20px">
+                            <div class="clearfix"></div>
+
+                            <div class="col-md-12 objective_row" style="margin-top: 20px">
                                 <h3 class="text-center"><?php echo xlt('OBJECTIVES'); ?></h3>
                                 <h4 class="text-center"><?php echo xlt('Objectives must address the emotional, behavioral, and skill training needs identified by the member'); ?></h4>
                             </div>
@@ -267,44 +367,44 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 1:'); ?></label>
-                                    <input type="text" name="overall_obj1" value="<?php echo text($check_res['overall_obj1']); ?>">
+                                    <input type="text" name="overall_obj1" class="line-block" value="<?php echo text($check_res['overall_obj1']); ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj1_task_modality" id="" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj1_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj1_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj1_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj1_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj1_place']); ?>
                                             </select>
@@ -323,40 +423,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj1_90_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj1_90_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_90_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj1_90_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_90_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj1_90_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj1_90_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj1_90_review_place']); ?>
                                             </select>
@@ -375,40 +475,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj1_180_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj1_180_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_180_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj1_180_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_180_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj1_180_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj1_180_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj1_180_review_place']); ?>
                                             </select>
@@ -426,40 +526,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj1_270_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj1_270_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_270_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj1_270_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj1_270_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj1_270_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj1_270_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj1_270_review_place']); ?>
                                             </select>
@@ -476,44 +576,44 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 2:'); ?></label>
-                                    <input type="text" name="overall_obj2" value="<?php echo text($check_res['overall_obj2']); ?>">
+                                    <input type="text" name="overall_obj2" class="line-block" value="<?php echo text($check_res['overall_obj2']); ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj2_task_modality" id="" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj2_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj2_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj2_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj2_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj2_place']); ?>
                                             </select>
@@ -532,40 +632,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj2_90_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj2_90_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_90_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj2_90_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_90_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj2_90_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj2_90_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj2_90_review_place']); ?>
                                             </select>
@@ -584,40 +684,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj2_180_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj2_180_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_180_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj2_180_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_180_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj2_180_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj2_180_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj2_180_review_place']); ?>
                                             </select>
@@ -635,40 +735,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="overall_obj2_270_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['overall_obj2_270_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_270_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['overall_obj2_270_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="overall_obj2_270_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['overall_obj2_270_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="overall_obj2_270_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['overall_obj2_270_review_place']); ?>
                                             </select>
@@ -694,44 +794,44 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 1:'); ?></label>
-                                    <input type="text" name="short_term_obj1" value="<?php echo text($check_res['short_term_obj1']); ?>">
+                                    <input type="text" name="short_term_obj1" class="line-block"  value="<?php echo text($check_res['short_term_obj1']); ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj1_task_modality" id="" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj1_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj1_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj1_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj1_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj1_place']); ?>
                                             </select>
@@ -750,40 +850,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj1_90_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj1_90_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_90_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj1_90_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_90_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj1_90_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj1_90_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj1_90_review_place']); ?>
                                             </select>
@@ -802,40 +902,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj1_180_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj1_180_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_180_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj1_180_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_180_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj1_180_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj1_180_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj1_180_review_place']); ?>
                                             </select>
@@ -853,40 +953,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj1_270_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj1_270_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_270_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj1_270_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj1_270_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj1_270_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj1_270_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj1_270_review_place']); ?>
                                             </select>
@@ -902,44 +1002,44 @@ if ($postCalendarCategoryACO) {
                                 <div style="border-top: 1px solid #aaa;">&nbsp;</div>
                                 <div class="form-group">
                                     <label for=""><?php echo xlt('Objective 2:'); ?></label>
-                                    <input type="text" name="short_term_obj2" value="<?php echo text($check_res['short_term_obj2']); ?>">
+                                    <input type="text" name="short_term_obj2" class="line-block" value="<?php echo text($check_res['short_term_obj2']); ?>">
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj2_task_modality" id="" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj2_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj2_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj2_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj2_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj2_place']); ?>
                                             </select>
@@ -958,40 +1058,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj2_90_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj2_90_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_90_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj2_90_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_90_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj2_90_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj2_90_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj2_90_review_place']); ?>
                                             </select>
@@ -1010,40 +1110,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj2_180_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj2_180_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_180_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj2_180_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_180_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj2_180_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj2_180_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj2_180_review_place']); ?>
                                             </select>
@@ -1061,40 +1161,40 @@ if ($postCalendarCategoryACO) {
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-5"><?php echo xlt('Task Modality:'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="" class="col-sm-5 line-block"><?php echo xlt('Task Modality:'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <select name="short_term_obj2_270_review_task_modality" class="form-control">
                                                 <?php echo get_task_modality($check_res['short_term_obj2_270_review_task_modality']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>                                
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Frequency:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Frequency:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_270_review_frequency" class="form-control">
                                                 <?php echo get_weekly_frequency($check_res['short_term_obj2_270_review_frequency']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4"><?php echo xlt('Duration:'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="" class="col-sm-4 line-block"><?php echo xlt('Duration:'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="short_term_obj2_270_review_duration" id="" class="form-control">
                                                 <?php echo get_treatment_duration($check_res['short_term_obj2_270_review_duration']); ?>
                                             </select>
                                         </div>                                        
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 line-block-50">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3"><?php echo xlt('Place:'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Place:'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="short_term_obj2_270_review_place" id="" class="form-control">
                                                 <?php echo get_task_place($check_res['short_term_obj2_270_review_place']); ?>
                                             </select>
@@ -1105,7 +1205,7 @@ if ($postCalendarCategoryACO) {
                             <div class="clearfix"></div>         
 
                             <div class="col-md-12" style="margin-top: 20px">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 line-block">
                                     <div class="form-group">
                                         <label for="" class="col-sm-6"><?php echo xlt('Target Date for Attainment of Goals:'); ?></label>
                                         <div class="col-sm-6">
@@ -1113,7 +1213,7 @@ if ($postCalendarCategoryACO) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 line-block">
                                     <div class="form-group">
                                         <label class="radio-inline">
                                           <strong><?php echo xlt('Who is responsible: '); ?></strong>
@@ -1235,6 +1335,7 @@ if ($postCalendarCategoryACO) {
                                 ?>
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
+                                <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
                     </div>
@@ -1243,6 +1344,7 @@ if ($postCalendarCategoryACO) {
         </div>
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+        <script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
         <script language="javascript">
             $(document).ready(function(){
 
@@ -1312,6 +1414,31 @@ if ($postCalendarCategoryACO) {
                 $('.esign-button-form').css({"width": "110px", "height":"25px", "line-height":"20px", "vertical-align":"middle", "margin-right":"25px"});
 
                 $('.esign-button-form span').html('Digitally Sign');
+
+                $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "Counselor Treatment Plan",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>Counselor Treatment Plan</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
             });
 
