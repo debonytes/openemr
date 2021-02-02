@@ -35,23 +35,7 @@ $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
 
-$is_group = ($attendant_type == 'gid') ? true : false;
 
-$esignApi = new Api();
-// Create the ESign instance for this form
-$esign = $esignApi->createFormESign($form['id'], $folderName, $encounter);
-
-//fetch acl for category of given encounter
-$pc_catid = fetchCategoryIdByEncounter($encounter);
-$postCalendarCategoryACO = fetchPostCalendarCategoryACO($pc_catid);
-if ($postCalendarCategoryACO) {
-    $postCalendarCategoryACO = explode('|', $postCalendarCategoryACO);
-    $authPostCalendarCategory = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1]);
-    $authPostCalendarCategoryWrite = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1], '', 'write');
-} else { // if no aco is set for category
-    $authPostCalendarCategory = true;
-    $authPostCalendarCategoryWrite = true;
-}
 
 
 ?>
@@ -200,20 +184,20 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-6 line-block-50">
                                     <label class="checkbox-inline"><strong><?php echo xlt('Type of CDA:'); ?></strong> </label>
                                     <label class="checkbox-inline">
-                                      <input type="radio" id="type_cda_1" name="type_cda" value="New" <?php echo ($check_res['type_cda'] == 'New') ? 'checked':''; ?> > <?php echo xlt('New'); ?>
+                                      <input type="radio" id="type_cda_1" name="type_cda" disabled value="New" <?php echo ($check_res['type_cda'] == 'New') ? 'checked':''; ?> > <?php echo xlt('New'); ?>
                                     </label>
                                     <label class="checkbox-inline">
-                                      <input type="radio" id="type_cda_2" name="type_cda" value="Updated" <?php echo ($check_res['type_cda'] == 'Updated') ? 'checked':''; ?> > <?php echo xlt('Updated'); ?>
+                                      <input type="radio" id="type_cda_2" name="type_cda" disabled value="Updated" <?php echo ($check_res['type_cda'] == 'Updated') ? 'checked':''; ?> > <?php echo xlt('Updated'); ?>
                                     </label>
                                     <label class="checkbox-inline">
-                                      <input type="radio" id="type_cda_3"  name="type_cda" value="Annual Review" <?php echo ($check_res['type_cda'] == 'Annual Review') ? 'checked':''; ?> > <?php echo xlt('Annual Review'); ?>
+                                      <input type="radio" id="type_cda_3"  name="type_cda" disabled value="Annual Review" <?php echo ($check_res['type_cda'] == 'Annual Review') ? 'checked':''; ?> > <?php echo xlt('Annual Review'); ?>
                                     </label>
                                 </div>
                                 <div class="col-sm-6 line-block-50">
                                     <div class="form-group">
                                         <label for="inputEmail3" class="col-sm-8 control-label"> <?php echo xlt('If update or review original CDA date:'); ?> </label>
                                         <div class="col-sm-4">
-                                          <input type="text" class="form-control datepicker" name="cda_date" value="<?php echo text($check_res['cda_date']); ?>" autocomplete="off" >
+                                          <input type="text" class="form-control" disabled name="cda_date" value="<?php echo text($check_res['cda_date']); ?>" >
                                         </div>
                                     </div>
                                 </div>   
@@ -223,7 +207,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="name" class="col-sm-5 line-block"><?php echo xlt('Participant Name'); ?></label>
                                         <div class="col-sm-7 line-block">
-                                            <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" readonly>
+                                            <input type="text"  id="name" class="form-control" disabled value="<?php echo text($patient_full_name); ?>" readonly>
                                             <input type="hidden" name="name" value="<?php echo text($patient_full_name); ?>" >
                                         </div>                                    
                                     </div>
@@ -232,7 +216,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="medicaid" class="col-sm-3 line-block"><?php echo xlt('Medicaid #'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <input type="text" name="medicaid" id="medicaid" class="form-control" value="<?php echo text($check_res['medicaid']); ?>">
+                                            <input type="text" name="medicaid" id="medicaid" class="form-control" disabled value="<?php echo text($check_res['medicaid']); ?>">
                                             <small class="text-danger medicaid_error"></small>
                                         </div>                                    
                                     </div>
@@ -241,7 +225,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="" class="col-sm-3 line-block"><?php echo xlt('Date'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <input type="text" name="date" id="date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
+                                            <input type="text" name="date" id="date" disabled class="form-control" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
                                             <small class="text-danger date_error"></small>
                                         </div>                                    
                                     </div>
@@ -252,7 +236,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="age" class="col-sm-3 line-block"><?php echo xlt('Age'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <input type="text" id="age" class="form-control" name="age" value="<?php echo text($check_res['age']); ?>">
+                                            <input type="text" id="age" class="form-control" disabled name="age" value="<?php echo text($check_res['age']); ?>">
                                             <small class="text-danger age_error"></small>
                                         </div>                                    
                                     </div>
@@ -260,7 +244,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="sex" class="col-sm-3 line-block"><?php echo xlt('Sex'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <select name="sex" id="sex" class="form-control">
+                                            <select name="sex" id="sex" class="form-control" disabled>
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="Male" <?php echo ($check_res['sex'] == 'Male') ? 'selected':''; ?> ><?php echo xlt('Male'); ?></option>
                                                 <option value="Female" <?php echo ($check_res['sex'] == 'Female') ? 'selected':''; ?> ><?php echo xlt('Female'); ?></option>
@@ -277,7 +261,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="ethnicity" class="col-sm-3 line-block"><?php echo xlt('Ethnicity'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <select name="ethnicity" id="ethnicity" class="form-control">
+                                            <select name="ethnicity" id="ethnicity" class="form-control" disabled>
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="White" <?php echo ($check_res['ethnicity'] == 'White') ? 'selected':''; ?> ><?php echo xlt('White/Caucasian'); ?></option>
                                                 <option value="Hispanic" <?php echo ($check_res['ethnicity'] == 'Hispanic') ? 'selected':''; ?> ><?php echo xlt('Hispanic'); ?></option>
@@ -292,7 +276,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="ethnicity_other" class="col-sm-3 line-block"><?php echo xlt('Other Enthicity'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <input type="text" name="ethnicity_other" id="ethnicity_other" class="form-control" value="<?php echo text($check_res['ethnicity_other']); ?>">
+                                            <input type="text" name="ethnicity_other" disabled id="ethnicity_other" class="form-control" value="<?php echo text($check_res['ethnicity_other']); ?>">
                                             <small class="text-danger ethnicity_other_error"></small>
                                         </div>                                    
                                     </div>
@@ -303,7 +287,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="dob" class="col-sm-3 line-block"><?php echo xlt('DOB'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <input type="text" name="dob" id="dob" class="form-control newDatePicker" value="<?php echo ( isset($check_res['dob']) && $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])):''; ?>" autocomplete="off">
+                                            <input type="text" name="dob" id="dob" disabled class="form-control " value="<?php echo ( isset($check_res['dob']) && $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])):''; ?>" autocomplete="off">
                                             <small class="text-danger dob_error"></small>
                                         </div>                                    
                                     </div>
@@ -315,7 +299,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="examiner" class="col-sm-3 line-block"><?php echo xlt('Examiner'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <select name="examiner" id="examiner" class="form-control">
+                                            <select name="examiner" id="examiner" class="form-control" disabled>
                                                 <?php echo get_examiner_name_dregree($check_res['examiner']); ?>
                                             </select>                                            
                                             <small class="text-danger examiner_error"></small>
@@ -326,7 +310,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="region" class="col-sm-3 line-block"><?php echo xlt('Region'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <input type="text" name="region" id="region" class="form-control " value="<?php echo text($check_res['region']); ?>" >
+                                            <input type="text" name="region" id="region" disabled class="form-control " value="<?php echo text($check_res['region']); ?>" >
                                             <small class="text-danger region_error"></small>
                                         </div>                                    
                                     </div>
@@ -337,7 +321,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="agency" class="col-sm-3 line-block"><?php echo xlt('Agency'); ?></label>
                                         <div class="col-sm-9 line-block">
-                                            <select name="agency" id="agency" class="form-control">
+                                            <select name="agency" id="agency" class="form-control" disabled>
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="Kuna Counseling Center, LLC" <?php echo ($check_res['agency'] == 'Kuna Counseling Center, LLC') ? 'selected':''; ?> ><?php echo xlt('Kuna Counseling Center, LLC'); ?></option>
                                                 <option value="Real Solutions Counseling, LLC" <?php echo ($check_res['agency'] == 'Real Solutions Counseling, LLC') ? 'selected':''; ?> ><?php echo xlt('Real Solutions Counseling, LLC'); ?></option>                                                
@@ -352,7 +336,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="marital_status" class="col-sm-4 line-block"><?php echo xlt('Marital Status'); ?></label>
                                         <div class="col-sm-8 line-block">
-                                            <select name="marital_status" id="marital_status" class="form-control">
+                                            <select name="marital_status" id="marital_status" class="form-control" disabled>
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="Single" <?php echo ($check_res['marital_status'] == 'Single') ? 'selected':''; ?> ><?php echo xlt('Single'); ?></option>
                                                 <option value="Married" <?php echo ($check_res['marital_status'] == 'Married') ? 'selected':''; ?> ><?php echo xlt('Married'); ?></option>
@@ -368,7 +352,7 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="referral_source" class="col-sm-4 line-block"><?php echo xlt('Referral Source'); ?></label>
                                         <div class="col-sm-8 line-block">
-                                            <input type="text" name="referral_source" id="referral_source" class="form-control " value="<?php echo text($check_res['referral_source']); ?>" >
+                                            <input type="text" name="referral_source" id="referral_source" class="form-control " disabled value="<?php echo text($check_res['referral_source']); ?>" >
                                             <small class="text-danger referral_source_error"></small>
                                         </div>                                    
                                     </div>
@@ -376,10 +360,10 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-4">
                                     <div ><strong><?php echo xlt('Participation Status:'); ?></strong> </div>
                                     <label class="checkbox-inline">
-                                      <input type="radio"  name="participation_status" value="Voluntary" <?php echo ($check_res['participation_status'] == 'Voluntary') ? 'checked': ''; ?> > <?php echo xlt('Voluntary'); ?>
+                                      <input type="radio"  name="participation_status" disabled value="Voluntary" <?php echo ($check_res['participation_status'] == 'Voluntary') ? 'checked': ''; ?> > <?php echo xlt('Voluntary'); ?>
                                     </label>
                                     <label class="checkbox-inline">
-                                      <input type="radio"  name="participation_status" value="Involuntary"  <?php echo ($check_res['participation_status'] == 'Involuntary') ? 'checked': ''; ?> > <?php echo xlt('Involuntary'); ?>
+                                      <input type="radio"  name="participation_status" disabled value="Involuntary"  <?php echo ($check_res['participation_status'] == 'Involuntary') ? 'checked': ''; ?> > <?php echo xlt('Involuntary'); ?>
                                     </label>
                                 </div>
                                 <div class="clearfix"></div>
@@ -399,29 +383,29 @@ if ($postCalendarCategoryACO) {
                                     <h4><?php echo xlt('PSYCHIATRIC SECTION'); ?></h4>
                                     <div class="form-group">
                                         <label for="behave_treatment_history"><?php echo xlt('Behavioral health treatment history (previous dx, age of onset, any treatment):'); ?></label>
-                                        <textarea name="behave_treatment_history"  rows="3" class="form-control"><?php echo text($check_res['behave_treatment_history']); ?></textarea>
+                                        <textarea name="behave_treatment_history" disabled  rows="3" class="form-control"><?php echo text($check_res['behave_treatment_history']); ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <label for="behave_treatment_history"><?php echo xlt('Behavioral health family history (previous dx, age of onset, any treatment):'); ?></label>
-                                        <textarea name="behave_family_history"  rows="3" class="form-control"><?php echo text($check_res['behave_family_history']); ?></textarea>
+                                        <textarea name="behave_family_history" disabled rows="3" class="form-control"><?php echo text($check_res['behave_family_history']); ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <label for="behave_treatment_history"><?php echo xlt('Any previous history of abuse (self or witness):'); ?></label>
-                                        <textarea name="history_abuse"  rows="3" class="form-control"><?php echo text($check_res['history_abuse']); ?></textarea>
+                                        <textarea name="history_abuse" disabled rows="3" class="form-control"><?php echo text($check_res['history_abuse']); ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <label class="checkbox-inline"><strong><?php echo xlt('Has client had counseling or CBRS at a different agency in the past year?'); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="agency_past_year" value="Yes" <?php echo ($check_res['agency_past_year'] == 'Yes') ? 'checked': ''; ?>  > <?php echo xlt('Yes'); ?>
+                                          <input type="radio"  name="agency_past_year" value="Yes" disabled <?php echo ($check_res['agency_past_year'] == 'Yes') ? 'checked': ''; ?>  > <?php echo xlt('Yes'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="agency_past_year" value="No" <?php echo ($check_res['agency_past_year'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                          <input type="radio"  name="agency_past_year" value="No" disabled <?php echo ($check_res['agency_past_year'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                         </label>
                                         <label class="checkbox-inline">
                                           <strong><?php echo xlt('If so, where?'); ?></strong>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="text" class="form-control"  name="agency_past_year_place" value="<?php echo text($check_res['agency_past_year_place']); ?>">
+                                          <input type="text" class="form-control" disabled  name="agency_past_year_place" value="<?php echo text($check_res['agency_past_year_place']); ?>">
                                         </label>
                                     </div>
 
@@ -429,27 +413,27 @@ if ($postCalendarCategoryACO) {
                                         <div><strong><?php echo xlt('Development history/problems (mental or physical problems):'); ?></strong></div>
                                         <div class="radio" style="margin-top: 0">
                                           <label>
-                                            <input type="radio" name="devt_history" value="met_milestones" <?php echo ($check_res['devt_history'] == 'met_milestones') ? 'checked':''; ?> >
+                                            <input type="radio" name="devt_history" value="met_milestones" disabled <?php echo ($check_res['devt_history'] == 'met_milestones') ? 'checked':''; ?> >
                                             <?php echo xlt('Met milestones at appropriate times of life'); ?>
                                           </label>
                                         </div>
                                         <div class="radio">
                                           <label>
-                                            <input type="radio" name="devt_history" value="not_met_milestones" <?php echo ($check_res['devt_history'] == 'not_met_milestones') ? 'checked':''; ?> >
+                                            <input type="radio" name="devt_history" value="not_met_milestones" disabled <?php echo ($check_res['devt_history'] == 'not_met_milestones') ? 'checked':''; ?> >
                                             <?php echo xlt('Did not meet milestones at appropriate times of life'); ?>
                                           </label>
                                         </div>
                                         <p><?php echo xlt('Explain if did not meet the milestones:'); ?></p>
-                                        <textarea name="devt_history_details"  rows="3" class="form-control"><?php echo text($check_res['devt_history_details']); ?></textarea>
+                                        <textarea name="devt_history_details"  rows="3" disabled class="form-control"><?php echo text($check_res['devt_history_details']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('If the child is an adolescent, give a sexual behavior history:'); ?></strong></div>
-                                        <textarea name="adult_sexual_behavior"  rows="3" class="form-control"><?php echo text($check_res['adult_sexual_behavior']); ?></textarea>
+                                        <textarea name="adult_sexual_behavior"  rows="3" disabled class="form-control"><?php echo text($check_res['adult_sexual_behavior']); ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('If the child (under 18), please give number of hours per day spent on electronics (include TV, computer, tablet, phone, video games):'); ?></strong></div>
-                                        <input type="text" name="child_gadget_hours" value="<?php echo text($check_res['child_gadget_hours']); ?>">
+                                        <input type="text" name="child_gadget_hours" disabled value="<?php echo text($check_res['child_gadget_hours']); ?>">
                                     </div>
                                 </div>
 
@@ -466,7 +450,7 @@ if ($postCalendarCategoryACO) {
                                         <li>
                                             <div class="checkbox">
                                               <label>
-                                                <input type="checkbox" value="<?php echo $medical; ?>" name="recipient_report[]" <?php echo (in_array($medical, $recipient_report)) ? 'checked': '';  ?> >
+                                                <input type="checkbox" disabled value="<?php echo $medical; ?>" name="recipient_report[]" <?php echo (in_array($medical, $recipient_report)) ? 'checked': '';  ?> >
                                                 <?php echo xlt($medical); ?>
                                               </label>
                                             </div>
@@ -476,56 +460,56 @@ if ($postCalendarCategoryACO) {
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Medical history (explain any above marked):'); ?></strong></div>
-                                        <textarea name="medical_history"  rows="3" class="form-control"><?php echo text($check_res['medical_history']); ?></textarea>
+                                        <textarea name="medical_history" disabled rows="3" class="form-control"><?php echo text($check_res['medical_history']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Allergies to medications and other substances:'); ?></strong></div>
-                                        <textarea name="allergies_medication"  rows="3" class="form-control"><?php echo text($check_res['allergies_medication']); ?></textarea>
+                                        <textarea name="allergies_medication" disabled rows="3" class="form-control"><?php echo text($check_res['allergies_medication']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Family medical history:'); ?></strong></div>
-                                        <textarea name="family_medical_history"  rows="3" class="form-control"><?php echo text($check_res['family_medical_history']); ?></textarea>
+                                        <textarea name="family_medical_history" disabled rows="3" class="form-control"><?php echo text($check_res['family_medical_history']); ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Self-report of infectious diseases (previous or current):'); ?></strong></div>
-                                        <textarea name="infectious_diseases"  rows="3" class="form-control"><?php echo text($check_res['infectious_diseases']); ?></textarea>
+                                        <textarea name="infectious_diseases" disabled rows="3" class="form-control"><?php echo text($check_res['infectious_diseases']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Medication history including past and current medications (what medications, purpose, dose, effects, compliance):'); ?></strong></div>
-                                        <textarea name="medication_history"  rows="3" class="form-control"><?php echo text($check_res['medication_history']); ?></textarea>
+                                        <textarea name="medication_history" disabled rows="3" class="form-control"><?php echo text($check_res['medication_history']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="checkbox-inline"><strong><?php echo xlt('Name and contact information of current primary care physician: '); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="text" class="form-control" name="name_physician" value="<?php echo text($check_res['name_physician']); ?>"> 
+                                          <input type="text" class="form-control" disabled name="name_physician" value="<?php echo text($check_res['name_physician']); ?>"> 
                                         </label>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="checkbox-inline"><strong><?php echo xlt('Health and Physical obtained from the medical provider'); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="obtain_medical_provider" value="Yes" <?php echo ($check_res['obtain_medical_provider'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                          <input type="radio"  name="obtain_medical_provider" disabled value="Yes" <?php echo ($check_res['obtain_medical_provider'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="obtain_medical_provider" value="No" <?php echo ($check_res['obtain_medical_provider'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                          <input type="radio"  name="obtain_medical_provider"  disabled value="No" <?php echo ($check_res['obtain_medical_provider'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                         </label>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="checkbox-inline"><strong><?php echo xlt('Name and contact information of current primary psychiatrist/medication manager: '); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="text" class="form-control" name="name_current_psychiatrist" value="<?php echo text($check_res['name_current_psychiatrist']); ?>"> 
+                                          <input type="text" class="form-control" name="name_current_psychiatrist" disabled value="<?php echo text($check_res['name_current_psychiatrist']); ?>"> 
                                         </label>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="checkbox-inline"><strong><?php echo xlt('Name and contact information of past primary psychiatrist/medication manager: '); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="text" class="form-control" name="name_past_psychiatrist" value="<?php echo text($check_res['name_past_psychiatrist']); ?>"> 
+                                          <input type="text" class="form-control" name="name_past_psychiatrist" disabled value="<?php echo text($check_res['name_past_psychiatrist']); ?>"> 
                                         </label>
                                     </div>
 
@@ -541,32 +525,32 @@ if ($postCalendarCategoryACO) {
                                     <h4><?php echo xlt('PSYCHIATRIC SECTION'); ?></h4>
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Presenting problem including current Symptoms of each diagnosis (current condition, onset, duration, and frequency including assessments administered and results):'); ?></strong></div>
-                                        <textarea name="current_symptoms"  rows="3" class="form-control"><?php echo text($check_res['current_symptoms']); ?></textarea>
+                                        <textarea name="current_symptoms"  rows="3" disabled class="form-control"><?php echo text($check_res['current_symptoms']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="checkbox-inline"><strong><?php echo xlt('CADIC Completed'); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="cadic_completed" value="Yes" <?php echo ($check_res['cadic_completed'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                          <input type="radio"  name="cadic_completed" value="Yes" disabled <?php echo ($check_res['cadic_completed'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="cadic_completed" value="No" <?php echo ($check_res['cadic_completed'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                          <input type="radio"  name="cadic_completed" value="No" disabled <?php echo ($check_res['cadic_completed'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="text"  name="cadic_completed_details" value="<?php echo text($check_res['cadic_completed_details']); ?>"  > 
+                                          <input type="text"  name="cadic_completed_details" disabled value="<?php echo text($check_res['cadic_completed_details']); ?>"  > 
                                         </label>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="checkbox-inline"><strong><?php echo xlt('Child Depression Screening Completed'); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="child_depression" value="Yes" <?php echo ($check_res['child_depression'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                          <input type="radio"  name="child_depression" value="Yes" disabled <?php echo ($check_res['child_depression'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="child_depression" value="No" <?php echo ($check_res['child_depression'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                          <input type="radio"  name="child_depression" value="No" disabled <?php echo ($check_res['child_depression'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="text"  name="child_depression_details" value="<?php echo text($check_res['child_depression_details']); ?>"  > 
+                                          <input type="text"  name="child_depression_details" disabled value="<?php echo text($check_res['child_depression_details']); ?>"  > 
                                         </label>
                                     </div>
 
@@ -575,54 +559,54 @@ if ($postCalendarCategoryACO) {
                                         
                                         <label class="checkbox-inline"><strong><?php echo xlt('Current Suicidal Ideation'); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="current_suicidal_ideation" value="No" <?php echo ($check_res['current_suicidal_ideation'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                          <input type="radio"  name="current_suicidal_ideation" disabled value="No" <?php echo ($check_res['current_suicidal_ideation'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="current_suicidal_ideation" value="Yes" <?php echo ($check_res['current_suicidal_ideation'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                          <input type="radio"  name="current_suicidal_ideation" disabled value="Yes" <?php echo ($check_res['current_suicidal_ideation'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                         </label>                                        
                                     </div>
                                     <div class="form-group">
                                         <label for=""><?php echo xlt('If Yes, please explain:'); ?></label>
-                                        <textarea name="current_suicidal_ideation_details"  rows="3" class="form-control"><?php echo text($check_res['current_suicidal_ideation_details']); ?></textarea>
+                                        <textarea name="current_suicidal_ideation_details"  rows="3" disabled class="form-control"><?php echo text($check_res['current_suicidal_ideation_details']); ?></textarea>
                                     </div>
 
 
                                     <div class="form-group">                                        
                                         <label class="checkbox-inline"><strong><?php echo xlt('Current Homicidal Ideation'); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="current_homicidal_ideation" value="No" <?php echo ($check_res['current_homicidal_ideation'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                          <input type="radio"  name="current_homicidal_ideation" disabled value="No" <?php echo ($check_res['current_homicidal_ideation'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="current_homicidal_ideation" value="Yes" <?php echo ($check_res['current_homicidal_ideation'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                          <input type="radio"  name="current_homicidal_ideation" disabled value="Yes" <?php echo ($check_res['current_homicidal_ideation'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                         </label>                                        
                                     </div>
                                     <div class="form-group">
                                         <label for=""><?php echo xlt('If Yes, please explain:'); ?></label>
-                                        <textarea name="current_homicidal_ideation_details"  rows="3" class="form-control"><?php echo text($check_res['current_homicidal_ideation_details']); ?></textarea>
+                                        <textarea name="current_homicidal_ideation_details"  rows="3" disabled class="form-control"><?php echo text($check_res['current_homicidal_ideation_details']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('History of suicidal or homicidal ideation and/or attempts (include how many, when, and method):'); ?></strong></div>
-                                        <textarea name="history_suicidal_attempts"  rows="3" class="form-control"><?php echo text($check_res['history_suicidal_attempts']); ?></textarea>
+                                        <textarea name="history_suicidal_attempts"  rows="3" disabled class="form-control"><?php echo text($check_res['history_suicidal_attempts']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Safety Plan, if current risk is identified:'); ?></strong></div>
                                         <div class="radio" style="margin-top: 0">
                                           <label>
-                                            <input type="radio" name="safety_plan" value="no_need" <?php echo ($check_res['safety_plan'] == 'no_need') ? 'checked': ''; ?> >
+                                            <input type="radio" name="safety_plan" value="no_need" disabled <?php echo ($check_res['safety_plan'] == 'no_need') ? 'checked': ''; ?> >
                                             Does not currently appear in need of a safety plan
                                           </label>
                                         </div>
                                         <div class="radio" style="margin-top: 0">
                                           <label>
-                                            <input type="radio" name="safety_plan" value="presented_treatment" <?php echo ($check_res['safety_plan'] == 'presented_treatment') ? 'checked': ''; ?> >
+                                            <input type="radio" name="safety_plan" value="presented_treatment" disabled <?php echo ($check_res['safety_plan'] == 'presented_treatment') ? 'checked': ''; ?> >
                                             Presented to treatment with current safety plan and was reviewed during assessment
                                           </label>
                                         </div>
                                         <div class="radio" style="margin-top: 0">
                                           <label>
-                                            <input type="radio" name="safety_plan" value="plan_developed" <?php echo ($check_res['safety_plan'] == 'plan_developed') ? 'checked': ''; ?> >
+                                            <input type="radio" name="safety_plan" value="plan_developed"  disabled <?php echo ($check_res['safety_plan'] == 'plan_developed') ? 'checked': ''; ?> >
                                             Plan was developed
                                           </label>
                                         </div>
@@ -630,7 +614,7 @@ if ($postCalendarCategoryACO) {
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Legal History (charges, probation/parole, CPS, divorse, legal custody, victim in criminal cases, etc.):'); ?></strong></div>
-                                        <textarea name="legal_history"  rows="3" class="form-control"><?php echo text($check_res['legal_history']); ?></textarea>
+                                        <textarea name="legal_history"  rows="3" disabled class="form-control"><?php echo text($check_res['legal_history']); ?></textarea>
                                     </div>
 
                                     <h5 style="margin-top: 20px"><strong><?php echo xlt('Family History'); ?></strong></h5>
@@ -639,24 +623,24 @@ if ($postCalendarCategoryACO) {
                                         <div class="form-group">
                                             <label class="checkbox-inline"><strong><?php echo xlt('Client reports their family to be supportive'); ?></strong></label>
                                             <label class="checkbox-inline">
-                                              <input type="radio"  name="client_family_support" value="Yes" <?php echo ($check_res['client_family_support'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                              <input type="radio"  name="client_family_support" disabled value="Yes" <?php echo ($check_res['client_family_support'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                             </label>
                                             <label class="checkbox-inline">
-                                              <input type="radio"  name="client_family_support" value="No" <?php echo ($check_res['client_family_support'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                              <input type="radio"  name="client_family_support" disabled value="No" <?php echo ($check_res['client_family_support'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                             </label>                                        
                                         </div>
 
                                         <div class="form-group">
                                             <label class="checkbox-inline"><strong><?php echo xlt('Client currently lives with:'); ?></strong></label>
                                             <label class="checkbox-inline">
-                                              <input type="text" class="form-control"  name="client_lives_with" value="<?php echo text($check_res['client_lives_with']); ?>"  >
+                                              <input type="text" class="form-control"  name="client_lives_with" disabled value="<?php echo text($check_res['client_lives_with']); ?>"  >
                                             </label>                                                                             
                                         </div>
 
                                         <div class="form-group">
                                             <label class="checkbox-inline"><strong><?php echo xlt('Adult client grew up with:'); ?></strong></label>
                                             <label class="checkbox-inline">
-                                              <input type="text" class="form-control"   name="adult_grew_with" value="<?php echo text($check_res['adult_grew_with']); ?>"  >
+                                              <input type="text" class="form-control"   name="adult_grew_with" disabled value="<?php echo text($check_res['adult_grew_with']); ?>"  >
                                             </label>                                                                             
                                         </div>
 
@@ -665,13 +649,13 @@ if ($postCalendarCategoryACO) {
                                         <div class="form-group">
                                             <label class="checkbox-inline"><strong><?php echo xlt('Client reports their childhood to be:'); ?></strong></label>
                                             <label class="checkbox-inline">
-                                              <input type="text" class="form-control"   name="client_childhood" value="<?php echo text($check_res['client_childhood']); ?>"  >
+                                              <input type="text" class="form-control" disabled  name="client_childhood" value="<?php echo text($check_res['client_childhood']); ?>"  >
                                             </label>                                                                             
                                         </div>
                                         <div class="form-group">
                                             <label class="checkbox-inline"><strong><?php echo xlt('Childhood punishments (past and present):'); ?></strong></label>
                                             <label class="checkbox-inline">
-                                              <input type="text" class="form-control"   name="childhood_punishment" value="<?php echo text($check_res['childhood_punishment']); ?>"  >
+                                              <input type="text" class="form-control" disabled  name="childhood_punishment" value="<?php echo text($check_res['childhood_punishment']); ?>"  >
                                             </label>                                                                             
                                         </div>
 
@@ -680,38 +664,38 @@ if ($postCalendarCategoryACO) {
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Other family information:'); ?></strong></div>
-                                        <textarea name="other_family_info"  rows="3" class="form-control"><?php echo text($check_res['other_family_info']); ?></textarea>
+                                        <textarea name="other_family_info" disabled rows="3" class="form-control"><?php echo text($check_res['other_family_info']); ?></textarea>
                                     </div>
                                     
 
                                     <div class="form-group" style="margin-top: 20px">
                                         <label class="checkbox-inline"><strong><?php echo xlt('Religious Preference:'); ?></strong></label>
                                         <label class="checkbox-inline">
-                                          <input type="text" class="form-control"   name="religious_preference" value="<?php echo text($check_res['religious_preference']); ?>"  >
+                                          <input type="text" class="form-control" disabled  name="religious_preference" value="<?php echo text($check_res['religious_preference']); ?>"  >
                                         </label>                                                                             
                                     </div>
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Assessment of spiritual issues impacting treatment:'); ?></strong></div>
-                                        <textarea name="assess_spiritual"  rows="3" class="form-control"><?php echo text($check_res['assess_spiritual']); ?></textarea>
+                                        <textarea name="assess_spiritual" disabled rows="3" class="form-control"><?php echo text($check_res['assess_spiritual']); ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Assessment of vocational/educational issues impacting treatment:'); ?></strong></div>
-                                        <textarea name="assess_vocational"  rows="3" class="form-control"><?php echo text($check_res['assess_vocational']); ?></textarea>
+                                        <textarea name="assess_vocational" disabled rows="3" class="form-control"><?php echo text($check_res['assess_vocational']); ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Assessment of cultural issues impacting treatment:'); ?></strong></div>
-                                        <textarea name="assess_cultural"  rows="3" class="form-control"><?php echo text($check_res['assess_cultural']); ?></textarea>
+                                        <textarea name="assess_cultural" disabled rows="3" class="form-control"><?php echo text($check_res['assess_cultural']); ?></textarea>
                                     </div>
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Assessment of client strengths and other resilience factors including social support network:'); ?></strong></div>
-                                        <textarea name="assess_social"  rows="3" class="form-control"><?php echo text($check_res['assess_social']); ?></textarea>
+                                        <textarea name="assess_social"  rows="3" disabled class="form-control"><?php echo text($check_res['assess_social']); ?></textarea>
 
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="strength_identify" value="identify_easily" <?php echo ($check_res['strength_identify'] == 'identify_easily') ? 'checked': ''; ?> > <?php echo xlt('Client identified strengths easily'); ?>
+                                          <input type="radio"  name="strength_identify" disabled value="identify_easily" <?php echo ($check_res['strength_identify'] == 'identify_easily') ? 'checked': ''; ?> > <?php echo xlt('Client identified strengths easily'); ?>
                                         </label>
                                         <label class="checkbox-inline">
-                                          <input type="radio"  name="strength_identify" value="identify_struggle" <?php echo ($check_res['strength_identify'] == 'identify_struggle') ? 'checked': ''; ?> > <?php echo xlt('Client struggled to identify strengths'); ?>
+                                          <input type="radio"  name="strength_identify" disabled value="identify_struggle" <?php echo ($check_res['strength_identify'] == 'identify_struggle') ? 'checked': ''; ?> > <?php echo xlt('Client struggled to identify strengths'); ?>
                                         </label>
                                     </div>
 
@@ -721,13 +705,13 @@ if ($postCalendarCategoryACO) {
                                         <div style="padding-left: 20px">
 
                                             <label class="radio">
-                                              <input type="radio"  name="client_readiness" value="identify_the_need" <?php echo ($check_res['client_readiness'] == 'identify_the_need') ? 'checked': ''; ?> > <?php echo xlt('Client identified the need for treatment as evidenced by: '); ?>
-                                                <input type="text" name="client_identify_evidence" value="<?php echo text($check_res['client_identify_evidence']); ?>">
+                                              <input type="radio"  name="client_readiness" value="identify_the_need" disabled <?php echo ($check_res['client_readiness'] == 'identify_the_need') ? 'checked': ''; ?> > <?php echo xlt('Client identified the need for treatment as evidenced by: '); ?>
+                                                <input type="text" name="client_identify_evidence" disabled value="<?php echo text($check_res['client_identify_evidence']); ?>">
                                             </label>
 
                                             <label class="radio">
-                                              <input type="radio"  name="client_readiness" value="struggle_identify_the_need" <?php echo ($check_res['client_readiness'] == 'struggle_identify_the_need') ? 'checked': ''; ?> > <?php echo xlt('Client struggled to identify the need for treatment as evidenced by: '); ?>
-                                                <input type="text" name="client_struggle_evidence" value="<?php echo text($check_res['client_struggle_evidence']); ?>">
+                                              <input type="radio"  name="client_readiness" value="struggle_identify_the_need" disabled <?php echo ($check_res['client_readiness'] == 'struggle_identify_the_need') ? 'checked': ''; ?> > <?php echo xlt('Client struggled to identify the need for treatment as evidenced by: '); ?>
+                                                <input type="text" name="client_struggle_evidence"  disabled value="<?php echo text($check_res['client_struggle_evidence']); ?>">
                                             </label>
                                             
                                         </div>
@@ -736,7 +720,7 @@ if ($postCalendarCategoryACO) {
 
                                     <div class="form-group">
                                         <div><strong><?php echo xlt('Activities needed to improve the member\'s readiness for treatment:'); ?></strong></div>
-                                        <textarea name="activities_readiness" rows="3" class="form-control"><?php echo text($check_res['activities_readiness']); ?></textarea>
+                                        <textarea name="activities_readiness" rows="3" disabled class="form-control"><?php echo text($check_res['activities_readiness']); ?></textarea>
                                     </div>
 
 
@@ -755,10 +739,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Current'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="illegal_drug_current" value="Yes" <?php echo ($check_res['illegal_drug_current'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="illegal_drug_current" value="Yes" disabled <?php echo ($check_res['illegal_drug_current'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="illegal_drug_current" value="No" <?php echo ($check_res['illegal_drug_current'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="illegal_drug_current" value="No" disabled <?php echo ($check_res['illegal_drug_current'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -766,10 +750,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Past 12 Months:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="illegal_drug_past_12" value="Yes" <?php echo ($check_res['illegal_drug_past_12'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="illegal_drug_past_12" value="Yes" disabled <?php echo ($check_res['illegal_drug_past_12'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="illegal_drug_past_12" value="No" <?php echo ($check_res['illegal_drug_past_12'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="illegal_drug_past_12" value="No" disabled <?php echo ($check_res['illegal_drug_past_12'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -777,10 +761,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Lifetime:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="illegal_drug_lifetime" value="Yes" <?php echo ($check_res['illegal_drug_lifetime'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="illegal_drug_lifetime" value="Yes" disabled <?php echo ($check_res['illegal_drug_lifetime'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="illegal_drug_lifetime" value="No" <?php echo ($check_res['illegal_drug_lifetime'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="illegal_drug_lifetime" value="No" disabled <?php echo ($check_res['illegal_drug_lifetime'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -795,10 +779,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Current:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="prescriptive_drug_current" value="Yes" <?php echo ($check_res['prescriptive_drug_current'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="prescriptive_drug_current" value="Yes" disabled <?php echo ($check_res['prescriptive_drug_current'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="prescriptive_drug_current" value="No" <?php echo ($check_res['prescriptive_drug_current'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="prescriptive_drug_current" value="No" disabled <?php echo ($check_res['prescriptive_drug_current'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -806,10 +790,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Past 12 Months:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="prescriptive_drug_past_12" value="Yes" <?php echo ($check_res['prescriptive_drug_past_12'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="prescriptive_drug_past_12" value="Yes" disabled <?php echo ($check_res['prescriptive_drug_past_12'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="prescriptive_drug_past_12" value="No" <?php echo ($check_res['prescriptive_drug_past_12'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="prescriptive_drug_past_12" value="No" disabled <?php echo ($check_res['prescriptive_drug_past_12'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -817,10 +801,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Lifetime:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="prescriptive_drug_lifetime" value="Yes" <?php echo ($check_res['prescriptive_drug_lifetime'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="prescriptive_drug_lifetime" value="Yes" disabled <?php echo ($check_res['prescriptive_drug_lifetime'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="prescriptive_drug_lifetime" value="No" <?php echo ($check_res['prescriptive_drug_lifetime'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="prescriptive_drug_lifetime" value="No" disabled <?php echo ($check_res['prescriptive_drug_lifetime'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -835,10 +819,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Current:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="alcohol_drug_current" value="Yes" <?php echo ($check_res['alcohol_drug_current'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="alcohol_drug_current" value="Yes"  disabled <?php echo ($check_res['alcohol_drug_current'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="alcohol_drug_current" value="No" <?php echo ($check_res['alcohol_drug_current'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="alcohol_drug_current" value="No" disabled <?php echo ($check_res['alcohol_drug_current'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -846,10 +830,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Past 12 Months:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="alcohol_drug_past_12" value="Yes" <?php echo ($check_res['alcohol_drug_past_12'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="alcohol_drug_past_12" value="Yes" disabled <?php echo ($check_res['alcohol_drug_past_12'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="alcohol_drug_past_12" value="No" <?php echo ($check_res['alcohol_drug_past_12'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="alcohol_drug_past_12" value="No" disabled <?php echo ($check_res['alcohol_drug_past_12'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -857,10 +841,10 @@ if ($postCalendarCategoryACO) {
                                             <div class="form-group">
                                                 <label class="checkbox-inline"><strong><?php echo xlt('Lifetime:'); ?></strong></label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="alcohol_drug_lifetime" value="Yes" <?php echo ($check_res['alcohol_drug_lifetime'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
+                                                  <input type="radio"  name="alcohol_drug_lifetime" value="Yes" disabled <?php echo ($check_res['alcohol_drug_lifetime'] == 'Yes') ? 'checked': ''; ?> > <?php echo xlt('Yes'); ?>
                                                 </label>
                                                 <label class="checkbox-inline">
-                                                  <input type="radio"  name="alcohol_drug_lifetime" value="No" <?php echo ($check_res['alcohol_drug_lifetime'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
+                                                  <input type="radio"  name="alcohol_drug_lifetime" value="No" disabled <?php echo ($check_res['alcohol_drug_lifetime'] == 'No') ? 'checked': ''; ?> > <?php echo xlt('No'); ?>
                                                 </label>
                                             </div>
                                         </div>
@@ -884,129 +868,129 @@ if ($postCalendarCategoryACO) {
                                                 <tr>
                                                     <td><?php echo xlt('Caffeine'); ?></td>
                                                     <td>
-                                                        <input type="text" name="caffeine_age_first" value="<?php echo text($check_res['caffeine_age_first']); ?>" style="width: 140px">
+                                                        <input type="text" name="caffeine_age_first" disabled value="<?php echo text($check_res['caffeine_age_first']); ?>" style="width: 140px">
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="caffeine_age_last" value="<?php echo text($check_res['caffeine_age_last']); ?>" style="width: 140px" >
+                                                        <input type="text" name="caffeine_age_last" disabled value="<?php echo text($check_res['caffeine_age_last']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="caffeine_frequency" value="<?php echo text($check_res['caffeine_frequency']); ?>" style="width: 140px" >
+                                                        <input type="text" name="caffeine_frequency" disabled value="<?php echo text($check_res['caffeine_frequency']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="caffeine_amount" value="<?php echo text($check_res['caffeine_amount']); ?>" style="width: 140px" >
+                                                        <input type="text" name="caffeine_amount" disabled value="<?php echo text($check_res['caffeine_amount']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="caffeine_method" value="<?php echo text($check_res['caffeine_method']); ?>" style="width: 140px">
+                                                        <input type="text" name="caffeine_method" disabled value="<?php echo text($check_res['caffeine_method']); ?>" style="width: 140px">
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><?php echo xlt('Tobacco'); ?></td>
                                                     <td>
-                                                        <input type="text" name="tobacco_age_first" value="<?php echo text($check_res['tobacco_age_first']); ?>" style="width: 140px" >
+                                                        <input type="text" name="tobacco_age_first" disabled value="<?php echo text($check_res['tobacco_age_first']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="tobacco_age_last" value="<?php echo text($check_res['tobacco_age_last']); ?>" style="width: 140px" >
+                                                        <input type="text" name="tobacco_age_last" disabled value="<?php echo text($check_res['tobacco_age_last']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="tobacco_frequency" value="<?php echo text($check_res['tobacco_frequency']); ?>" style="width: 140px" >
+                                                        <input type="text" name="tobacco_frequency" disabled value="<?php echo text($check_res['tobacco_frequency']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="tobacco_amount" value="<?php echo text($check_res['tobacco_amount']); ?>" style="width: 140px" >
+                                                        <input type="text" name="tobacco_amount" disabled value="<?php echo text($check_res['tobacco_amount']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="tobacco_method" value="<?php echo text($check_res['tobacco_method']); ?>" style="width: 140px" >
+                                                        <input type="text" name="tobacco_method" disabled value="<?php echo text($check_res['tobacco_method']); ?>" style="width: 140px" >
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><?php echo xlt('Alcohol'); ?></td>
                                                     <td>
-                                                        <input type="text" name="alcohol_age_first" value="<?php echo text($check_res['alcohol_age_first']); ?>" style="width: 140px">
+                                                        <input type="text" name="alcohol_age_first" disabled value="<?php echo text($check_res['alcohol_age_first']); ?>" style="width: 140px">
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="alcohol_age_last" value="<?php echo text($check_res['alcohol_age_last']); ?>" style="width: 140px">
+                                                        <input type="text" name="alcohol_age_last" disabled value="<?php echo text($check_res['alcohol_age_last']); ?>" style="width: 140px">
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="alcohol_frequency" value="<?php echo text($check_res['alcohol_frequency']); ?>" style="width: 140px">
+                                                        <input type="text" name="alcohol_frequency" disabled value="<?php echo text($check_res['alcohol_frequency']); ?>" style="width: 140px">
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="alcohol_amount" value="<?php echo text($check_res['alcohol_amount']); ?>" style="width: 140px">
+                                                        <input type="text" name="alcohol_amount" disabled value="<?php echo text($check_res['alcohol_amount']); ?>" style="width: 140px">
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="alcohol_method" value="<?php echo text($check_res['alcohol_method']); ?>" style="width: 140px">
+                                                        <input type="text" name="alcohol_method" disabled value="<?php echo text($check_res['alcohol_method']); ?>" style="width: 140px">
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><?php echo xlt('Prescription drugs'); ?>
-                                                        <input type="text" name="prescription_drugs" value="<?php echo text($check_res['prescription_drugs']); ?>" style="width: 140px" >
+                                                        <input type="text" name="prescription_drugs" disabled value="<?php echo text($check_res['prescription_drugs']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="prescription_age_first" value="<?php echo text($check_res['prescription_age_first']); ?>" style="width: 140px" >
+                                                        <input type="text" name="prescription_age_first" disabled value="<?php echo text($check_res['prescription_age_first']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="prescription_age_last" value="<?php echo text($check_res['prescription_age_last']); ?>" style="width: 140px" >
+                                                        <input type="text" name="prescription_age_last" disabled value="<?php echo text($check_res['prescription_age_last']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="prescription_frequency" value="<?php echo text($check_res['prescription_frequency']); ?>" style="width: 140px" >
+                                                        <input type="text" name="prescription_frequency" disabled value="<?php echo text($check_res['prescription_frequency']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="prescription_amount" value="<?php echo text($check_res['prescription_amount']); ?>" style="width: 140px" >
+                                                        <input type="text" name="prescription_amount" disabled value="<?php echo text($check_res['prescription_amount']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="prescription_method" value="<?php echo text($check_res['prescription_method']); ?>" style="width: 140px" >
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td><?php echo xlt('Other'); ?></td>
-                                                    <td>
-                                                        <input type="text" name="other1_age_first" value="<?php echo text($check_res['other1_age_first']); ?>" style="width: 140px" >
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="other1_age_last" value="<?php echo text($check_res['other1_age_last']); ?>" style="width: 140px" >
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="other1_frequency" value="<?php echo text($check_res['other1_frequency']); ?>" style="width: 140px" >
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="other1_amount" value="<?php echo text($check_res['other1_amount']); ?>" style="width: 140px" >
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="other1_method" value="<?php echo text($check_res['other1_method']); ?>" style="width: 140px" >
+                                                        <input type="text" name="prescription_method" disabled value="<?php echo text($check_res['prescription_method']); ?>" style="width: 140px" >
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><?php echo xlt('Other'); ?></td>
                                                     <td>
-                                                        <input type="text" name="other2_age_first" value="<?php echo text($check_res['other2_age_first']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other1_age_first" disabled value="<?php echo text($check_res['other1_age_first']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other2_age_last" value="<?php echo text($check_res['other2_age_last']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other1_age_last" disabled value="<?php echo text($check_res['other1_age_last']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other2_frequency" value="<?php echo text($check_res['other2_frequency']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other1_frequency" disabled value="<?php echo text($check_res['other1_frequency']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other2_amount" value="<?php echo text($check_res['other2_amount']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other1_amount" disabled value="<?php echo text($check_res['other1_amount']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other2_method" value="<?php echo text($check_res['other2_method']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other1_method" disabled value="<?php echo text($check_res['other1_method']); ?>" style="width: 140px" >
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td><?php echo xlt('Other'); ?></td>
                                                     <td>
-                                                        <input type="text" name="other3_age_first" value="<?php echo text($check_res['other3_age_first']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other2_age_first" disabled value="<?php echo text($check_res['other2_age_first']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other3_age_last" value="<?php echo text($check_res['other3_age_last']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other2_age_last" disabled value="<?php echo text($check_res['other2_age_last']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other3_frequency" value="<?php echo text($check_res['other3_frequency']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other2_frequency" disabled value="<?php echo text($check_res['other2_frequency']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other3_amount" value="<?php echo text($check_res['other3_amount']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other2_amount" disabled value="<?php echo text($check_res['other2_amount']); ?>" style="width: 140px" >
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="other3_method" value="<?php echo text($check_res['other3_method']); ?>" style="width: 140px" >
+                                                        <input type="text" name="other2_method" disabled value="<?php echo text($check_res['other2_method']); ?>" style="width: 140px" >
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><?php echo xlt('Other'); ?></td>
+                                                    <td>
+                                                        <input type="text" name="other3_age_first" disabled value="<?php echo text($check_res['other3_age_first']); ?>" style="width: 140px" >
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="other3_age_last" disabled value="<?php echo text($check_res['other3_age_last']); ?>" style="width: 140px" >
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="other3_frequency" disabled value="<?php echo text($check_res['other3_frequency']); ?>" style="width: 140px" >
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="other3_amount" disabled value="<?php echo text($check_res['other3_amount']); ?>" style="width: 140px" >
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="other3_method" disabled value="<?php echo text($check_res['other3_method']); ?>" style="width: 140px" >
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -1019,19 +1003,19 @@ if ($postCalendarCategoryACO) {
                                         <div class="form-group">
                                             <div class="checkbox">
                                               <label>
-                                                <input type="checkbox" value="send_referral_cbs" name="referral_comm_services[]" <?php echo (in_array('send_referral_cbs', $referral_comm_services)) ? 'checked':''; ?> >
+                                                <input type="checkbox" value="send_referral_cbs" disabled name="referral_comm_services[]" <?php echo (in_array('send_referral_cbs', $referral_comm_services)) ? 'checked':''; ?> >
                                                 Send Referral to CBS services
                                               </label>
                                             </div>
                                             <div class="checkbox">
                                               <label>
-                                                <input type="checkbox" value="not_applicable" name="referral_comm_services[]" <?php echo (in_array('not_applicable', $referral_comm_services)) ? 'checked':''; ?> >
+                                                <input type="checkbox" value="not_applicable" disabled name="referral_comm_services[]" <?php echo (in_array('not_applicable', $referral_comm_services)) ? 'checked':''; ?> >
                                                 Not Applicable - not eligible for services as CBRS, CM, Peer Support, etc. Not a behavior disorder such as ADHD, ODD, CDD, etc. or a persistent and severe diagnosis such as Depression, Anxiety, Bipolar, PTSD Schizophrenic, Personality Disorder, etc. 
                                               </label>
                                             </div>
                                             <div class="checkbox">
                                               <label>
-                                                <input type="checkbox" value="send_referral_development" name="referral_comm_services[]" <?php echo (in_array('send_referral_development', $referral_comm_services)) ? 'checked':''; ?> >
+                                                <input type="checkbox" value="send_referral_development" disabled name="referral_comm_services[]" <?php echo (in_array('send_referral_development', $referral_comm_services)) ? 'checked':''; ?> >
                                                 Send Referral to Developmental Disability Services - has disability diagnosis such as Spectrum Disorder, Delayed Intellectual Functioning, Intellectual Disability, etc.
                                               </label>
                                             </div>
@@ -1078,10 +1062,10 @@ if ($postCalendarCategoryACO) {
                                                             foreach($appearance_weight_arr as $appearance_wgt):
                                                          ?>
                                                         <label class="">
-                                                          <input type="checkbox" name="appearance_weight[]" value="<?php echo text($appearance_wgt); ?>"  <?php echo (in_array($appearance_wgt,$appearance_weight)) ? 'checked':''; ?> > <?php echo xlt($appearance_wgt); ?>
+                                                          <input type="checkbox" name="appearance_weight[]" disabled value="<?php echo text($appearance_wgt); ?>"  <?php echo (in_array($appearance_wgt,$appearance_weight)) ? 'checked':''; ?> > <?php echo xlt($appearance_wgt); ?>
                                                         </label>
-                                                        <?php endforeach; ?>                                                        
-                                                        <input type="text" name="appearance_weight_other" value="<?php echo text($check_res['appearance_weight_other']); ?>">
+                                                        <?php endforeach; ?>
+                                                        <input type="text" name="appearance_weight_other" disabled value="<?php echo text($check_res['appearance_weight_other']); ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
@@ -1093,22 +1077,22 @@ if ($postCalendarCategoryACO) {
                                                             foreach($appearance_hygiene_arr as $appearance_hyg):
                                                         ?>
                                                         <label class="">
-                                                          <input type="checkbox" name="appearance_hygiene[]"  value="<?php echo text($appearance_hyg); ?>" <?php echo (in_array($appearance_hyg,$appearance_hygiene)) ? 'checked':''; ?> ><?php echo text($appearance_hyg); ?>
+                                                          <input type="checkbox" name="appearance_hygiene[]" disabled value="<?php echo text($appearance_hyg); ?>" <?php echo (in_array($appearance_hyg,$appearance_hygiene)) ? 'checked':''; ?> ><?php echo text($appearance_hyg); ?>
                                                         </label>
-                                                        <?php endforeach; ?>
-                                                        <input type="text" name="appearance_hygiene_other" value="<?php echo text($check_res['appearance_hygiene_other']); ?>">
+                                                        <?php endforeach; ?>                                                        
+                                                        <input type="text" name="appearance_hygiene_other" disabled value="<?php echo text($check_res['appearance_hygiene_other']); ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <strong><?php echo xlt('Dressed appropriate for age and season:'); ?></strong>
                                                     <div class="form-group">
                                                         <label class="">
-                                                          <input type="radio" name="appearance_dress" value="Yes" <?php echo ($check_res['appearance_dress'] == 'Yes') ? 'checked':''; ?> > <?php echo xlt('Yes'); ?>
+                                                          <input type="radio" name="appearance_dress" value="Yes" disabled <?php echo ($check_res['appearance_dress'] == 'Yes') ? 'checked':''; ?> > <?php echo xlt('Yes'); ?>
                                                         </label>
                                                         <label class="">
-                                                          <input type="radio" name="appearance_dress" value="No" <?php echo ($check_res['appearance_dress'] == 'No') ? 'checked':''; ?> > <?php echo xlt('No'); ?>
+                                                          <input type="radio" name="appearance_dress" value="No" disabled <?php echo ($check_res['appearance_dress'] == 'No') ? 'checked':''; ?> > <?php echo xlt('No'); ?>
                                                         </label>
-                                                        <input type="text" name="appearance_dress_other" value="<?php echo text($check_res['appearance_dress_other']); ?>">
+                                                        <input type="text" name="appearance_dress_other" disabled value="<?php echo text($check_res['appearance_dress_other']); ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1124,40 +1108,55 @@ if ($postCalendarCategoryACO) {
                                                     <?php $speech_rate = explode('|', $check_res['speech_rate']); ?>
                                                     <strong><?php echo xlt('Rate'); ?></strong>
                                                     <div class="form-group">
-                                                        <?php  
-                                                            $speech_rate_arr = array('Slow', 'Rapid', 'Pauses', 'WNL');
-                                                            foreach($speech_rate_arr as $speech_rt):
-                                                        ?>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="speech_rate[]" value="<?php echo text($speech_rt); ?>" <?php echo (in_array($speech_rt, $speech_rate)) ? 'checked':''; ?> > <?php echo xlt($speech_rt); ?>
-                                                        </label>          
-                                                        <?php endforeach; ?>                                                         
+                                                          <input type="checkbox" name="speech_rate[]" disabled value="Slow" <?php echo (in_array('Slow', $speech_rate)) ? 'checked':''; ?> > <?php echo xlt('Slow'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_rate[]" disabled value="Rapid" <?php echo (in_array('Rapid', $speech_rate)) ? 'checked':''; ?> > <?php echo xlt('Rapid'); ?>
+                                                        </label>
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_rate[]" disabled value="Pauses" <?php echo (in_array('Pauses', $speech_rate)) ? 'checked':''; ?> > <?php echo xlt('Pauses'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_rate[]" value="WNL" disabled <?php echo (in_array('WNL', $speech_rate)) ? 'checked':''; ?> > <?php echo xlt('WNL'); ?>
+                                                        </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <?php $speech_volume = explode('|', $check_res['speech_volume']); ?>
                                                     <strong><?php echo xlt('Volume'); ?></strong>
                                                     <div class="form-group">
-                                                        <?php  
-                                                            $speech_volume_arr1 = array('Loud', 'Soft', 'Whisper', 'WNL');
-                                                            foreach($speech_volume_arr1 as $speech_vol1):
-                                                        ?>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="speech_volume[]" value="<?php echo text($speech_vol1); ?>" <?php echo (in_array($speech_vol1, $speech_volume)) ? 'checked':''; ?> > <?php echo trim(xlt($speech_vol1)); ?>
-                                                        </label>    
-                                                        <?php endforeach; ?>  
+                                                          <input type="checkbox" name="speech_volume[]" value="Loud" disabled <?php echo (in_array('Loud', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Loud'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_volume[]" value="Soft" disabled <?php echo (in_array('Soft', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Soft'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_volume[]" value="Whisper" disabled <?php echo (in_array('Whisper', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Whisper'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_volume[]" value="WNL" disabled <?php echo (in_array('WNL', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('WNL'); ?>
+                                                        </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
-                                                        <?php  
-                                                            $speech_volume_arr2 = array('Pressured', 'Slurred', 'Stuttering', 'Talking to Self', 'Controlled Speech Impediment');
-                                                            foreach($speech_volume_arr2 as $speech_vol2):
-                                                        ?>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="speech_volume[]" value="<?php echo text($speech_vol2); ?>" <?php echo (in_array($speech_vol2, $speech_volume)) ? 'checked':''; ?> > <?php echo xlt($speech_vol2); ?>
-                                                        </label>          
-                                                        <?php endforeach; ?> 
+                                                          <input type="checkbox" name="speech_volume[]" value="Pressured" disabled <?php echo (in_array('Pressured', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Pressured'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_volume[]" value="Slurred" disabled <?php echo (in_array('Slurred', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Slurred'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_volume[]" value="Stuttering" disabled <?php echo (in_array('Stuttering', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Stuttering'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_volume[]" value="Talking to self" disabled <?php echo (in_array('Talking to self', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Talking to self'); ?>
+                                                        </label>                                        
+                                                        <label class="checkbox">
+                                                          <input type="checkbox" name="speech_volume[]" value="Controlled Speech Impediment" disabled <?php echo (in_array('Controlled Speech Impediment', $speech_volume)) ? 'checked':''; ?> > <?php echo xlt('Controlled Speech Impediment'); ?>
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1172,10 +1171,10 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="motor_activity[]" value="Normal" <?php echo (in_array('Normal', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Normal'); ?>
+                                                          <input type="checkbox" name="motor_activity[]" value="Normal" disabled <?php echo (in_array('Normal', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Normal'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="motor_activity[]" value="Abnormal Movements" <?php echo (in_array('Abnormal Movements', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Abnormal Movements'); ?>
+                                                          <input type="checkbox" name="motor_activity[]" value="Abnormal Movements" disabled <?php echo (in_array('Abnormal Movements', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Abnormal Movements'); ?>
                                                         </label>
                                                         
                                                     </div>
@@ -1183,20 +1182,20 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="motor_activity[]" value="Decreased" <?php echo (in_array('Decreased', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Decreased'); ?>
+                                                          <input type="checkbox" name="motor_activity[]" value="Decreased" disabled <?php echo (in_array('Decreased', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Decreased'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="motor_activity[]" value="Increased" <?php echo (in_array('Increased', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Increased'); ?>
+                                                          <input type="checkbox" name="motor_activity[]" value="Increased" disabled <?php echo (in_array('Increased', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Increased'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="motor_activity[]" value="Catatonia" <?php echo (in_array('Catatonia', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Catatonia'); ?>
+                                                          <input type="checkbox" name="motor_activity[]" value="Catatonia" disabled <?php echo (in_array('Catatonia', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Catatonia'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="motor_activity[]" value="Agitation" <?php echo (in_array('Agitation', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Agitation/restless'); ?>
+                                                          <input type="checkbox" name="motor_activity[]" value="Agitation" disabled <?php echo (in_array('Agitation', $motor_activity)) ? 'checked':''; ?> > <?php echo xlt('Agitation/restless'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1212,30 +1211,30 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="eye_contact[]" value="Normal" <?php echo (in_array('Normal', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Normal'); ?>
+                                                          <input type="checkbox" name="eye_contact[]" value="Normal" disabled <?php echo (in_array('Normal', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Normal'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="eye_contact[]" value="Inconsistent" <?php echo (in_array('Inconsistent', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Inconsistent'); ?>
+                                                          <input type="checkbox" name="eye_contact[]" value="Inconsistent" disabled <?php echo (in_array('Inconsistent', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Inconsistent'); ?>
                                                         </label>                                            
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="eye_contact[]" value="Decreased" <?php echo (in_array('Decreased', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Decreased'); ?>
+                                                          <input type="checkbox" name="eye_contact[]" value="Decreased" disabled <?php echo (in_array('Decreased', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Decreased'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="eye_contact[]" value="Excessive" <?php echo (in_array('Excessive', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Excessive'); ?>
+                                                          <input type="checkbox" name="eye_contact[]" value="Excessive" disabled <?php echo (in_array('Excessive', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Excessive'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="eye_contact[]" value="Avoidant" <?php echo (in_array('Avoidant', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Avoidant'); ?>
+                                                          <input type="checkbox" name="eye_contact[]" value="Avoidant" disabled <?php echo (in_array('Avoidant', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Avoidant'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="eye_contact[]" value="Intrusive" <?php echo (in_array('Intrusive', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Intrusive'); ?>
+                                                          <input type="checkbox" name="eye_contact[]" value="Intrusive" disabled <?php echo (in_array('Intrusive', $eye_contact)) ? 'checked':''; ?> > <?php echo xlt('Intrusive'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1251,27 +1250,27 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="cooperativeness[]" value="Cooperative" <?php echo (in_array('Cooperative', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Cooperative'); ?>
+                                                          <input type="checkbox" name="cooperativeness[]" value="Cooperative" disabled <?php echo (in_array('Cooperative', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Cooperative'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="cooperativeness[]" value="Uncooperative" <?php echo (in_array('Uncooperative', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Uncooperative'); ?>
+                                                          <input type="checkbox" name="cooperativeness[]" value="Uncooperative" disabled <?php echo (in_array('Uncooperative', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Uncooperative'); ?>
                                                         </label>                                            
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="cooperativeness[]" value="Hostile" <?php echo (in_array('Hostile', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Hostile'); ?>
+                                                          <input type="checkbox" name="cooperativeness[]" value="Hostile" disabled <?php echo (in_array('Hostile', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Hostile'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="cooperativeness[]" value="Reluctant" <?php echo (in_array('Reluctant', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Reluctant'); ?>
+                                                          <input type="checkbox" name="cooperativeness[]" value="Reluctant" disabled <?php echo (in_array('Reluctant', $cooperativeness)) ? 'checked':''; ?> > <?php echo xlt('Reluctant'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class=""><?php echo xlt('Other:'); ?></label>                                        
-                                                        <input type="text" name="cooperativeness_other" value="<?php echo text($check_res['cooperativeness_other']); ?>">
+                                                        <input type="text" name="cooperativeness_other" disabled value="<?php echo text($check_res['cooperativeness_other']); ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1290,36 +1289,36 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Logical" <?php echo (in_array('Logical', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Logical/Coherent'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Logical" disabled <?php echo (in_array('Logical', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Logical/Coherent'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Vague" <?php echo (in_array('Vague', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Vague'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Vague" disabled <?php echo (in_array('Vague', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Vague'); ?>
                                                         </label>     
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Incoherent"  <?php echo (in_array('Incoherent', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Incoherent'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Incoherent" disabled <?php echo (in_array('Incoherent', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Incoherent'); ?>
                                                         </label>                                       
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Disorganized" <?php echo (in_array('Disorganized', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Disorganized'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Disorganized" disabled <?php echo (in_array('Disorganized', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Disorganized'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Bizarre" <?php echo (in_array('Bizarre', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Bizarre'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Bizarre" disabled <?php echo (in_array('Bizarre', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Bizarre'); ?>
                                                         </label>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Repeated Thought" <?php echo (in_array('Repeated Thought', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Repeated Thought'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Repeated Thought" disabled <?php echo (in_array('Repeated Thought', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Repeated Thought'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Tangential" <?php echo (in_array('Tangential', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Tangential'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Tangential" disabled <?php echo (in_array('Tangential', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Tangential'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_process[]" value="Distracted" <?php echo (in_array('Distracted', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Distracted'); ?>
+                                                          <input type="checkbox" name="thought_process[]" value="Distracted" disabled <?php echo (in_array('Distracted', $thought_process)) ? 'checked':'';  ?> > <?php echo xlt('Distracted'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1335,46 +1334,46 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_content[]" value="Appropriate" <?php echo (in_array('Appropriate', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Appropriate'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Appropriate" disabled <?php echo (in_array('Appropriate', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Appropriate'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_content[]" value="Future Oriented" <?php echo (in_array('Future Oriented', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Future Oriented'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Future Oriented" disabled <?php echo (in_array('Future Oriented', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Future Oriented'); ?>
                                                         </label>     
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_content[]" value="Ruminating"  <?php echo (in_array('Ruminating', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Ruminating'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Ruminating" disabled <?php echo (in_array('Ruminating', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Ruminating'); ?>
                                                         </label>  
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_content[]" value="Obsessions"  <?php echo (in_array('Obsessions', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Obsessions'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Obsessions" disabled <?php echo (in_array('Obsessions', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Obsessions'); ?>
                                                         </label>                                      
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_content[]" value="Depersonalization" <?php echo (in_array('Depersonalization', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Depersonalization'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Depersonalization" disabled <?php echo (in_array('Depersonalization', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Depersonalization'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_content[]" value="Fears" <?php echo (in_array('Fears', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Fears/Phobias'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Fears" disabled <?php echo (in_array('Fears', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Fears/Phobias'); ?>
                                                         </label>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_content[]" value="Self-Harm" <?php echo (in_array('Self-Harm', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Self-Harm'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Self-Harm" disabled <?php echo (in_array('Self-Harm', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Self-Harm'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox" style="margin-bottom: 0">
-                                                          <input type="checkbox" name="thought_content[]" value="Suicidal" <?php echo (in_array('Suicidal', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Suicidal/Homicidal Ideation'); ?>
+                                                          <input type="checkbox" name="thought_content[]" value="Suicidal" disabled <?php echo (in_array('Suicidal', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Suicidal/Homicidal Ideation'); ?>
                                                         </label>  
                                                         <div style="padding-left: 20px; margin-top: -7px">
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_content[]" value="Plan" <?php echo (in_array('Plan', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Plan'); ?>
+                                                              <input type="checkbox" name="thought_content[]" value="Plan" disabled <?php echo (in_array('Plan', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Plan'); ?>
                                                             </label>
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_content[]" value="Means" <?php echo (in_array('Means', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Means'); ?>
+                                                              <input type="checkbox" name="thought_content[]" value="Means" disabled <?php echo (in_array('Means', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Means'); ?>
                                                             </label>
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_content[]" value="Able to Contract" <?php echo (in_array('Able to Contract', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Able to Contract'); ?>
+                                                              <input type="checkbox" name="thought_content[]" value="Able to Contract" disabled <?php echo (in_array('Able to Contract', $thought_content)) ? 'checked':'';  ?> > <?php echo xlt('Able to Contract'); ?>
                                                             </label>                                                
                                                         </div>                                      
                                                         
@@ -1393,13 +1392,13 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_perception[]" value="Appropriate" <?php echo (in_array('Appropriate', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Appropriate'); ?>
+                                                          <input type="checkbox" name="thought_perception[]" value="Appropriate" disabled <?php echo (in_array('Appropriate', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Appropriate'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_perception[]" value="Distorted" <?php echo (in_array('Distorted', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Distorted'); ?>
+                                                          <input type="checkbox" name="thought_perception[]" value="Distorted" disabled <?php echo (in_array('Distorted', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Distorted'); ?>
                                                         </label>     
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="thought_perception[]" value="Inconsistent"  <?php echo (in_array('Inconsistent', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Inconsistent'); ?>
+                                                          <input type="checkbox" name="thought_perception[]" value="Inconsistent" disabled <?php echo (in_array('Inconsistent', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Inconsistent'); ?>
                                                         </label>  
                                                                                         
                                                     </div>
@@ -1407,17 +1406,17 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox" style="margin-bottom: 0">
-                                                          <input type="checkbox" name="thought_perception[]" value="Delusions" <?php echo (in_array('Delusions', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Delusions'); ?>
+                                                          <input type="checkbox" name="thought_perception[]" value="Delusions" disabled <?php echo (in_array('Delusions', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Delusions'); ?>
                                                         </label>      
                                                         <div style="padding-left: 20px; margin-top: -7px">
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_perception[]" value="Paranoid" <?php echo (in_array('Paranoid', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Paranoid'); ?>
+                                                              <input type="checkbox" name="thought_perception[]" value="Paranoid" disabled <?php echo (in_array('Paranoid', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Paranoid'); ?>
                                                             </label>
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_perception[]" value="Grandiose" <?php echo (in_array('Grandiose', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Grandiose'); ?>
+                                                              <input type="checkbox" name="thought_perception[]" value="Grandiose" disabled <?php echo (in_array('Grandiose', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Grandiose'); ?>
                                                             </label>
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_perception[]" value="Bizarre" <?php echo (in_array('Bizarre', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Bizarre'); ?>
+                                                              <input type="checkbox" name="thought_perception[]" value="Bizarre" disabled <?php echo (in_array('Bizarre', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Bizarre'); ?>
                                                             </label>
                                                         </div>                                  
                                                         
@@ -1426,21 +1425,21 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox" style="margin-bottom: 0">
-                                                          <input type="checkbox" name="thought_perception[]" value="Hallucinations" <?php echo (in_array('Hallucinations', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Hallucinations'); ?>
+                                                          <input type="checkbox" name="thought_perception[]" value="Hallucinations" disabled <?php echo (in_array('Hallucinations', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Hallucinations'); ?>
                                                         </label>  
                                                         <div style="padding-left: 20px; margin-top: -7px">
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_perception[]" value="Auditory" <?php echo (in_array('Auditory', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Auditory'); ?>
+                                                              <input type="checkbox" name="thought_perception[]" value="Auditory" disabled <?php echo (in_array('Auditory', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Auditory'); ?>
                                                             </label>
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_perception[]" value="Visual" <?php echo (in_array('Visual', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Visual'); ?>
+                                                              <input type="checkbox" name="thought_perception[]" value="Visual" disabled <?php echo (in_array('Visual', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Visual'); ?>
                                                             </label>
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_perception[]" value="Olfactory" <?php echo (in_array('Olfactory', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Olfactory'); ?>
+                                                              <input type="checkbox" name="thought_perception[]" value="Olfactory" disabled <?php echo (in_array('Olfactory', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Olfactory'); ?>
                                                             </label>  
                                                             <label class="checkbox">
-                                                              <input type="checkbox" name="thought_perception[]" value="Other" <?php echo (in_array('Other', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Other'); ?>
-                                                              <input type="text" name="thought_perception_other" value="<?php echo text($check_res['thought_perception_other']); ?>" style="width: 125px;">
+                                                              <input type="checkbox" name="thought_perception[]" value="Other" disabled <?php echo (in_array('Other', $thought_perception)) ? 'checked':'';  ?> > <?php echo xlt('Other'); ?>
+                                                              <input type="text" name="thought_perception_other" disabled value="<?php echo text($check_res['thought_perception_other']); ?>" style="width: 125px;">
                                                             </label>                                              
                                                         </div>                                      
                                                         
@@ -1464,39 +1463,39 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Calm" <?php echo (in_array('Calm', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Calm'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Calm" disabled <?php echo (in_array('Calm', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Calm'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Apathetic" <?php echo (in_array('Apathetic', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Apathetic'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Apathetic" disabled <?php echo (in_array('Apathetic', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Apathetic'); ?>
                                                         </label>     
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Distraught"  <?php echo (in_array('Distraught', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Distraught'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Distraught" disabled <?php echo (in_array('Distraught', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Distraught'); ?>
                                                         </label>                                       
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Angry" <?php echo (in_array('Angry', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Angry'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Angry" disabled <?php echo (in_array('Angry', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Angry'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Hopeless" <?php echo (in_array('Hopeless', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Hopeless'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Hopeless" disabled <?php echo (in_array('Hopeless', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Hopeless'); ?>
                                                         </label>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Anxious" <?php echo (in_array('Anxious', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Anxious'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Anxious" disabled <?php echo (in_array('Anxious', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Anxious'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Cheerful" <?php echo (in_array('Cheerful', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Cheerful'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Cheerful" disabled <?php echo (in_array('Cheerful', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Cheerful'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Despondent" <?php echo (in_array('Despondent', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Despondent/Sad'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Despondent" disabled <?php echo (in_array('Despondent', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Despondent/Sad'); ?>
                                                         </label>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="mood[]" value="Irritable" <?php echo (in_array('Irritable', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Irritable'); ?>
+                                                          <input type="checkbox" name="mood[]" value="Irritable" disabled <?php echo (in_array('Irritable', $mood)) ? 'checked':'';  ?> > <?php echo xlt('Irritable'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1512,39 +1511,39 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Congruent to mood" <?php echo (in_array('Congruent to mood', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Congruent to mood'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Congruent to mood" disabled <?php echo (in_array('Congruent to mood', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Congruent to mood'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Hostile" <?php echo (in_array('Hostile', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Hostile'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Hostile" disabled <?php echo (in_array('Hostile', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Hostile'); ?>
                                                         </label>     
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Agitated"  <?php echo (in_array('Agitated', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Agitated'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Agitated" disabled <?php echo (in_array('Agitated', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Agitated'); ?>
                                                         </label>                                       
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Labile" <?php echo (in_array('Labile', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Labile'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Labile" disabled <?php echo (in_array('Labile', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Labile'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Tearful" <?php echo (in_array('Tearful', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Tearful'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Tearful" disabled <?php echo (in_array('Tearful', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Tearful'); ?>
                                                         </label>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Expansive" <?php echo (in_array('Expansive', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Expansive'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Expansive" disabled <?php echo (in_array('Expansive', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Expansive'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Inappropriate" <?php echo (in_array('Inappropriate', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Inappropriate'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Inappropriate" disabled <?php echo (in_array('Inappropriate', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Inappropriate'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Blunted" <?php echo (in_array('Blunted', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Blunted'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Blunted" disabled <?php echo (in_array('Blunted', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Blunted'); ?>
                                                         </label>
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="affect[]" value="Flat" <?php echo (in_array('Flat', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Flat'); ?>
+                                                          <input type="checkbox" name="affect[]" value="Flat" disabled <?php echo (in_array('Flat', $affect)) ? 'checked':'';  ?> > <?php echo xlt('Flat'); ?>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1566,30 +1565,30 @@ if ($postCalendarCategoryACO) {
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="orientation[]" value="Oriented to time" <?php echo (in_array('Oriented to time', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to time'); ?>
+                                                          <input type="checkbox" name="orientation[]" value="Oriented to time" disabled <?php echo (in_array('Oriented to time', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to time'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="orientation[]" value="Oriented to person" <?php echo (in_array('Oriented to person', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to person'); ?>
+                                                          <input type="checkbox" name="orientation[]" value="Oriented to person" disabled <?php echo (in_array('Oriented to person', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to person'); ?>
                                                         </label>                         
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">                                        
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="orientation[]" value="Oriented to place" <?php echo (in_array('Oriented to place', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to place'); ?>
+                                                          <input type="checkbox" name="orientation[]" value="Oriented to place" disabled <?php echo (in_array('Oriented to place', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to place'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="orientation[]" value="Oriented to situation" <?php echo (in_array('Oriented to situation', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to situation'); ?>
+                                                          <input type="checkbox" name="orientation[]" value="Oriented to situation" disabled <?php echo (in_array('Oriented to situation', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Oriented to situation'); ?>
                                                         </label>                                            
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="orientation[]" value="Inattentive" <?php echo (in_array('Inattentive', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Inattentive'); ?>
+                                                          <input type="checkbox" name="orientation[]" value="Inattentive" disabled <?php echo (in_array('Inattentive', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('Inattentive'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="orientation[]" value="No intact" <?php echo (in_array('No intact', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('No intact'); ?>
+                                                          <input type="checkbox" name="orientation[]" value="No intact" disabled <?php echo (in_array('No intact', $orientation)) ? 'checked':'';  ?> > <?php echo xlt('No intact'); ?>
                                                         </label>                                            
                                                     </div>
                                                 </div>
@@ -1606,10 +1605,10 @@ if ($postCalendarCategoryACO) {
                                                     <?php $memory_immediate = explode('|', $check_res['memory_immediate']); ?>
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="memory_immediate[]" value="Intact" <?php echo (in_array('Intact', $memory_immediate)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
+                                                          <input type="checkbox" name="memory_immediate[]" value="Intact" disabled <?php echo (in_array('Intact', $memory_immediate)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="memory_immediate[]" value="Not Intact" <?php echo (in_array('Not Intact', $memory_immediate)) ? 'checked':'';  ?> > <?php echo xlt('Not Intact'); ?>
+                                                          <input type="checkbox" name="memory_immediate[]" value="Not Intact" disabled <?php echo (in_array('Not Intact', $memory_immediate)) ? 'checked':'';  ?> > <?php echo xlt('Not Intact'); ?>
                                                         </label>                         
                                                     </div>
                                                 </div>
@@ -1618,10 +1617,10 @@ if ($postCalendarCategoryACO) {
                                                     <?php $memory_recent = explode('|', $check_res['memory_recent']); ?>
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="memory_recent[]" value="Intact" <?php echo (in_array('Intact', $memory_recent)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
+                                                          <input type="checkbox" name="memory_recent[]" value="Intact" disabled <?php echo (in_array('Intact', $memory_recent)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="memory_recent[]" value="Not Intact" <?php echo (in_array('Not Intact', $memory_recent)) ? 'checked':'';  ?> > <?php echo xlt('Not Intact'); ?>
+                                                          <input type="checkbox" name="memory_recent[]" value="Not Intact" disabled <?php echo (in_array('Not Intact', $memory_recent)) ? 'checked':'';  ?> > <?php echo xlt('Not Intact'); ?>
                                                         </label>                                            
                                                     </div>
                                                 </div>
@@ -1630,10 +1629,10 @@ if ($postCalendarCategoryACO) {
                                                     <?php $memory_remote = explode('|', $check_res['memory_remote']); ?>
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="memory_remote[]" value="Intact" <?php echo (in_array('Intact', $memory_remote)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
+                                                          <input type="checkbox" name="memory_remote[]" value="Intact" disabled <?php echo (in_array('Intact', $memory_remote)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="memory_remote[]" value="Not Intact" <?php echo (in_array('Not Intact', $memory_remote)) ? 'checked':'';  ?> > <?php echo xlt('Not Intact'); ?>
+                                                          <input type="checkbox" name="memory_remote[]" value="Not Intact" disabled <?php echo (in_array('Not Intact', $memory_remote)) ? 'checked':'';  ?> > <?php echo xlt('Not Intact'); ?>
                                                         </label>                                            
                                                     </div>
                                                 </div>
@@ -1649,19 +1648,19 @@ if ($postCalendarCategoryACO) {
                                                     <?php $insight = explode('|', $check_res['insight']); ?>
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight[]" value="Intact" <?php echo (in_array('Intact', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
+                                                          <input type="checkbox" name="insight[]" value="Intact" disabled <?php echo (in_array('Intact', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Intact'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight[]" value="Blames Others" <?php echo (in_array('Blames Others', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Blames Others'); ?>
+                                                          <input type="checkbox" name="insight[]" value="Blames Others" disabled <?php echo (in_array('Blames Others', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Blames Others'); ?>
                                                         </label>  
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight[]" value="Poor Impulse Control" <?php echo (in_array('Poor Impulse Control', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Poor Impulse Control'); ?>
+                                                          <input type="checkbox" name="insight[]" value="Poor Impulse Control" disabled <?php echo (in_array('Poor Impulse Control', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Poor Impulse Control'); ?>
                                                         </label> 
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight[]" value="Denies Problem" <?php echo (in_array('Denies Problem', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Denies Problem'); ?>
+                                                          <input type="checkbox" name="insight[]" value="Denies Problem" disabled <?php echo (in_array('Denies Problem', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Denies Problem'); ?>
                                                         </label> 
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight[]" value="Blames Self" <?php echo (in_array('Blames Self', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Blames Self'); ?>
+                                                          <input type="checkbox" name="insight[]" value="Blames Self" disabled <?php echo (in_array('Blames Self', $insight)) ? 'checked':'';  ?> > <?php echo xlt('Blames Self'); ?>
                                                         </label>                        
                                                     </div>
                                                 </div>
@@ -1670,13 +1669,13 @@ if ($postCalendarCategoryACO) {
                                                     <?php $insight_awareness_symptoms = explode('|', $check_res['insight_awareness_symptoms']); ?>
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight_awareness_symptoms[]" value="Poor" <?php echo (in_array('Poor', $insight_awareness_symptoms)) ? 'checked':'';  ?> > <?php echo xlt('Poor'); ?>
+                                                          <input type="checkbox" name="insight_awareness_symptoms[]" value="Poor" disabled <?php echo (in_array('Poor', $insight_awareness_symptoms)) ? 'checked':'';  ?> > <?php echo xlt('Poor'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight_awareness_symptoms[]" value="Limited" <?php echo (in_array('Limited', $insight_awareness_symptoms)) ? 'checked':'';  ?> > <?php echo xlt('Limited'); ?>
+                                                          <input type="checkbox" name="insight_awareness_symptoms[]" value="Limited" disabled <?php echo (in_array('Limited', $insight_awareness_symptoms)) ? 'checked':'';  ?> > <?php echo xlt('Limited'); ?>
                                                         </label>    
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight_awareness_symptoms[]" value="Good" <?php echo (in_array('Good', $insight_awareness_symptoms)) ? 'checked':'';  ?> > <?php echo xlt('Good'); ?>
+                                                          <input type="checkbox" name="insight_awareness_symptoms[]" value="Good" disabled <?php echo (in_array('Good', $insight_awareness_symptoms)) ? 'checked':'';  ?> > <?php echo xlt('Good'); ?>
                                                         </label>                                        
                                                     </div>
                                                 </div>
@@ -1685,13 +1684,13 @@ if ($postCalendarCategoryACO) {
                                                     <?php $insight_awareness_need = explode('|', $check_res['insight_awareness_need']); ?>
                                                     <div class="form-group">
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight_awareness_need[]" value="Poor" <?php echo (in_array('Poor', $insight_awareness_need)) ? 'checked':'';  ?> > <?php echo xlt('Poor'); ?>
+                                                          <input type="checkbox" name="insight_awareness_need[]" value="Poor" disabled <?php echo (in_array('Poor', $insight_awareness_need)) ? 'checked':'';  ?> > <?php echo xlt('Poor'); ?>
                                                         </label>                                        
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight_awareness_need[]" value="Limited" <?php echo (in_array('Limited', $insight_awareness_need)) ? 'checked':'';  ?> > <?php echo xlt('Limited'); ?>
+                                                          <input type="checkbox" name="insight_awareness_need[]" value="Limited" disabled <?php echo (in_array('Limited', $insight_awareness_need)) ? 'checked':'';  ?> > <?php echo xlt('Limited'); ?>
                                                         </label>      
                                                         <label class="checkbox">
-                                                          <input type="checkbox" name="insight_awareness_need[]" value="Good" <?php echo (in_array('Good', $insight_awareness_need)) ? 'checked':'';  ?> > <?php echo xlt('Good'); ?>
+                                                          <input type="checkbox" name="insight_awareness_need[]" value="Good" disabled <?php echo (in_array('Good', $insight_awareness_need)) ? 'checked':'';  ?> > <?php echo xlt('Good'); ?>
                                                         </label>                                       
                                                     </div>
                                                 </div>
@@ -1707,7 +1706,7 @@ if ($postCalendarCategoryACO) {
                                                     <div class="form-group">
                                                          <label for="" class="col-sm-4"><?php echo xlt('Appetite:'); ?></label> 
                                                          <div class="col-sm-8">
-                                                             <select name="vegetative_appetite"  class="form-control">
+                                                             <select name="vegetative_appetite"  class="form-control" disabled>
                                                                  <option value=""><?php echo xlt('Choose'); ?></option>
                                                                  <option value="Increased" <?php echo ($check_res['vegetative_appetite'] == 'Increased') ? 'selected': ''; ?> ><?php echo xlt('Increased'); ?></option>
                                                                  <option value="Unchanged" <?php echo ($check_res['vegetative_appetite'] == 'Unchanged') ? 'selected': ''; ?> ><?php echo xlt('Unchanged'); ?></option>
@@ -1721,7 +1720,7 @@ if ($postCalendarCategoryACO) {
                                                     <div class="form-group">
                                                         <label for="" class="col-sm-4"><?php echo xlt('Sleep:'); ?></label> 
                                                         <div class="col-sm-8">
-                                                             <select name="vegetative_sleep"  class="form-control">
+                                                             <select name="vegetative_sleep"  class="form-control" disabled>
                                                                  <option value=""><?php echo xlt('Choose'); ?></option>
                                                                  <option value="Hypersomnia" <?php echo ($check_res['vegetative_sleep'] == 'Hypersomnia') ? 'selected': ''; ?> ><?php echo xlt('Hypersomnia'); ?></option>
                                                                  <option value="Hyposomnia" <?php echo ($check_res['vegetative_sleep'] == 'Hyposomnia') ? 'selected': ''; ?> ><?php echo xlt('Hyposomnia'); ?></option>
@@ -1735,7 +1734,7 @@ if ($postCalendarCategoryACO) {
                                                     <div class="form-group">
                                                         <label for="" class="col-sm-4"><?php echo xlt('Concentration:'); ?></label> 
                                                         <div class="col-sm-8">
-                                                             <select name="vegetative_concentration"  class="form-control">
+                                                             <select name="vegetative_concentration"  class="form-control" disabled>
                                                                  <option value=""><?php echo xlt('Choose'); ?></option>
                                                                  <option value="Decreased" <?php echo ($check_res['vegetative_concentration'] == 'Decreased') ? 'selected': ''; ?> ><?php echo xlt('Decreased'); ?></option>
                                                                  <option value="Unchanged" <?php echo ($check_res['vegetative_concentration'] == 'Unchanged') ? 'selected': ''; ?> ><?php echo xlt('Unchanged'); ?></option>
@@ -1763,20 +1762,20 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-sm-6">
                                         <strong><?php echo xlt('DSM 5 Code'); ?></strong>
                                         <div class="form-group">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[0]); ?>">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[1]); ?>">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[2]); ?>">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[3]); ?>">                                            
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[0]); ?>">
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[1]); ?>">
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[2]); ?>">
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[3]); ?>">                                            
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <strong><?php echo xlt('Disorder'); ?></strong>
                                         <?php $dsm_5_code_disorder = explode('|', $check_res['dsm_5_code_disorder']); ?>
                                         <div class="form-group">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[0]); ?>">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[1]); ?>">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[2]); ?>">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[3]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[0]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[1]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[2]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[3]); ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -1784,19 +1783,19 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-sm-6">
                                         <strong><?php echo xlt('DSM 5 Code'); ?></strong>
                                         <div class="form-group">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[4]); ?>">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[5]); ?>">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[6]); ?>">
-                                            <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[7]); ?>">                                            
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[4]); ?>">
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[5]); ?>">
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[6]); ?>">
+                                            <input type="text" name="dsm_5_code[]" class="form-control" disabled value="<?php echo text($dsm_5_code[7]); ?>">                                            
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <strong><?php echo xlt('Disorder'); ?></strong>
                                         <div class="form-group">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[4]); ?>">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[5]); ?>">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[6]); ?>">
-                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[7]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[4]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[5]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[6]); ?>">
+                                            <input type="text" name="dsm_5_code_disorder[]" class="form-control" disabled value="<?php echo text($dsm_5_code_disorder[7]); ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -1804,7 +1803,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-12">
                                     <div class="form-group" style="margin-top: 10px">
                                         <label for=""><?php echo xlt('Type of education provided to members/families about prognosis and outcomes from their diagnosis:'); ?></label>
-                                        <textarea name="dsm_5_type_education" rows="3" class="form-control"><?php echo text($check_res['dsm_5_type_education']); ?></textarea>
+                                        <textarea name="dsm_5_type_education" rows="3" class="form-control" disabled><?php echo text($check_res['dsm_5_type_education']); ?></textarea>
                                     </div>
                                 </div>                                
                             </div>
@@ -1826,199 +1825,199 @@ if ($postCalendarCategoryACO) {
                                     <tbody>
                                         <tr>
                                             <td style="width: 25%">
-                                                <select name="service_type_1" class="form-control">
+                                                <select name="service_type_1" class="form-control" disabled>
                                                     <?php echo get_service_type($check_res['service_type_1']); ?>                 
                                                 </select>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_1_intencity" class="form-control" >
+                                                <select name="service_type_1_intencity" class="form-control" disabled>
                                                     <?php echo get_intensity_hours($check_res['service_type_1_intencity']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_1_intencity_other" value="<?php echo text($check_res['service_type_1_intencity_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_1_intencity_other" value="<?php echo text($check_res['service_type_1_intencity_other']); ?>" disabled>
                                                 </div>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_1_frequency" class="form-control" >
+                                                <select name="service_type_1_frequency" class="form-control" disabled>
                                                     <?php echo get_weekly_frequency($check_res['service_type_1_frequency']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_1_frequency_other" value="<?php echo text($check_res['service_type_1_frequency_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_1_frequency_other" value="<?php echo text($check_res['service_type_1_frequency_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_1_duration" id="" class="form-control">
+                                                <select name="service_type_1_duration" id="" class="form-control" disabled>
                                                     <?php echo get_treatment_duration($check_res['service_type_1_duration']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_1_duration_other" value="<?php echo text($check_res['service_type_1_duration_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_1_duration_other" value="<?php echo text($check_res['service_type_1_duration_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width: 25%">
-                                                <select name="service_type_2" class="form-control">
+                                                <select name="service_type_2" class="form-control" disabled>
                                                     <?php echo get_service_type($check_res['service_type_2']); ?>                 
                                                 </select>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_2_intencity" class="form-control" >
+                                                <select name="service_type_2_intencity" class="form-control" disabled>
                                                     <?php echo get_intensity_hours($check_res['service_type_2_intencity']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_2_intencity_other" value="<?php echo text($check_res['service_type_2_intencity_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_2_intencity_other" value="<?php echo text($check_res['service_type_2_intencity_other']); ?>" disabled>
                                                 </div>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_2_frequency" class="form-control" >
+                                                <select name="service_type_2_frequency" class="form-control" disabled>
                                                     <?php echo get_weekly_frequency($check_res['service_type_2_frequency']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_2_frequency_other" value="<?php echo text($check_res['service_type_2_frequency_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_2_frequency_other" value="<?php echo text($check_res['service_type_2_frequency_other']); ?>" disabled >
                                                 </div>
                                                 
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_2_duration" id="" class="form-control">
+                                                <select name="service_type_2_duration" id="" class="form-control" disabled>
                                                     <?php echo get_treatment_duration($check_res['service_type_2_duration']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_2_duration_other" value="<?php echo text($check_res['service_type_2_duration_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_2_duration_other" value="<?php echo text($check_res['service_type_2_duration_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width: 25%">
-                                                <select name="service_type_3" class="form-control">
+                                                <select name="service_type_3" class="form-control" disabled>
                                                     <?php echo get_service_type($check_res['service_type_3']); ?>                 
                                                 </select>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_3_intencity" class="form-control" >
+                                                <select name="service_type_3_intencity" class="form-control" disabled>
                                                     <?php echo get_intensity_hours($check_res['service_type_3_intencity']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_3_intencity_other" value="<?php echo text($check_res['service_type_3_intencity_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_3_intencity_other" value="<?php echo text($check_res['service_type_3_intencity_other']); ?>" disabled>
                                                 </div>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_3_frequency" class="form-control" >
+                                                <select name="service_type_3_frequency" class="form-control" disabled>
                                                     <?php echo get_weekly_frequency($check_res['service_type_3_frequency']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_3_frequency_other" value="<?php echo text($check_res['service_type_3_frequency_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_3_frequency_other" value="<?php echo text($check_res['service_type_3_frequency_other']); ?>" disabled >
                                                 </div>
                                                 
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_3_duration" id="" class="form-control">
+                                                <select name="service_type_3_duration" id="" class="form-control" disabled>
                                                     <?php echo get_treatment_duration($check_res['service_type_3_duration']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_3_duration_other" value="<?php echo text($check_res['service_type_3_duration_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_3_duration_other" value="<?php echo text($check_res['service_type_3_duration_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width: 25%">
-                                                <select name="service_type_4" class="form-control">
+                                                <select name="service_type_4" class="form-control" disabled>
                                                     <?php echo get_service_type($check_res['service_type_4']); ?>                 
                                                 </select>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_4_intencity" class="form-control" >
+                                                <select name="service_type_4_intencity" class="form-control" disabled>
                                                     <?php echo get_intensity_hours($check_res['service_type_4_intencity']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_4_intencity_other" value="<?php echo text($check_res['service_type_4_intencity_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_4_intencity_other" value="<?php echo text($check_res['service_type_4_intencity_other']); ?>" disabled>
                                                 </div>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_4_frequency" class="form-control" >
+                                                <select name="service_type_4_frequency" class="form-control" disabled>
                                                     <?php echo get_weekly_frequency($check_res['service_type_4_frequency']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_4_frequency_other" value="<?php echo text($check_res['service_type_4_frequency_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_4_frequency_other" value="<?php echo text($check_res['service_type_4_frequency_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_4_duration" id="" class="form-control">
+                                                <select name="service_type_4_duration" id="" class="form-control" disabled>
                                                     <?php echo get_treatment_duration($check_res['service_type_4_duration']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_4_duration_other" value="<?php echo text($check_res['service_type_4_duration_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_4_duration_other" value="<?php echo text($check_res['service_type_4_duration_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width: 25%">
-                                                <select name="service_type_5" class="form-control">
+                                                <select name="service_type_5" class="form-control" disabled>
                                                     <?php echo get_service_type($check_res['service_type_5']); ?>                 
                                                 </select>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_5_intencity" class="form-control" >
+                                                <select name="service_type_5_intencity" class="form-control" disabled>
                                                     <?php echo get_intensity_hours($check_res['service_type_5_intencity']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_5_intencity_other" value="<?php echo text($check_res['service_type_5_intencity_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_5_intencity_other" value="<?php echo text($check_res['service_type_5_intencity_other']); ?>" disabled >
                                                 </div>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_5_frequency" class="form-control" >
+                                                <select name="service_type_5_frequency" class="form-control" disabled>
                                                     <?php echo get_weekly_frequency($check_res['service_type_5_frequency']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_5_frequency_other" value="<?php echo text($check_res['service_type_5_frequency_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_5_frequency_other" value="<?php echo text($check_res['service_type_5_frequency_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_5_duration" id="" class="form-control">
+                                                <select name="service_type_5_duration" id="" class="form-control" disabled>
                                                     <?php echo get_treatment_duration($check_res['service_type_5_duration']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_5_duration_other" value="<?php echo text($check_res['service_type_5_duration_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_5_duration_other" value="<?php echo text($check_res['service_type_5_duration_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width: 25%">
-                                                <select name="service_type_6" class="form-control">
+                                                <select name="service_type_6" class="form-control" disabled>
                                                     <?php echo get_service_type($check_res['service_type_6']); ?>                 
                                                 </select>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_6_intencity" class="form-control" >
+                                                <select name="service_type_6_intencity" class="form-control" disabled>
                                                     <?php echo get_intensity_hours($check_res['service_type_6_intencity']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_6_intencity_other" value="<?php echo text($check_res['service_type_6_intencity_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_6_intencity_other" value="<?php echo text($check_res['service_type_6_intencity_other']); ?>" disabled>
                                                 </div>
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_6_frequency" class="form-control" >
+                                                <select name="service_type_6_frequency" class="form-control" disabled>
                                                     <?php echo get_weekly_frequency($check_res['service_type_6_frequency']); ?>
                                                 </select>
                                                 <div>
-                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_6_frequency_other" value="<?php echo text($check_res['service_type_6_frequency_other']); ?>" >
+                                                    <?php echo xlt('Other:'); ?> <input type="text" name="service_type_6_frequency_other" value="<?php echo text($check_res['service_type_6_frequency_other']); ?>" disabled>
                                                 </div>
                                                 
                                             </td>
                                             <td style="width: 25%">
-                                                <select name="service_type_6_duration" id="" class="form-control">
+                                                <select name="service_type_6_duration" id="" class="form-control" disabled>
                                                     <?php echo get_treatment_duration($check_res['service_type_6_duration']); ?>
                                                 </select>
                                                 <div>
                                                     <?php echo xlt('Other:'); ?>                                                    
-                                                        <input type="text" name="service_type_6_duration_other" value="<?php echo text($check_res['service_type_6_duration_other']); ?>" >
+                                                        <input type="text" name="service_type_6_duration_other" value="<?php echo text($check_res['service_type_6_duration_other']); ?>" disabled>
                                                      
                                                 </div>
                                                 
@@ -2040,84 +2039,84 @@ if ($postCalendarCategoryACO) {
                                             <tbody> 
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_1" class="form-control">
+                                                        <select name="service_criteria_1" class="form-control" disabled>
                                                             <?php echo get_service_type($check_res['service_criteria_1']); ?>
                                                         </select>
                                                     </td>
                                                     <td style="width: 70%">
                                                         <div style="padding: 10px">   
                                                             Medical necessity documenttation: Due to information in Psychiatric section of current diagnosis and symptoms ( reference if necessary ), what negative consequences may occur if treatment not implemented? 
-                                                            <textarea name="service_criteria_1_consequence" rows="3" class="form-control"><?php echo text($check_res['service_criteria_1_consequence']); ?></textarea>   
+                                                            <textarea name="service_criteria_1_consequence" rows="3" class="form-control" disabled><?php echo text($check_res['service_criteria_1_consequence']); ?></textarea>   
                                                         </div>  
                                                         
                                                     </td>
                                                 </tr>   
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_2" class="form-control">
+                                                        <select name="service_criteria_2" class="form-control" disabled>
                                                             <?php echo get_service_type($check_res['service_criteria_2']); ?>
                                                         </select>
                                                     </td>
                                                     <td style="width: 70%">
                                                         <div style="padding: 10px">   
                                                             Medical necessity documenttation: Due to information in Psychiatric section of current diagnosis and symptoms ( reference if necessary ), what negative consequences may occur if treatment not implemented? 
-                                                            <textarea name="service_criteria_2_consequence" rows="3" class="form-control"><?php echo text($check_res['service_criteria_2_consequence']); ?></textarea>   
+                                                            <textarea name="service_criteria_2_consequence" rows="3" class="form-control" disabled><?php echo text($check_res['service_criteria_2_consequence']); ?></textarea>   
                                                         </div>  
                                                         
                                                     </td>
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_3" class="form-control">
+                                                        <select name="service_criteria_3" class="form-control" disabled>
                                                             <?php echo get_service_type($check_res['service_criteria_3']); ?>
                                                         </select>
                                                     </td>
                                                     <td style="width: 70%">
                                                         <div style="padding: 10px">   
                                                             Medical necessity documenttation: Due to information in Psychiatric section of current diagnosis and symptoms ( reference if necessary ), what negative consequences may occur if treatment not implemented? 
-                                                            <textarea name="service_criteria_3_consequence" rows="3" class="form-control"><?php echo text($check_res['service_criteria_3_consequence']); ?></textarea>   
+                                                            <textarea name="service_criteria_3_consequence" rows="3" class="form-control" disabled><?php echo text($check_res['service_criteria_3_consequence']); ?></textarea>   
                                                         </div>  
                                                         
                                                     </td>
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_4" class="form-control">
+                                                        <select name="service_criteria_4" class="form-control" disabled>
                                                             <?php echo get_service_type($check_res['service_criteria_4']); ?>
                                                         </select>
                                                     </td>
                                                     <td style="width: 70%">
                                                         <div style="padding: 10px">   
                                                             Medical necessity documenttation: Due to information in Psychiatric section of current diagnosis and symptoms ( reference if necessary ), what negative consequences may occur if treatment not implemented? 
-                                                            <textarea name="service_criteria_4_consequence" rows="3" class="form-control"><?php echo text($check_res['service_criteria_4_consequence']); ?></textarea>   
+                                                            <textarea name="service_criteria_4_consequence" rows="3" class="form-control" disabled><?php echo text($check_res['service_criteria_4_consequence']); ?></textarea>   
                                                         </div>  
                                                         
                                                     </td>
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_5" class="form-control">
+                                                        <select name="service_criteria_5" class="form-control" disabled>
                                                             <?php echo get_service_type($check_res['service_criteria_5']); ?>
                                                         </select>
                                                     </td>
                                                     <td style="width: 70%">
                                                         <div style="padding: 10px">   
                                                             Medical necessity documenttation: Due to information in Psychiatric section of current diagnosis and symptoms ( reference if necessary ), what negative consequences may occur if treatment not implemented? 
-                                                            <textarea name="service_criteria_5_consequence" rows="3" class="form-control"><?php echo text($check_res['service_criteria_5_consequence']); ?></textarea>   
+                                                            <textarea name="service_criteria_5_consequence" rows="3" class="form-control" disabled><?php echo text($check_res['service_criteria_5_consequence']); ?></textarea>   
                                                         </div>  
                                                         
                                                     </td>
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_6" class="form-control">
+                                                        <select name="service_criteria_6" class="form-control" disabled>
                                                             <?php echo get_service_type($check_res['service_criteria_6']); ?>
                                                         </select>
                                                     </td>
                                                     <td style="width: 70%">
                                                         <div style="padding: 10px">   
                                                             Medical necessity documenttation: Due to information in Psychiatric section of current diagnosis and symptoms ( reference if necessary ), what negative consequences may occur if treatment not implemented? 
-                                                            <textarea name="service_criteria_6_consequence" rows="3" class="form-control"><?php echo text($check_res['service_criteria_6_consequence']); ?></textarea>   
+                                                            <textarea name="service_criteria_6_consequence" rows="3" class="form-control" disabled><?php echo text($check_res['service_criteria_6_consequence']); ?></textarea>   
                                                         </div>  
                                                         
                                                     </td>
@@ -2129,7 +2128,7 @@ if ($postCalendarCategoryACO) {
                                 <div style="padding: 10px 20px;">  
                                     <div class="form-group">    
                                         <label for=""><?php echo xlt('ANNUAL ASSESSMENT (Document why a new or updated assessment is more appropriate for participant):'); ?></label>
-                                        <textarea name="annual_assessment" rows="3" class="form-control"><?php echo text($check_res['annual_assessment']); ?></textarea>
+                                        <textarea name="annual_assessment" rows="3" class="form-control" disabled><?php echo text($check_res['annual_assessment']); ?></textarea>
                                     </div>   
                                 </div>
 
@@ -2138,7 +2137,7 @@ if ($postCalendarCategoryACO) {
                                         <div class="form-group">
                                             <label for="" class="col-sm-6">Clinician's Signature, Degree, and Credentials</label>
                                             <div class="col-sm-6">
-                                                <select name="name_examiner" class="form-control">
+                                                <select name="name_examiner" class="form-control" disabled>
                                                     <?php echo get_examiner_name_dregree($check_res['name_examiner']); ?>
                                                 </select>
                                             </div>
@@ -2149,7 +2148,7 @@ if ($postCalendarCategoryACO) {
                                         <div class="form-group">    
                                             <label for="" class="col-sm-3"><?php echo xlt('Date:'); ?></label>
                                             <div class="col-sm-9">  
-                                                <input type="text" name="date_examine" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date_examine']) && $check_res['date_examine'] ) ? date('m/d/Y',strtotime($check_res['date_examine'])):''; ?>" autocomplete="off">
+                                                <input type="text" name="date_examine" class="form-control" value="<?php echo ( isset($check_res['date_examine']) && $check_res['date_examine'] ) ? date('m/d/Y',strtotime($check_res['date_examine'])):''; ?>" autocomplete="off" disabled>
                                             </div>                                            
                                         </div>  
                                     </div>  
@@ -2165,14 +2164,7 @@ if ($postCalendarCategoryACO) {
                     <div class="form-group clearfix">
                         <div class="col-sm-12 col-sm-offset-1 position-override">
                             <div class="btn-group oe-opt-btn-group-pinch" role="group">
-                                <?php                                    
-                                    if (($esign->isButtonViewable() and $is_group == 0 and $authPostCalendarCategoryWrite) or ($esign->isButtonViewable() and $is_group and acl_check("groups", "glog", false, 'write') and $authPostCalendarCategoryWrite)) {
-                                        if (!$aco_spec || acl_check($aco_spec[0], $aco_spec[1], '', 'write')) {
-                                            echo $esign->buttonHtml();
-                                        }
-                                    }
-                                ?>
-                                <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
+                                
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
                                 <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
@@ -2205,54 +2197,7 @@ if ($postCalendarCategoryACO) {
                     format:'m/d/Y'
                 });
 
-                // esign API
-                var formConfig = <?php echo $esignApi->formConfigToJson(); ?>;
-                $(".esign-button-form").esign(
-                    formConfig,
-                    {
-                        afterFormSuccess : function( response ) {
-                            if ( response.locked ) {
-                                var editButtonId = "form-edit-button-"+response.formDir+"-"+response.formId;
-                                $("#"+editButtonId).replaceWith( response.editButtonHtml );
-                            }
-
-                            var logId = "esign-signature-log-"+response.formDir+"-"+response.formId;
-                            $.post( formConfig.logViewAction, response, function( html ) {
-                                $("#"+logId).replaceWith( html );
-                            });
-                        }
-                    }
-                );
-
-                var encounterConfig = <?php echo $esignApi->encounterConfigToJson(); ?>;
-                $(".esign-button-encounter").esign(
-                    encounterConfig,
-                    {
-                        afterFormSuccess : function( response ) {
-                            // If the response indicates a locked encounter, replace all
-                            // form edit buttons with a "disabled" button, and "disable" left
-                            // nav visit form links
-                            if ( response.locked ) {
-                                // Lock the form edit buttons
-                                $(".form-edit-button").replaceWith( response.editButtonHtml );
-                                // Disable the new-form capabilities in left nav
-                                top.window.parent.left_nav.syncRadios();
-                                // Disable the new-form capabilities in top nav of the encounter
-                                $(".encounter-form-category-li").remove();
-                            }
-
-                            var logId = "esign-signature-log-encounter-"+response.encounterId;
-                            $.post( encounterConfig.logViewAction, response, function( html ) {
-                                $("#"+logId).replaceWith( html );
-                            });
-                        }
-                    }
-                );
-
-
-                $('.esign-button-form').css({"width": "110px", "height":"25px", "line-height":"20px", "vertical-align":"middle", "margin-right":"25px"});
-
-                $('.esign-button-form span').html('Digitally Sign');
+               
 
                 $("#print").on('click', function(){
                     $('.form_content').printThis({
