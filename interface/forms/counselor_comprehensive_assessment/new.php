@@ -35,6 +35,98 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
         <?php Header::setupHeader(['datetime-picker', 'opener']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
+        <style>
+            @media print{
+                .col-sm-2 {
+                    width: 16.66666667%;
+                }
+                .col-sm-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-sm-4 {
+                    width: 33.3333%;
+                }
+                .col-sm-3 {
+                    width: 25%;
+                }
+                .col-sm-8 {
+                    width: 66.66666667%;
+                }
+                .col-sm-9 {
+                    width: 75%;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .col-sm-5 {
+                    width: 41.66666667%;
+                }
+                .col-sm-7 {
+                    width: 58.33333333%;
+                }
+                .nth_day_review{
+                    width: 25%;
+                }
+                .nth_day_review_update{
+                    width: 60%;
+                    text-align: center;
+                    margin: 0 auto;
+                }
+                .clearfix{
+                    position: relative;
+                    clear: both;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .objective_row{
+                    padding-top: 110px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 155px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                .line-block{
+                    display: block;
+                    width: 100%;
+                }
+                .line-block-50{
+                    display: inline-block;
+                    width: 50%;
+                }
+                .no-print{
+                    display: none;
+                }
+            }
+            @page {
+              margin: 2cm;
+            }
+
+        </style>
     </head>
     <body class="body_top">
         <div class="container">
@@ -76,9 +168,9 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                     <input type="hidden" name="activity" value="1">
     
 
-                    <fieldset style="padding-top:20px!important">    
+                    <fieldset style="padding-top:20px!important" class="form_content">    
                             <div class="col-md-12" style="margin-top: 10px">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 line-block-50">
                                     <label class="checkbox-inline"><strong><?php echo xlt('Type of CDA:'); ?></strong> </label>
                                     <label class="checkbox-inline">
                                       <input type="radio" id="type_cda_1" name="type_cda" value="New" <?php echo ($check_res['type_cda'] == 'New') ? 'checked':''; ?> > <?php echo xlt('New'); ?>
@@ -90,10 +182,10 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                       <input type="radio" id="type_cda_3"  name="type_cda" value="Annual Review" <?php echo ($check_res['type_cda'] == 'Annual Review') ? 'checked':''; ?> > <?php echo xlt('Annual Review'); ?>
                                     </label>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 line-block-50">
                                     <div class="form-group">
-                                        <label for="inputEmail3" class="col-sm-7 control-label"> <?php echo xlt('If update or review original CDA date:'); ?> </label>
-                                        <div class="col-sm-5">
+                                        <label for="inputEmail3" class="col-sm-8 control-label"> <?php echo xlt('If update or review original CDA date:'); ?> </label>
+                                        <div class="col-sm-4">
                                           <input type="text" class="form-control datepicker" name="cda_date" value="<?php echo text($check_res['cda_date']); ?>" >
                                         </div>
                                     </div>
@@ -102,8 +194,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="name" class="col-sm-5 "><?php echo xlt('Participant Name'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="name" class="col-sm-5 line-block"><?php echo xlt('Participant Name'); ?></label>
+                                        <div class="col-sm-7 line-block">
                                             <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" readonly>
                                             <input type="hidden" name="name" value="<?php echo text($patient_full_name); ?>" >
                                         </div>                                    
@@ -111,8 +203,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="medicaid" class="col-sm-3 "><?php echo xlt('Medicaid #'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="medicaid" class="col-sm-3 line-block"><?php echo xlt('Medicaid #'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <input type="text" name="medicaid" id="medicaid" class="form-control" value="<?php echo text($check_res['medicaid']); ?>">
                                             <small class="text-danger medicaid_error"></small>
                                         </div>                                    
@@ -120,8 +212,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 </div> 
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="" class="col-sm-3 "><?php echo xlt('Date'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="" class="col-sm-3 line-block"><?php echo xlt('Date'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <input type="text" name="date" id="date" class="form-control newDatePicker" value="<?php echo ( isset($check_res['date']) && $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
                                             <small class="text-danger date_error"></small>
                                         </div>                                    
@@ -131,16 +223,16 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="age" class="col-sm-3 "><?php echo xlt('Age'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="age" class="col-sm-3 line-block"><?php echo xlt('Age'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <input type="text" id="age" class="form-control" name="age" value="<?php echo text($check_res['age']); ?>">
                                             <small class="text-danger age_error"></small>
                                         </div>                                    
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="sex" class="col-sm-3 "><?php echo xlt('Sex'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="sex" class="col-sm-3 line-block"><?php echo xlt('Sex'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="sex" id="sex" class="form-control">
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="Male" <?php echo ($check_res['sex'] == 'Male') ? 'selected':''; ?> ><?php echo xlt('Male'); ?></option>
@@ -156,8 +248,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="ethnicity" class="col-sm-3 "><?php echo xlt('Ethnicity'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="ethnicity" class="col-sm-3 line-block"><?php echo xlt('Ethnicity'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="ethnicity" id="ethnicity" class="form-control">
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="White" <?php echo ($check_res['ethnicity'] == 'White') ? 'selected':''; ?> ><?php echo xlt('White/Caucasian'); ?></option>
@@ -171,8 +263,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="ethnicity_other" class="col-sm-3 "><?php echo xlt('Other Enthicity'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="ethnicity_other" class="col-sm-3 line-block"><?php echo xlt('Other Enthicity'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <input type="text" name="ethnicity_other" id="ethnicity_other" class="form-control" value="<?php echo text($check_res['ethnicity_other']); ?>">
                                             <small class="text-danger ethnicity_other_error"></small>
                                         </div>                                    
@@ -182,8 +274,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                                                
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="dob" class="col-sm-3 "><?php echo xlt('DOB'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="dob" class="col-sm-3 line-block"><?php echo xlt('DOB'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <input type="text" name="dob" id="dob" class="form-control newDatePicker" value="<?php echo ( isset($check_res['dob']) && $check_res['dob'] ) ? date('m/d/Y', strtotime($check_res['dob'])):''; ?>" autocomplete="off">
                                             <small class="text-danger dob_error"></small>
                                         </div>                                    
@@ -194,8 +286,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 <!-- Examiner -->
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="examiner" class="col-sm-3 "><?php echo xlt('Examiner'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="examiner" class="col-sm-3 line-block"><?php echo xlt('Examiner'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="examiner" id="examiner" class="form-control">
                                                 <?php echo get_examiner_name_dregree($check_res['examiner']); ?>
                                             </select>                                            
@@ -205,8 +297,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="region" class="col-sm-3 "><?php echo xlt('Region'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="region" class="col-sm-3 line-block"><?php echo xlt('Region'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <input type="text" name="region" id="region" class="form-control " value="<?php echo text($check_res['region']); ?>" >
                                             <small class="text-danger region_error"></small>
                                         </div>                                    
@@ -216,8 +308,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 <!-- Agency -->
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="agency" class="col-sm-3 "><?php echo xlt('Agency'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="agency" class="col-sm-3 line-block"><?php echo xlt('Agency'); ?></label>
+                                        <div class="col-sm-9 line-block">
                                             <select name="agency" id="agency" class="form-control">
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="Kuna Counseling Center, LLC" <?php echo ($check_res['agency'] == 'Kuna Counseling Center, LLC') ? 'selected':''; ?> ><?php echo xlt('Kuna Counseling Center, LLC'); ?></option>
@@ -231,8 +323,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="marital_status" class="col-sm-4 "><?php echo xlt('Marital Status'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="marital_status" class="col-sm-4 line-block"><?php echo xlt('Marital Status'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <select name="marital_status" id="marital_status" class="form-control">
                                                 <option value=""><?php echo xlt('Choose'); ?></option>
                                                 <option value="Single" <?php echo ($check_res['marital_status'] == 'Single') ? 'selected':''; ?> ><?php echo xlt('Single'); ?></option>
@@ -247,8 +339,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="referral_source" class="col-sm-4 "><?php echo xlt('Referral Source'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="referral_source" class="col-sm-4 line-block"><?php echo xlt('Referral Source'); ?></label>
+                                        <div class="col-sm-8 line-block">
                                             <input type="text" name="referral_source" id="referral_source" class="form-control " value="<?php echo text($check_res['referral_source']); ?>" >
                                             <small class="text-danger referral_source_error"></small>
                                         </div>                                    
@@ -2085,7 +2177,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                             <tbody> 
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_1">
+                                                        <select name="service_criteria_1" class="form-control">
                                                             <?php echo get_service_type($check_res['service_criteria_1']); ?>
                                                         </select>
                                                     </td>
@@ -2099,7 +2191,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                                 </tr>   
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_2">
+                                                        <select name="service_criteria_2" class="form-control">
                                                             <?php echo get_service_type($check_res['service_criteria_2']); ?>
                                                         </select>
                                                     </td>
@@ -2113,7 +2205,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_3">
+                                                        <select name="service_criteria_3" class="form-control">
                                                             <?php echo get_service_type($check_res['service_criteria_3']); ?>
                                                         </select>
                                                     </td>
@@ -2127,7 +2219,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_4">
+                                                        <select name="service_criteria_4" class="form-control">
                                                             <?php echo get_service_type($check_res['service_criteria_4']); ?>
                                                         </select>
                                                     </td>
@@ -2141,7 +2233,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_5">
+                                                        <select name="service_criteria_5" class="form-control">
                                                             <?php echo get_service_type($check_res['service_criteria_5']); ?>
                                                         </select>
                                                     </td>
@@ -2155,7 +2247,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                                 </tr>
                                                 <tr>    
                                                     <td style="width: 30%">
-                                                        <select name="service_criteria_6">
+                                                        <select name="service_criteria_6" class="form-control">
                                                             <?php echo get_service_type($check_res['service_criteria_6']); ?>
                                                         </select>
                                                     </td>
@@ -2212,6 +2304,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                             <div class="btn-group oe-opt-btn-group-pinch" role="group">
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
+                                <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
                     </div>
@@ -2220,6 +2313,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
         </div>
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+        <script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
         <script language="javascript">
             $(document).ready(function(){
 
@@ -2241,7 +2335,30 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                     format:'m/d/Y'
                 });
 
-                
+                $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "Comprehensive Diagnostic Assessment",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>Comprehensive Diagnostic Assessment</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
             });
         </script>
