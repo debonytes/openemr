@@ -144,9 +144,9 @@ if ($postCalendarCategoryACO) {
                                     </div>                                    
                                 </div>
                                 <div class="form-group">
-                                    <label for="provider_id" class="col-sm-3 "><?php echo xlt('Case Manager'); ?></label>
+                                    <label for="examiner" class="col-sm-3 "><?php echo xlt('Case Manager'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="provider_id" id="provider_id" class="form-control" value="<?php echo text($check_res['provider_id']); ?>">
+                                        <input type="text" name="examiner" id="examiner" class="form-control" value="<?php echo text($check_res['examiner']); ?>">
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    
                                 </div>

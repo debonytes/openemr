@@ -39,31 +39,7 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
-/* checking the last record */
-$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY timestamp DESC LIMIT 1";
-$last_record = sqlQuery($last_record_query, array($pid));
 
-$is_group = ($attendant_type == 'gid') ? true : false;
-
-
-
-$esignApi = new Api();
-// Create the ESign instance for this form
-//$esign = $esignApi->createFormESign($iter['id'], $formdir, $encounter);
-
-$esign = $esignApi->createFormESign($form['id'], $folderName, $encounter);
-
-//fetch acl for category of given encounter
-$pc_catid = fetchCategoryIdByEncounter($encounter);
-$postCalendarCategoryACO = fetchPostCalendarCategoryACO($pc_catid);
-if ($postCalendarCategoryACO) {
-    $postCalendarCategoryACO = explode('|', $postCalendarCategoryACO);
-    $authPostCalendarCategory = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1]);
-    $authPostCalendarCategoryWrite = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1], '', 'write');
-} else { // if no aco is set for category
-    $authPostCalendarCategory = true;
-    $authPostCalendarCategoryWrite = true;
-}
 ?>
 <html>
     <head>
@@ -72,6 +48,83 @@ if ($postCalendarCategoryACO) {
         <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
+        <style>
+            @media print{
+                .col-sm-2 {
+                    width: 16.66666667%;
+                }
+                .col-sm-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-sm-4 {
+                    width: 33.3333%;
+                }
+                .col-sm-3 {
+                    width: 25%;
+                }
+                .col-sm-8 {
+                    width: 66.66666667%;
+                }
+                .col-sm-9 {
+                    width: 75%;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .row_other{
+                    margin-top: 40px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 40px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                input[type=text]{
+                    border: none;
+                    font-weight: bold;
+                }
+                .form-control{
+                    border: none;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background: none;
+                }
+                textarea.form-control{
+                    border: 1px solid #333;
+                }
+                .session-focus{
+                    margin-top: 100px;
+                    padding-top: 60px;
+                }
+            }
+            @page {
+              margin: 2cm;
+            }
+
+        </style>
     </head>
     <body class="body_top">
         <div class="container">
@@ -88,9 +141,9 @@ if ($postCalendarCategoryACO) {
             $pid = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
             if($patient_id) {
               $patient = getPatientData($patient_id);
-              $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-              $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-              $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+              $patient_fname = ( $patient['fname'] ) ? $patient['fname'] : '';
+              $patient_mname = ( $patient['mname'] ) ? $patient['mname'] : '';
+              $patient_lname = ( $patient['lname'] ) ? $patient['lname'] : '';
               $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
               if($patientInfo && array_filter($patientInfo)) {
                 $patient_full_name = implode( ' ', array_filter($patientInfo) );
@@ -114,7 +167,7 @@ if ($postCalendarCategoryACO) {
                     <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
                     <input type="hidden" name="activity" value="1">
 
-                    <fieldset style="padding-top:20px!important">
+                    <fieldset style="padding-top:20px!important" class="form_content">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-3 "><?php echo xlt('Client Name'); ?></label>
@@ -321,7 +374,7 @@ if ($postCalendarCategoryACO) {
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20">
+                            <div class="col-md-12 margin-top-20 treatment_diagnostic_row">
                                 <div class="col-md-6">
                                     <h3><?php echo xlt('TREATMENT & DIAGNOSTIC CODING'); ?></h3>
                                    
@@ -427,7 +480,7 @@ if ($postCalendarCategoryACO) {
 
                             <div class="clearfix"></div>
                             
-                            <div class="col-md-12">
+                            <div class="col-md-12 brief_mental_status">
                                 <h3><?php echo xlt('Brief Mental Status Exam / Symptoms'); ?> <small><?php echo xlt('(mark all that apply)'); ?></small></h3>
                                 <div class="col-sm-6">
                                     <div class="col-sm-4">
@@ -598,7 +651,7 @@ if ($postCalendarCategoryACO) {
 
                                 <div class="clearfix"></div>
 
-                                <div class="col-sm-12">
+                                <div class="col-sm-12 row_other">
                                         <h4><?php echo xlt('Other'); ?></h4>
                                         <?php $symptoms_other  = explode('|', $check_res['symptoms_other']); ?>
                                         <ul style="list-style-type: none; columns: 4;-webkit-columns: 4;  -moz-columns: 4;">
@@ -630,7 +683,7 @@ if ($postCalendarCategoryACO) {
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20" style="margin-top: 30px">
+                            <div class="col-md-12 margin-top-20 session-focus " style="margin-top: 30px">
                                 <h3><?php echo xlt('Session Focus and Interventions'); ?></h3>
                                 <p><?php echo xlt('(clinical assessment, session focus, treatment interventions; collateral contact, psycho-educational activities, homework assignments, treatment plan update and review, other):'); ?></p>
                                 <textarea name="session_focus" id="session_focus" rows="4" class="form-control" disabled><?php echo text($check_res['session_focus']); ?></textarea>
@@ -671,6 +724,7 @@ if ($postCalendarCategoryACO) {
                             <div class="btn-group oe-opt-btn-group-pinch" role="group">
                                 
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
+                                <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
                     </div>
@@ -680,6 +734,7 @@ if ($postCalendarCategoryACO) {
         </div>
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+        <script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
         <script language="javascript">
             $(document).ready(function(){
 
@@ -701,54 +756,30 @@ if ($postCalendarCategoryACO) {
                     format:'m/d/Y'
                 });
 
-                // esign API
-                var formConfig = <?php echo $esignApi->formConfigToJson(); ?>;
-                $(".esign-button-form").esign(
-                    formConfig,
-                    {
-                        afterFormSuccess : function( response ) {
-                            if ( response.locked ) {
-                                var editButtonId = "form-edit-button-"+response.formDir+"-"+response.formId;
-                                $("#"+editButtonId).replaceWith( response.editButtonHtml );
-                            }
-
-                            var logId = "esign-signature-log-"+response.formDir+"-"+response.formId;
-                            $.post( formConfig.logViewAction, response, function( html ) {
-                                $("#"+logId).replaceWith( html );
-                            });
-                        }
-                    }
-                );
-
-                var encounterConfig = <?php echo $esignApi->encounterConfigToJson(); ?>;
-                $(".esign-button-encounter").esign(
-                    encounterConfig,
-                    {
-                        afterFormSuccess : function( response ) {
-                            // If the response indicates a locked encounter, replace all
-                            // form edit buttons with a "disabled" button, and "disable" left
-                            // nav visit form links
-                            if ( response.locked ) {
-                                // Lock the form edit buttons
-                                $(".form-edit-button").replaceWith( response.editButtonHtml );
-                                // Disable the new-form capabilities in left nav
-                                top.window.parent.left_nav.syncRadios();
-                                // Disable the new-form capabilities in top nav of the encounter
-                                $(".encounter-form-category-li").remove();
-                            }
-
-                            var logId = "esign-signature-log-encounter-"+response.encounterId;
-                            $.post( encounterConfig.logViewAction, response, function( html ) {
-                                $("#"+logId).replaceWith( html );
-                            });
-                        }
-                    }
-                );
-
-
-                $('.esign-button-form').css({"width": "110px", "height":"25px", "line-height":"20px", "vertical-align":"middle", "margin-right":"25px"});
-
-                $('.esign-button-form span').html('Digitally Sign');
+                $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "Counselor Progress Note",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>Counselor Progress Note</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
                 
 

@@ -128,11 +128,28 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                     font-size: 20px;
                 }
                 .brief_mental_status{
-                    margin-top: 155px;
+                    margin-top: 40px;
                     padding-top: 20px;
                 }
                 .treatment_diagnostic_row{
                     margin-top: 30px;
+                }
+                input[type=text]{
+                    border: none;
+                    font-weight: bold;
+                }
+                .form-control{
+                    border: none;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background: none;
+                }
+                textarea.form-control{
+                    border: 1px solid #333;
+                }
+                .session-focus{
+                    margin-top: 100px;
+                    padding-top: 40px;
                 }
             }
             @page {
@@ -161,9 +178,10 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                 $pid = ( $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
                 if($pid) {
                   $patient = getPatientData($patient_id);
-                  $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-                  $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-                  $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+                  //print_r($pid);
+                  $patient_fname = ( $patient['fname'] ) ? $patient['fname'] : '';
+                  $patient_mname = ( $patient['mname'] ) ? $patient['mname'] : '';
+                  $patient_lname = ( $patient['lname'] ) ? $patient['lname'] : '';
                   $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
                   if($patientInfo && array_filter($patientInfo)) {
                     $patient_full_name = implode( ' ', array_filter($patientInfo) );
@@ -706,7 +724,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20" style="margin-top: 30px">
+                            <div class="col-md-12 margin-top-20 session-focus" style="margin-top: 30px">
                                 <h3><?php echo xlt('Session Focus and Interventions'); ?></h3>
                                 <p><?php echo xlt('(clinical assessment, session focus, treatment interventions; collateral contact, psycho-educational activities, homework assignments, treatment plan update and review, other):'); ?></p>
                                 <textarea name="session_focus" id="session_focus" rows="4" class="form-control"><?php echo text($check_res['session_focus']); ?></textarea>
