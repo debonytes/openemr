@@ -193,7 +193,7 @@ function InsertEventFull()
     }
 }
 
-function DOBandEncounter($pc_eid)
+function DOBandEncounter($pc_eid = null)
 {
      global $event_date,$info_msg;
      // Save new DOB if it's there.
@@ -245,7 +245,7 @@ function DOBandEncounter($pc_eid)
 
     // auto create encounter for therapy group
     
-    if (!empty($_POST['form_gid'])) {
+    if (!empty($_POST['form_gid']) && empty($pc_eid)) {
         // status Took Place is the check in of therapy group
         if ($GLOBALS['auto_create_new_encounters'] && $event_date == date('Y-m-d') && $_POST['form_apptstatus'] == '=') {
             $encounter = todaysTherapyGroupEncounterCheck($_POST['form_gid'], $event_date, $_POST['form_comments'], $_POST['facility'], $_POST['billing_facility'], $_POST['form_provider'], $_POST['form_category'], false, $pc_eid);

@@ -440,13 +440,14 @@ function InsertFormCategory($args, $pc_eid)
             $onset_date         = $args['event_date'];
             $provider_id        = $args['form_provider'];
             $billing_facility   = $args['billing_facility'];
+            $pc_catid           = $args['form_category'];
 
-            $encounter_data = array($date, $reason, $facility, $facility_id, $pid, $encounter, $onset_date, $provider_id, $billing_facility);
+            $encounter_data = array($date, $reason, $facility, $facility_id, $pid, $encounter, $onset_date, $provider_id, $billing_facility, $pc_catid);
 
             $db_encounter = sqlInsert(
                 "INSERT INTO form_encounter ( " .
-                "date, reason, facility, facility_id, pid, encounter, onset_date, provider_id, billing_facility" .
-                ") VALUES (?,?,?,?,?,?,?,?,?)", $encounter_data                
+                "date, reason, facility, facility_id, pid, encounter, onset_date, provider_id, billing_facility, pc_catid" .
+                ") VALUES (?,?,?,?,?,?,?,?,?,?)", $encounter_data                
             );
 
 
