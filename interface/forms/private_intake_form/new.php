@@ -70,7 +70,7 @@ if ($postCalendarCategoryACO) {
     $authPostCalendarCategoryWrite = true;
 }
 
-$path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -81,29 +81,32 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
         <style>
+            .margin-top-10{
+                    margin-top: 10px;
+            }
             @media print{
-                .col-sm-2 {
+                .col-md-2 {
                     width: 16.66666667%;
                 }
-                .col-sm-10 {
+                .col-md-10 {
                     width: 83.33333333%;
                 }
                 .col-md-6 {
                     width: 50%;
                 }
-                .col-sm-4 {
+                .col-md-4 {
                     width: 33.3333%;
                 }
-                .col-sm-3 {
+                .col-md-3 {
                     width: 25%;
                 }
-                .col-sm-8 {
+                .col-md-8 {
                     width: 66.66666667%;
                 }
-                .col-sm-9 {
+                .col-md-9 {
                     width: 75%;
                 }
-                .col-sm-12 {
+                .col-md-12 {
                     width: 100%;
                 }
                 .form-group {
@@ -140,6 +143,9 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                 input[type=text]{
                     border: none;
                     font-weight: bold;
+                    border-bottom: 1px solid #24a35a;
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
                 }
                 .form-control{
                     border: none;
@@ -147,12 +153,36 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                     font-weight: bold;
                     background: none;
                 }
-                textarea.form-control{
-                    border: 1px solid #333;
+                .textarea_print{
+                    border: 1px solid #24a35a!important;
+                    width: 100%;
                 }
                 .session-focus{
-                    margin-top: 100px;
-                    padding-top: 40px;
+                    margin-top: 160px;
+                    padding-top: 80px;
+                }
+                .margin-top-10{
+                    margin-top: 10px;
+                }
+                .full-width{
+                    width: 100% !important;
+                }
+                .col-md-offset-6 {
+                    margin-left: 40%;
+                }
+                .estimate_date{
+                    width: 100%;
+                    float: left;
+                    margin: 0;
+                }
+                .pull-left {
+                    float: left!important;
+                }
+                .drug-history{
+                    margin-top: 120px;
+                }
+                .type-services{
+                    margin-top: 40px;
                 }
             }
             @page {
@@ -212,18 +242,18 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                     <input type="hidden" name="activity" value="1">
 
                     <fieldset style="padding-top:20px!important" class="form_content">
-                            <div class="col-md-12">
+                            <div class="" style="text-align: center">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="name" class="col-sm-3 "><?php echo xlt('Client Name'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="name" class="col-sm-4 "><?php echo xlt('Client Name'); ?></label>
+                                        <div class="col-sm-8">
                                             <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" readonly>
                                             <input type="hidden" name="name" value="<?php echo text($patient_full_name); ?>" >
                                         </div>                                    
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
+                                <div class="col-md-4 margin-top-10">
+                                    <div class="form-group ">
                                         <label for="age" class="col-sm-3 "><?php echo xlt('Age'); ?></label>
                                         <div class="col-sm-9">
                                             <input type="text" name="age" id="age" class="form-control" value="<?php echo ($check_res['age']) ? text($check_res['age']) : text($last_record['age']) ; ?>">
@@ -231,15 +261,15 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                         </div>                                    
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
+                                <div class="col-md-4 margin-top-10">
+                                    <div class="form-group ">
                                         <label for="gender" class="col-sm-3 "><?php echo xlt('Gender'); ?></label>
                                         <div class="col-sm-9">
                                             <label class="radio-inline" style="margin-right: 20px">
-                                              <input type="radio" name="gender" id="inlineRadio1" value="Male"> Male
+                                              <input type="radio" name="gender" id="inlineRadio1" value="Male" <?php echo ($check_res['gender'] == 'Male') ? 'checked': ''; ?> > Male
                                             </label>
                                             <label class="radio-inline">
-                                              <input type="radio" name="gender" id="inlineRadio2" value="Female"> Femaile
+                                              <input type="radio" name="gender" id="inlineRadio2" value="Female" <?php echo ($check_res['gender'] == 'Female') ? 'checked': ''; ?> > Female
                                             </label>                                            
                                         </div>                                    
                                     </div>
@@ -250,37 +280,37 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                             <div class="clearfix"></div>
 
                             <div class="col-md-12 margin-top-20" style="margin-top: 30px" >
-                                <div class="form-group">
+                                <div class="form-group full-width">
                                     <label for="presenting_problem" class="control-label"><?php echo xlt('Presenting Problem'); ?></label>
-                                    <textarea name="presenting_problem" id="presenting_problem" rows="3" class="form-control"><?php echo ($check_res['presenting_problem']) ? text($check_res['presenting_problem']) : text($last_record['presenting_problem']); ?></textarea>
+                                    <textarea name="presenting_problem" id="presenting_problem" rows="3" class="form-control textarea_print"><?php echo ($check_res['presenting_problem']) ? text($check_res['presenting_problem']) : text($last_record['presenting_problem']); ?></textarea>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group full-width">
                                     <label for="history_presenting_problem" class="control-label"><?php echo xlt('History of Presenting Problem'); ?></label>
-                                    <textarea name="history_presenting_problem" id="history_presenting_problem" rows="3" class="form-control"><?php echo ($check_res['history_presenting_problem']) ? text($check_res['history_presenting_problem']) : text($last_record['history_presenting_problem']); ?></textarea>
+                                    <textarea name="history_presenting_problem" id="history_presenting_problem" rows="3" class="form-control textarea_print"><?php echo ($check_res['history_presenting_problem']) ? text($check_res['history_presenting_problem']) : text($last_record['history_presenting_problem']); ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="relevent_social_history" class="control-label"><?php echo xlt('Relevant Social History'); ?></label>
-                                    <textarea name="relevent_social_history" id="relevent_social_history" rows="3" class="form-control"><?php echo ($check_res['relevent_social_history']) ? text($check_res['relevent_social_history']) : text($last_record['relevent_social_history']); ?></textarea>
+                                    <textarea name="relevent_social_history" id="relevent_social_history" rows="3" class="form-control textarea_print"><?php echo ($check_res['relevent_social_history']) ? text($check_res['relevent_social_history']) : text($last_record['relevent_social_history']); ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="family_history" class="control-label"><?php echo xlt('Family History'); ?></label>
-                                    <textarea name="family_history" id="family_history" rows="3" class="form-control"><?php echo ($check_res['family_history']) ? text($check_res['family_history']) : text($last_record['family_history']); ?></textarea>
+                                    <textarea name="family_history" id="family_history" rows="3" class="form-control textarea_print"><?php echo ($check_res['family_history']) ? text($check_res['family_history']) : text($last_record['family_history']); ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="medications" class="control-label"><?php echo xlt('Medication'); ?></label>
-                                    <textarea name="medications" id="medications" rows="3" class="form-control"><?php echo ($check_res['medications']) ? text($check_res['medications']) : text($last_record['medications']); ?></textarea>
+                                    <textarea name="medications" id="medications" rows="3" class="form-control textarea_print"><?php echo ($check_res['medications']) ? text($check_res['medications']) : text($last_record['medications']); ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="prior_medical_history" class="control-label"><?php echo xlt('Prior Medical History'); ?></label>
-                                    <textarea name="prior_medical_history" id="prior_medical_history" rows="3" class="form-control"><?php echo ($check_res['prior_medical_history']) ? text($check_res['prior_medical_history']) : text($last_record['prior_medical_history']); ?></textarea>
+                                    <textarea name="prior_medical_history" id="prior_medical_history" rows="3" class="form-control textarea_print"><?php echo ($check_res['prior_medical_history']) ? text($check_res['prior_medical_history']) : text($last_record['prior_medical_history']); ?></textarea>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group drug-history">
                                     <label for="drug_history" class="control-label"><?php echo xlt('Drug History'); ?></label>
-                                    <textarea name="drug_history" id="drug_history" rows="3" class="form-control"><?php echo ($check_res['drug_history']) ? text($check_res['drug_history']) : text($last_record['drug_history']); ?></textarea>
+                                    <textarea name="drug_history" id="drug_history" rows="3" class="form-control textarea_print"><?php echo ($check_res['drug_history']) ? text($check_res['drug_history']) : text($last_record['drug_history']); ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="resources_strengths" class="control-label"><?php echo xlt('Resources and Strengths'); ?></label>
-                                    <textarea name="resources_strengths" id="resources_strengths" rows="3" class="form-control"><?php echo ($check_res['resources_strengths']) ? text($check_res['resources_strengths']) : text($last_record['resources_strengths']); ?></textarea>
+                                    <textarea name="resources_strengths" id="resources_strengths" rows="3" class="form-control textarea_print"><?php echo ($check_res['resources_strengths']) ? text($check_res['resources_strengths']) : text($last_record['resources_strengths']); ?></textarea>
                                 </div>
                             </div>
 
@@ -294,7 +324,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                     <h4><?php echo xlt('DSM-5/ICD-10 ASSESSMENT'); ?></h4>
                                     <?php $dsm_5_code = explode('|', $check_res['dsm_5_code']); ?>
                                     <div class="col-md-6">
-                                        <div class="col-sm-6">
+                                        <div class="col-md-6">
                                             <strong><?php echo xlt('DSM 5 Code'); ?></strong>
                                             <div class="form-group">
                                                 <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[0]); ?>">
@@ -303,7 +333,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                                 <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[3]); ?>">                                            
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-md-6">
                                             <strong><?php echo xlt('Disorder'); ?></strong>
                                             <?php $dsm_5_code_disorder = explode('|', $check_res['dsm_5_code_disorder']); ?>
                                             <div class="form-group">
@@ -315,7 +345,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="col-sm-6">
+                                        <div class="col-md-6">
                                             <strong><?php echo xlt('DSM 5 Code'); ?></strong>
                                             <div class="form-group">
                                                 <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[4]); ?>">
@@ -324,7 +354,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                                 <input type="text" name="dsm_5_code[]" class="form-control" value="<?php echo text($dsm_5_code[7]); ?>">                                            
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-md-6">
                                             <strong><?php echo xlt('Disorder'); ?></strong>
                                             <div class="form-group">
                                                 <input type="text" name="dsm_5_code_disorder[]" class="form-control" value="<?php echo text($dsm_5_code_disorder[4]); ?>">
@@ -335,7 +365,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                         </div>
                                     </div>
                                     <div class="clearfix"></div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12 type-services">
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="type_services" class="control-label"><?php echo xlt('Type of Services'); ?></label>
@@ -357,32 +387,35 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                             <div class="col-md-12 margin-top-20 session-focus" style="margin-top: 30px">
                                 <h3><?php echo xlt('Client Objectives / Therapeutic Goals'); ?></h3>  
                                 <div class="form-group" style="margin-top: 20px">
-                                    <textarea name="therapeutic_goals_1" id="therapeutic_goals_1" rows="4" class="form-control" placeholder="Client Objective 1."><?php echo text($check_res['therapeutic_goals_1']); ?></textarea>
-                                    <div class="col-md-6 col-md-offset-6">
-                                        <label for="" class="col-sm-6"><?php echo xlt('Estimated Date of Completion'); ?></label>
-                                        <div class="col-sm-6">
-                                            <input type="text" name="therapeutic_goals_1_date_completion" class="form-control newDatePicker" autocomplete="off" value="<?php echo ( $check_res['therapeutic_goals_1_date_completion'] ) ? date('m/d/Y', strtotime($check_res['therapeutic_goals_1_date_completion'])):''; ?>">
-                                        </div>                                        
+                                    <textarea name="therapeutic_goals_1" id="therapeutic_goals_1" rows="4" class="form-control textarea_print" placeholder="Client Objective 1."><?php echo text($check_res['therapeutic_goals_1']); ?></textarea>
+                                    <div class="col-md-7 col-md-offset-5 margin-top-10">
+                                        <label for="" class="pull-left"><?php echo xlt('Estimated Date of Completion'); ?></label>
+                                        <div class=" pull-left">
+                                            <input type="text" name="therapeutic_goals_1_date_completion" class="form-control newDatePicker estimate_date" autocomplete="off" value="<?php echo ( $check_res['therapeutic_goals_1_date_completion'] ) ? date('m/d/Y', strtotime($check_res['therapeutic_goals_1_date_completion'])):''; ?>">
+                                        </div>    
+                                        <div class="clearfix"></div>                                    
                                     </div>
                                 </div> 
                                 <div class="clearfix"></div>
                                 <div class="form-group" style="margin-top: 20px">
-                                    <textarea name="therapeutic_goals_2" id="therapeutic_goals_2" rows="4" class="form-control" placeholder="Client Objective 2."><?php echo text($check_res['therapeutic_goals_2']); ?></textarea>
-                                    <div class="col-md-6 col-md-offset-6">
-                                        <label for="" class="col-sm-6"><?php echo xlt('Estimated Date of Completion'); ?></label>
-                                        <div class="col-sm-6">
-                                            <input type="text" name="therapeutic_goals_2_date_completion" class="form-control newDatePicker" autocomplete="off" value="<?php echo ( $check_res['therapeutic_goals_2_date_completion'] ) ? date('m/d/Y', strtotime($check_res['therapeutic_goals_2_date_completion'])):''; ?>">
-                                        </div>                                        
+                                    <textarea name="therapeutic_goals_2" id="therapeutic_goals_2" rows="4" class="form-control textarea_print" placeholder="Client Objective 2."><?php echo text($check_res['therapeutic_goals_2']); ?></textarea>
+                                    <div class="col-md-7 col-md-offset-5 margin-top-10">
+                                        <label for="" class="pull-left"><?php echo xlt('Estimated Date of Completion'); ?></label>
+                                        <div class="pull-left">
+                                            <input type="text" name="therapeutic_goals_2_date_completion" class="form-control newDatePicker estimate_date" autocomplete="off" value="<?php echo ( $check_res['therapeutic_goals_2_date_completion'] ) ? date('m/d/Y', strtotime($check_res['therapeutic_goals_2_date_completion'])):''; ?>">
+                                        </div>  
+                                        <div class="clearfix"></div>                                      
                                     </div>
                                 </div>  
                                 <div class="clearfix"></div>
                                 <div class="form-group" style="margin-top: 20px">
-                                    <textarea name="therapeutic_goals_3" id="therapeutic_goals_3" rows="4" class="form-control" placeholder="Client Objective 3."><?php echo text($check_res['therapeutic_goals_3']); ?></textarea>
-                                    <div class="col-md-6 col-md-offset-6">
-                                        <label for="" class="col-sm-6"><?php echo xlt('Estimated Date of Completion'); ?></label>
-                                        <div class="col-sm-6">
-                                            <input type="text" name="therapeutic_goals_3_date_completion" class="form-control newDatePicker" autocomplete="off" value="<?php echo ( $check_res['therapeutic_goals_3_date_completion'] ) ? date('m/d/Y', strtotime($check_res['therapeutic_goals_3_date_completion'])):''; ?>">
-                                        </div>                                        
+                                    <textarea name="therapeutic_goals_3" id="therapeutic_goals_3" rows="4" class="form-control textarea_print" placeholder="Client Objective 3."><?php echo text($check_res['therapeutic_goals_3']); ?></textarea>
+                                    <div class="col-md-7 col-md-offset-5 margin-top-10">
+                                        <label for="" class="pull-left"><?php echo xlt('Estimated Date of Completion'); ?></label>
+                                        <div class="pull-left">
+                                            <input type="text" name="therapeutic_goals_3_date_completion" class="form-control newDatePicker estimate_date" autocomplete="off" value="<?php echo ( $check_res['therapeutic_goals_3_date_completion'] ) ? date('m/d/Y', strtotime($check_res['therapeutic_goals_3_date_completion'])):''; ?>">
+                                        </div>  
+                                        <div class="clearfix"></div>                                      
                                     </div>
                                 </div>                           
                                 
@@ -390,19 +423,19 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20" style="margin-top: 20px">
+                            <div class=" margin-top-20" style="margin-top: 20px">
                                 <div class="form-group">                                    
-                                    <div class="col-sm-6">
-                                        <span class="col-sm-6"><?php echo xlt('Signature of Provider:'); ?> </span>
-                                        <div class="col-sm-6">
+                                    <div class="col-md-7">
+                                        <span class="col-md-6"><?php echo xlt('Signature of Provider:'); ?> </span>
+                                        <div class="col-md-6">
                                             <input type="text" class="form-control " name="signature_provider" id="signature_provider"  autocomplete="off">
                                             <small class="text-danger meet_again_date_error"></small>
                                         </div>                                        
                                     </div>
 
-                                    <div class="col-sm-6">
-                                        <span class="col-sm-3"><?php echo xlt('Date:'); ?> </span>
-                                        <div class="col-sm-9">
+                                    <div class="col-md-5">
+                                        <span class="col-md-3"><?php echo xlt('Date:'); ?> </span>
+                                        <div class="col-md-9">
                                             <input type="text" class="form-control newDatePicker" name="date" id="date" value="<?php echo ( $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])):''; ?>" autocomplete="off">
                                             <small class="text-danger meet_again_date_error"></small>
                                         </div>

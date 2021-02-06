@@ -30,9 +30,9 @@ if (!CsrfUtils::verifyCsrfToken($_POST["csrf_token_form"])) {
 
 $encounter = ( isset($_SESSION['encounter']) && $_SESSION['encounter'] ) ? true:false; 
 
-$folderName = 'private_progress_note';
+$folderName = 'private_intake_form';
 $tableName = 'form_' . $folderName;
-$form_textual_name = 'Private Payment Progress Note';
+$form_textual_name = 'Private Intake Form';
 
 $table_fields = sqlListFields($tableName); /* An array of the table fields */
 
@@ -49,7 +49,7 @@ $encounter = ( isset($_REQUEST['encounter']) && $_REQUEST['encounter'] ) ? $_REQ
 
 $dateFields = array('date','meet_again_date');
 
-$implode_arr = array('risk_self_harm', 'risk_suicidality', 'risk_homicidality', 'symptoms_orientation', 'symptoms_speech', 'symptoms_mood', 'symptoms_thought_content', 'symptoms_hygiene', 'symptoms_motor', 'symptoms_affect', 'symptoms_perception', 'symptoms_thought_process', 'symptoms_other');
+$implode_arr = array('dsm_5_code', 'dsm_5_code_disorder');
 
 /* UPDATE FIELDS */
 if ($id) {
