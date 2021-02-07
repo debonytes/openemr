@@ -50,7 +50,14 @@ if( empty($check_res) ){
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
-
+if($pid){
+    $patien_query = "SELECT CDA FROM patient_data WHERE id = ?";
+    $patient_data = sqlQuery($patien_query, array($pid));
+    $cda_date = trim($patient_data['CDA']);
+    $ninety_days = date('Y-m-d', strtotime($cda_date . '+ 90 days'));
+    $one_eighty = date('Y-m-d', strtotime($cda_date . '+ 180 days'));
+    $two_seventy = date('Y-m-d', strtotime($cda_date . '+ 270 days'));
+}
 
 $esignApi = new Api();
 // Create the ESign instance for this form
@@ -166,8 +173,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                 </div>
             </div>
            
-
-            <?php
+           <?php
             $current_date = date('Y-m-d');
 
             if( $_SESSION['from_dashboard'] ){
@@ -228,6 +234,13 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                     <label for="" class="col-sm-3 "><?php echo xlt('Location'); ?></label>
                                     <div class="col-sm-9">
                                         <input type="text" name="location" id="location" class="form-control" value="<?php echo ($check_res['location']) ? text($check_res['location']) : text($last_record['location']); ?>">
+                                        <small class="text-danger location_error"></small>
+                                    </div>                                    
+                                </div>
+                                <div class="form-group">
+                                    <label for="cda_date" class="col-sm-3 "><?php echo xlt('CDA Date'); ?></label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="cda_date" id="cda_date" class="form-control" value="<?php echo ($cda_date) ? date('m/d/Y', strtotime($cda_date)) : ''; ?>">
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
@@ -446,21 +459,21 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                     <div class="form-group">
                                             <label for="plan_review_90" class="col-sm-3 control-label"><?php echo xlt('90 Day:'); ?> </label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo ($check_res['plan_review_90']) ? text($check_res['plan_review_90']) : text($last_record['plan_review_90']); ?>">
+                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>">
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_180" class="col-sm-3 control-label"><?php echo xlt('180 Day: '); ?></label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo ($check_res['plan_review_180']) ? text($check_res['plan_review_180']) : text($last_record['plan_review_180']); ?>">
+                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>">
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_270" class="col-sm-3 control-label"><?php echo xlt('270 Day:'); ?></label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo ($check_res['plan_review_270']) ? text($check_res['plan_review_270']) : text($last_record['plan_review_270']); ?>">
+                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>">
                                             </div>
                                     </div>
 

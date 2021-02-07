@@ -190,6 +190,13 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="form-group">
+                                    <label for="cda_date" class="col-sm-3 "><?php echo xlt('CDA Date'); ?></label>
+                                    <div class="col-sm-9">
+                                        <input type="text" name="cda_date" id="cda_date" class="form-control" value="<?php echo ($check_res['cda_date']) ? text($check_res['cda_date']) : ''; ?>" disabled>
+                                        <small class="text-danger location_error"></small>
+                                    </div>                                    
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
