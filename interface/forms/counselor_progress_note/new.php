@@ -28,6 +28,11 @@ use ESign\Api;
 $folderName = 'counselor_progress_note';
 $tableName = 'form_' . $folderName;
 
+$green = '#2ecc71';
+$gray = '#555555';
+$color_90 = $green;
+$color_180 = $green;
+$color_270 = $green;
 
 $returnurl = 'encounter_top.php';
 $formid = (isset($_GET['id']) ? $_GET['id'] : 0);
@@ -50,14 +55,29 @@ if( empty($check_res) ){
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
+$ninety_days_disabled = '';
+$one_eighty_disabled = '';
+$two_seventy_disabled = '';
+
 if($pid){
     $patien_query = "SELECT CDA FROM patient_data WHERE id = ?";
     $patient_data = sqlQuery($patien_query, array($pid));
     $cda_date = trim($patient_data['CDA']);
+    $today = date('Y-m-d');
     $ninety_days = date('Y-m-d', strtotime($cda_date . '+ 90 days'));
     $one_eighty = date('Y-m-d', strtotime($cda_date . '+ 180 days'));
     $two_seventy = date('Y-m-d', strtotime($cda_date . '+ 270 days'));
+
+    $color_90 =  (strtotime($ninety_days) > strtotime($today) ) ? getDateColor($today, $ninety_days) : $gray;
+    $color_180 = (strtotime($one_eighty) > strtotime($today) ) ? getDateColor($today, $one_eighty) : $gray;
+    $color_270 = (strtotime($two_seventy) > strtotime($today) ) ? getDateColor($today, $two_seventy) : $gray;
+    
+    $ninety_days_disabled = (strtotime($ninety_days) < strtotime($today)) ? ' disabled ' : '';
+    $one_eighty_disabled = (strtotime($one_eighty) < strtotime($today)) ? ' disabled' : '';
+    $two_seventy_disabled = (strtotime($two_seventy) < strtotime($today)) ? ' disabled' : '';
 }
+
+
 
 $esignApi = new Api();
 // Create the ESign instance for this form
@@ -158,9 +178,24 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                     margin-top: 100px;
                     padding-top: 40px;
                 }
+
             }
             @page {
               margin: 2cm;
+            }
+
+            .plan_review_90, .plan_review_90[disabled]{
+                color: white;
+                background-color: <?php echo $color_90; ?> !important;
+            }
+
+            .plan_review_180, .plan_review_180[disabled]{
+                color: white;
+                background-color: <?php echo $color_180; ?> !important;
+            }
+            .plan_review_270, .plan_review_270[disabled]{
+                color: white;
+                background-color: <?php echo $color_270; ?> !important;
             }
 
         </style>
@@ -172,6 +207,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                     <h2><?php echo xlt('Counselor Progress Note'); ?></h2>
                 </div>
             </div>
+
            
            <?php
             $current_date = date('Y-m-d');
@@ -459,21 +495,21 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                     <div class="form-group">
                                             <label for="plan_review_90" class="col-sm-3 control-label"><?php echo xlt('90 Day:'); ?> </label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>">
+                                              <input type="text" class="form-control plan_review_90" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>" <?php echo $ninety_days_disabled; ?> >
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_180" class="col-sm-3 control-label"><?php echo xlt('180 Day: '); ?></label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>">
+                                              <input type="text" class="form-control plan_review_180" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>"  <?php echo $one_eighty_disabled; ?> >
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_270" class="col-sm-3 control-label"><?php echo xlt('270 Day:'); ?></label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>">
+                                              <input type="text" class="form-control plan_review_270" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>"  <?php echo $two_seventy_disabled; ?> >
                                             </div>
                                     </div>
 

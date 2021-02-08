@@ -412,21 +412,21 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <div class="form-group">
                                             <label for="plan_review_90" class="col-sm-2 control-label"><?php echo xlt('90 Day:'); ?> </label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_90" id="plan_review_90" value="<?php echo text($check_res['plan_review_90']); ?>" disabled >
+                                              <input type="text" class="form-control plan_review_90" name="plan_review_90" id="plan_review_90" value="<?php echo text($check_res['plan_review_90']); ?>" disabled >
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_180" class="col-sm-2 control-label"><?php echo xlt('180 Day: '); ?></label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_180" id="plan_review_180" value="<?php echo text($check_res['plan_review_180']); ?>" disabled>
+                                              <input type="text" class="form-control plan_review_180" name="plan_review_180" id="plan_review_180" value="<?php echo text($check_res['plan_review_180']); ?>" disabled>
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_270" class="col-sm-2 control-label"><?php echo xlt('270 Day:'); ?></label>
                                             <div class="col-sm-10">
-                                              <input type="text" class="form-control" name="plan_review_270" id="plan_review_270" value="<?php echo text($check_res['plan_review_270']); ?>" disabled>
+                                              <input type="text" class="form-control plan_review_270" name="plan_review_270" id="plan_review_270" value="<?php echo text($check_res['plan_review_270']); ?>" disabled>
                                             </div>
                                     </div>
 

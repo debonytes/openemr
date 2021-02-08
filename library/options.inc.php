@@ -4113,7 +4113,36 @@ function get_task_place($value = null)
     return $option;
 }
 
+function getDateColor($today, $nth_days)
+{
+    $color = '';
+    $green = '#2ecc71';
+    $orange = '#ffa500';
+    $red = '#ff0000';
+    $gray = '#555555';
+    $different = dateDifference($today , $nth_days);
+    if($different > 30){
+        $color = $green;
+    } elseif( ($different <= 30) && ($different > 7) ){
+        $color = $orange;
+    } elseif( ($different <= 7) && ($different > 0) ){
+        $color = $red;
+    } elseif($different <= 0) {
+        $color = $gray;
+    } else {
+        $color = $green;
+    }
+    return $color;
+}
 
+function dateDifference($date_1 , $date_2 , $differenceFormat = '%a' )
+{
+    $datetime1 = date_create($date_1);
+    $datetime2 = date_create($date_2);   
+    $interval = date_diff($datetime1, $datetime2, false);   
+    return $interval->format($differenceFormat);
+   
+}
 
 
 
