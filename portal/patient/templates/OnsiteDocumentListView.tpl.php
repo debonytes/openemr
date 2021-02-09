@@ -87,6 +87,11 @@ $cuser = isset($_SESSION['sessionUser']) ? $_SESSION['sessionUser'] : $_SESSION[
         .script("<?php echo $GLOBALS['web_root']; ?>/portal/patient/scripts/model.js?v=<?php echo $GLOBALS['v_js_includes']; ?>").wait()
         .script("<?php echo $GLOBALS['web_root']; ?>/portal/patient/scripts/view.js?v=<?php echo $GLOBALS['v_js_includes']; ?>").wait()
 </script>
+<style>
+    .bg-green{
+        background-color: #2ecc71;
+    }
+</style>
 </head>
 <body class="skin-blue">
 <script type="text/javascript">
@@ -330,7 +335,7 @@ body {
         <div class="container-fluid">
         <table class="collection table table-condensed table-hover">
         <thead>
-            <tr class='bg-primary' style='cursor:pointer'>
+            <tr class='bg-primary bg-green' style='cursor:pointer'>
                 <th id="header_Id"><?php echo xlt('Doc Id');?><% if (page.orderBy == 'Id') { %> <i class='icon-arrow-<%= page.orderDesc ? 'up' : 'down' %>' /><% } %></th>
                 <th id="header_DocType"><?php echo xlt('Document');?><% if (page.orderBy == 'DocType') { %> <i class='icon-arrow-<%= page.orderDesc ? 'up' : 'down' %>' /><% } %></th>
                 <th id="header_CreateDate"><?php echo xlt('Create Date');?><% if (page.orderBy == 'CreateDate') { %> <i class='icon-arrow-<%= page.orderDesc ? 'up' : 'down' %>' /><% } %></th>

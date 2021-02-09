@@ -146,6 +146,7 @@ if (!(isset($_SESSION['password_update']) || isset($_GET['requestNew']))) {
     <script type="text/javascript" src="<?php echo $GLOBALS['assets_static_relative']; ?>/emodal/dist/eModal.min.js"></script>
     <link rel="stylesheet" type="text/css" href="assets/css/base.css?v=<?php echo $v_js_includes; ?>" />
     <link rel="stylesheet" type="text/css" href="assets/css/register.css?v=<?php echo $v_js_includes; ?>" />
+    <link rel="stylesheet" type="text/css" href="assets/css/custom.css?v=<?php echo $v_js_includes; ?>" />
     <script type="text/javascript">
         function checkUserName() {
             let vacct = document.getElementById('uname').value;
@@ -342,7 +343,7 @@ if (!(isset($_SESSION['password_update']) || isset($_GET['requestNew']))) {
                     <img class="img-responsive center-block login-image" src='<?php echo $GLOBALS['images_static_relative']; ?>/login-logo.png' />
                     <form class="text-center" action="get_patient_info.php" method="POST" onsubmit="return process()">
                                 <fieldset>
-                                    <legend class="bg-primary"><h3><?php echo xlt('Patient Portal Login'); ?></h3></legend>
+                                    <legend class="bg-success bg-green"><h3><?php echo xlt('Patient Portal Login'); ?></h3></legend>
                                     <div class="well">
                                         <div class="form-inline">
                                             <div class="form-group">

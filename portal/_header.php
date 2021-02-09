@@ -27,6 +27,7 @@ use OpenEMR\Core\Header;
 <script type="text/javascript" src="../interface/main/tabs/js/dialog_utils.js?v=<?php echo $v_js_includes; ?>"></script>
 <link href="<?php echo $GLOBALS['web_root']; ?>/portal/assets/css/style.css?v=<?php echo $v_js_includes; ?>" rel="stylesheet" type="text/css" />
 <link href="<?php echo $GLOBALS['web_root']; ?>/portal/sign/css/signer_modal.css?v=<?php echo $v_js_includes; ?>" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="assets/css/custom.css?v=<?php echo $v_js_includes; ?>" />
 
 <script type="text/javascript">
     var tab_mode = true;

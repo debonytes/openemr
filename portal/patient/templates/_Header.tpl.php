@@ -30,6 +30,7 @@
         <link href="styles/style.css?v=<?php echo $GLOBALS['v_js_includes']; ?>" rel="stylesheet" />
         <link href="<?php echo $GLOBALS['assets_static_relative']; ?>/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
         <link href="<?php echo $GLOBALS['assets_static_relative']; ?>/jquery-datetimepicker/build/jquery.datetimepicker.min.css" rel="stylesheet" />
+        <link href="styles/custom.css?v=<?php echo $GLOBALS['v_js_includes']; ?>" rel="stylesheet" />
 
         <script type="text/javascript" src="<?php echo $GLOBALS['web_root']; ?>/portal/patient/scripts/libs/LAB.min.js"></script>
         <script type="text/javascript">
