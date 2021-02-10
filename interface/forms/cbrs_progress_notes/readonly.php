@@ -1,4 +1,5 @@
 <?php
+//session_start();
 /**
  * Clinical instructions form.
  *
@@ -31,32 +32,21 @@ $tableName = 'form_' . $folderName;
 
 $returnurl = 'encounter_top.php';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
-$check_res = $formid ? formFetch($tableName, $formid) : array();
-
-$is_group = ($attendant_type == 'gid') ? true : false;
 
 $formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
 $form = sqlQuery($formStmt, array($formid, $folderName));
 
-$esignApi = new Api();
-// Create the ESign instance for this form
-//$esign = $esignApi->createFormESign($iter['id'], $formdir, $encounter);
+$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
-$esign = $esignApi->createFormESign($form['id'], $folderName, $encounter);
+$check_res = $formid ? formFetch($tableName, $formid) : array();
 
-//fetch acl for category of given encounter
-$pc_catid = fetchCategoryIdByEncounter($encounter);
-$postCalendarCategoryACO = fetchPostCalendarCategoryACO($pc_catid);
-if ($postCalendarCategoryACO) {
-    $postCalendarCategoryACO = explode('|', $postCalendarCategoryACO);
-    $authPostCalendarCategory = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1]);
-    $authPostCalendarCategoryWrite = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1], '', 'write');
-} else { // if no aco is set for category
-    $authPostCalendarCategory = true;
-    $authPostCalendarCategoryWrite = true;
-}
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
+$last_record = sqlQuery($last_record_query, array($pid));
+
+
 
 ?>
+<!DOCTYPE html>
 <html>
     <head>
         <title><?php echo xlt("CBRS Progress Notes"); ?></title>
@@ -64,29 +54,175 @@ if ($postCalendarCategoryACO) {
         <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
+        <style>
+            .margin-left-40{
+                margin-left: 300px;
+            }
+            .margin-right-40{
+                margin-right: 40px;
+            }
+            .margin-top-20{
+                margin-top: 20px;
+            }
+            @media print{
+                .margin-left-40{
+                    margin-left: 40px;
+                }
+                .margin-right-40{
+                    margin-right: 20px;
+                }
+                .col-md-2 {
+                    width: 16.66666667%;
+                }
+                .col-md-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-md-4 {
+                    width: 33.3333%;
+                }
+                .col-md-3 {
+                    width: 25%;
+                }
+                .col-md-8 {
+                    width: 66.66666667%;
+                }
+                .col-md-9 {
+                    width: 75%;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: normal;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .row_other{
+                    margin-top: 40px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 40px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                input[type=text]{
+                    border: none;
+                    font-weight: bold;
+                    border-bottom: 1px solid #333;
+                    border-bottom-right-radius: 0;
+                    border-bottom-left-radius: 0;
+                }
+                .form-control{
+                    border: none;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background: none;
+                }
+                textarea.form-control{
+                    border: 1px solid #333;
+                }
+                .session-focus{
+                    margin-top: 100px;
+                    padding-top: 40px;
+                }
+                .col-md-offset-2 {
+                    margin-left: 0;
+                }
+                .checkbox-inline, .radio-inline {
+                    position: relative;
+                    display: inline-block;
+                    padding-left: 20px;
+                    margin-bottom: 0;
+                    font-weight: 400;
+                    vertical-align: middle;
+                    cursor: pointer;
+                }
+
+                .full-width{
+                    width: 100%;
+                    margin: 0;
+                }
+
+                .line-block{
+                    display: block;
+                    width: 100%;
+                }
+                .date-time-align{
+                    display: inline-block;
+                    margin-right: 10px;
+                }
+
+                .work-on{
+                    margin-top: 100px;
+                }
+
+            }
+            @page {
+              margin: 2cm;
+            }
+
+           
+        </style>
     </head>
-    <body class="body_top">
+    <body class="body_top"  onbeforeunload="return myFunction()">
         <div class="container">
             <div class="row">
                 <div class="page-header">
-                    <h2><?php echo xlt('Viewing of CBRS Progress Notes'); ?></h2>
+                    <h2><?php echo xlt('CBRS Progress Notes'); ?></h2>
                 </div>
             </div>
+
+            <?php
+                /*echo "<pre>";
+                print_r($_SESSION);
+                echo '</pre>';*/
+            ?>
             <?php
             $current_date = date('Y-m-d');
 
-            $patient_id = ( isset($_SESSION['alert_notify_pid']) && $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
-            $pid = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
-            if($patient_id) {
-              $patient = getPatientData($patient_id);
-              $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-              $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-              $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
-              $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
-              if($patientInfo && array_filter($patientInfo)) {
-                $patient_full_name = implode( ' ', array_filter($patientInfo) );
-              }
+            if( $_SESSION['from_dashboard'] ){
+                $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+            } else {
+
+                $patient_id = ( $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
+                $pid = ( $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
+                if($patient_id) {
+                  $patient = getPatientData($patient_id);
+                  $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
+                  $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
+                  $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+                  $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
+                  if($patientInfo && array_filter($patientInfo)) {
+                    $patient_full_name = implode( ' ', array_filter($patientInfo) );
+                  } else {
+                    $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+                  }
+                }
+
             }
+
+            
 
             $duration = [
                 0 => 'Select',
@@ -111,7 +247,9 @@ if ($postCalendarCategoryACO) {
             ?>
             <div class="row">
                 
-                <form method="post" id="my_progress_notes_form" name="my_progress_notes_form" action="">
+                <form method="post" id="my_progress_notes_form" name="my_progress_notes_form" action="<?php echo $rootdir; ?>/forms/<?php echo $folderName; ?>/save.php?id=<?php echo attr_url($formid); ?>">
+            
+
                 
                     <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
                     <input type="hidden" name="pid" value="<?php echo $pid; ?>">
@@ -120,70 +258,63 @@ if ($postCalendarCategoryACO) {
                     <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
                     <input type="hidden" name="activity" value="1">
 
-                    <fieldset>
+                    <fieldset class="form_content">
                         <legend class=""><?php echo xlt('CBRS Progress Notes'); ?></legend>
-                            <!--
-                            <div class="form-group">
-                                <div class="col-sm-10 col-sm-offset-1">
-                                    <textarea name="services_place" id ="services_place"  class="form-control" cols="80" rows="5" ><?php //echo text($check_res['services_place']); ?></textarea>
-                                </div>
-                            </div>
-                            -->
-                           
                             
-
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="name" class="col-sm-3 "><?php echo xlt('Client Name'); ?></label>
-                                    <div class="col-sm-9">
-                                        <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" readonly>
+                                    <label for="name" class="col-md-5 "><?php echo xlt('Client Name'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" readonly disabled>
                                         <input type="hidden" name="name" value="<?php echo text($patient_full_name); ?>" >
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
-                                    <label for="cbrs" class="col-sm-3 "><?php echo xlt('CBRS'); ?></label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="cbrs" id="cbrs" class="form-control" value="<?php echo text($check_res['cbrs']); ?>" readonly>
+                                    <label for="cbrs" class="col-md-5 "><?php echo xlt('CBRS'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="cbrs" id="cbrs" class="form-control" value="<?php echo ($check_res['cbrs']) ? text($check_res['cbrs']) : text($last_record['cbrs']); ?>" disabled>
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
-                                    <label for="" class="col-sm-3 "><?php echo xlt('Billing Code'); ?></label>
-                                    <div class="col-sm-9">
-                                        <input type="text"  class="form-control" value="H2017-CBRS" readonly>
+                                    <label for="" class="col-md-5 "><?php echo xlt('Billing Code'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text"  class="form-control" value="H2017-CBRS" readonly disabled>
                                         <input type="hidden" name="billing_code" value="H2017-CBRS">
                                     </div>                                    
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="" class="col-sm-3 "><?php echo xlt('Date of Service'); ?></label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control " value="<?php echo text($check_res['dateofservice']); ?>" autocomplete="off" readonly>
+                                    <label for="" class="col-md-5 "><?php echo xlt('Date of Service'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control datepicker" value="<?php echo ($check_res['dateofservice']) ? text(date('m/d/Y', strtotime($check_res['dateofservice']) )) : date('m/d/Y'); ?>" autocomplete="off" disabled>
                                         <small class="text-danger date_error"></small>
                                     </div>                                    
                                 </div>
-
+                                <div class="clearfix"></div>
                                 <div class="form-group">
-                                    <label for="starttime" class="col-sm-3 "><?php echo xlt('Start Time'); ?></label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="starttime" id="starttime" class="form-control " value="<?php echo text($check_res['starttime']); ?>" autocomplete="off" readonly>
+                                    <label for="starttime" class="col-md-5 "><?php echo xlt('Start Time'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="starttime" id="starttime" class="form-control timepicker" value="<?php echo text($check_res['starttime']); ?>" autocomplete="off" disabled>
                                         <small class="text-danger starttime_error"></small>
                                     </div>                                    
                                 </div>
-
+                                <div class="clearfix"></div>
                                 <div class="form-group">
-                                    <label for="endtime" class="col-sm-3 "><?php echo xlt('End Time'); ?></label>
-                                    <div class="col-sm-9">
-                                        <input type="text" name="endtime" id="endtime" class="form-control " value="<?php echo text($check_res['endtime']); ?>" autocomplete="off" readonly>
+                                    <label for="endtime" class="col-md-5 "><?php echo xlt('End Time'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="endtime" id="endtime" class="form-control timepicker" value="<?php echo text($check_res['endtime']); ?>" autocomplete="off" disabled>
                                         <small class="text-danger endtime_error"></small>
                                     </div>                                    
                                 </div>
-
+                                <div class="clearfix"></div>
                                 <div class="form-group">
-                                    <label for="duration" class="col-sm-3 "><?php echo xlt('Duration'); ?></label>
-                                    <div class="col-sm-9">
-                                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo text($check_res['duration']); ?>" readonly>
+                                    <label for="duration" class="col-md-5 "><?php echo xlt('Duration'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo text($check_res['duration']); ?>" disabled>
                                         <small class="text-danger duration_error"></small>
                                     </div>                                    
                                 </div>
@@ -197,7 +328,13 @@ if ($postCalendarCategoryACO) {
                                         <?php echo xlt('(N) State where the services took place:'); ?>
                                     </label>
                                     <div class="col-sm-8">
-                                        <input type="text" value="<?php echo ucwords(text($check_res['services_place']));  ?>" readonly>
+                                        <label class="radio-inline">
+                                          <input type="radio" name="services_place" id="services_place1" value="home" <?php echo ($check_res['services_place'] == 'home') ? "checked": "";  ?> disabled> <?php echo xlt('Home'); ?>
+                                        </label>
+                                        <label class="radio-inline">
+                                          <input type="radio" name="services_place" id="services_place2" value="community"  <?php echo ($check_res['services_place'] == 'community') ? "checked": "";  ?> disabled> <?php echo xlt('Community'); ?>
+                                        </label>
+                                        <small class="text-danger services_place_error clearfix"></small>
                                     </div>
                                 </div>
                                 <div class="clearfix"></div>
@@ -206,168 +343,128 @@ if ($postCalendarCategoryACO) {
                                         <?php echo xlt('And who you were with:'); ?>
                                     </label>
                                     <div class="col-sm-8">
-                                        <input type="text" value="<?php echo ucwords(text($check_res['services_with'])); ?>" readonly >
+                                        <label class="radio-inline">
+                                          <input type="radio" name="services_with" id="services_with1" value="client"  <?php echo ($check_res['services_with'] == 'client') ? "checked": "";  ?> disabled> <?php echo xlt('Client'); ?>
+                                        </label>
+                                        <label class="radio-inline">
+                                          <input type="radio" name="services_with" id="services_with2" value="family" <?php echo ($check_res['services_with'] == 'family') ? "checked": "";  ?> disabled> <?php echo xlt('Family'); ?>
+                                        </label>
+                                        <small class="text-danger services_with_error clearfix"></small>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20" style="margin-top: 30px" >
+                            <div class="col-md-12 margin-top-20" >
                                 <p>
                                     <?php echo xlt('(A) State the goals and tasks set at the beginning of services for the client. You will not always work on all of them at each date of service.'); ?>
                                 </p>
 
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 1.1 (H2017):'); ?></strong></label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_1']); ?>" readonly>
-                                        
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_1']); ?>" disabled>
+                                        <small class="text-danger goals_object_1_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
-                                    <div class="col-sm-4" >
+                                </div>
+
+                                <div class="clearfix"></div>
+
+                                <div class="col-sm-10 col-sm-offset-2" >
                                     <div class="form-group padding-left-18">
-                                        <?php if($check_res['goals_object_1_status'] == 'completed'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_1_status" id="goals_object_1a" value="completed" <?php echo ($check_res['goals_object_1_status'] == 'completed') ? "checked": "";  ?> > <?php echo xlt('Completed/Maintenance'); ?>
+                                          <input type="radio" name="goals_object_1_status" id="goals_object_1a" value="completed" <?php echo ($check_res['goals_object_1_status'] == 'completed') ? "checked": "";  ?> disabled> <?php echo xlt('Completed/Maintenance'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_1_status'] == 'substantial'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_1_status" id="goals_object_1b" value="substantial" <?php echo ($check_res['goals_object_1_status'] == 'substantial') ? "checked": "";  ?> > <?php echo xlt('Substantial'); ?>
+                                          <input type="radio" name="goals_object_1_status" id="goals_object_1b" value="substantial" <?php echo ($check_res['goals_object_1_status'] == 'substantial') ? "checked": "";  ?> disabled> <?php echo xlt('Substantial'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_1_status'] == 'moderate'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_1_status" id="goals_object_1c" value="moderate" <?php echo ($check_res['goals_object_1_status'] == 'moderate') ? "checked": "";  ?> > <?php echo xlt('Moderate'); ?>
+                                          <input type="radio" name="goals_object_1_status" id="goals_object_1c" value="moderate" <?php echo ($check_res['goals_object_1_status'] == 'moderate') ? "checked": "";  ?> disabled> <?php echo xlt('Moderate'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_1_status'] == 'minimal'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_1_status" id="goals_object_1d" value="minimal" <?php echo ($check_res['goals_object_1_status'] == 'minimal') ? "checked": "";  ?> > <?php echo xlt('Minimal'); ?>
+                                          <input type="radio" name="goals_object_1_status" id="goals_object_1d" value="minimal" <?php echo ($check_res['goals_object_1_status'] == 'minimal') ? "checked": "";  ?> disabled> <?php echo xlt('Minimal'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_1_status'] == 'regression'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_1_status" id="goals_object_1e" value="regression" <?php echo ($check_res['goals_object_1_status'] == 'regression') ? "checked": "";  ?> > <?php echo xlt('Regression'); ?>
+                                          <input type="radio" name="goals_object_1_status" id="goals_object_1e" value="regression" <?php echo ($check_res['goals_object_1_status'] == 'regression') ? "checked": "";  ?> disabled> <?php echo xlt('Regression'); ?>
                                         </label>
-                                        <?php endif; ?>
-                                        
+                                        <small class="text-danger clearfix goals_object_1_status_error"></small>
                                     </div>  
                                 </div>
-                                </div>
-
-                                
-
-                                
 
                                 <div class="clearfix "></div>
 
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 2.1 (H2017):'); ?></strong></label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" name="goals_object_2" id="goals_object_2" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_2']); ?>" readonly>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="goals_object_2" id="goals_object_2" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_2']); ?>" disabled>
+                                        <small class="text-danger goals_object_2_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
+                                </div>
 
-                                    <div class="col-sm-4" >
+                                <div class="clearfix"></div>
+
+                                <div class="col-sm-10 col-sm-offset-2" >
                                     <div class="form-group padding-left-18">
-                                        <?php if($check_res['goals_object_2_status'] == 'completed'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2a" value="completed" <?php echo ($check_res['goals_object_2_status'] == 'completed') ? "checked": "";  ?> > <?php echo xlt('Completed/Maintenance'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2a" value="completed" <?php echo ($check_res['goals_object_2_status'] == 'completed') ? "checked": "";  ?> disabled> <?php echo xlt('Completed/Maintenance'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_2_status'] == 'substantial'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2b" value="substantial" <?php echo ($check_res['goals_object_2_status'] == 'substantial') ? "checked": "";  ?> > <?php echo xlt('Substantial'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2b" value="substantial" <?php echo ($check_res['goals_object_2_status'] == 'substantial') ? "checked": "";  ?> disabled> <?php echo xlt('Substantial'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_2_status'] == 'moderate'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2c" value="moderate" <?php echo ($check_res['goals_object_2_status'] == 'moderate') ? "checked": "";  ?> > <?php echo xlt('Moderate'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2c" value="moderate" <?php echo ($check_res['goals_object_2_status'] == 'moderate') ? "checked": "";  ?> disabled> <?php echo xlt('Moderate'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_2_status'] == 'minimal'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2d" value="minimal" <?php echo ($check_res['goals_object_2_status'] == 'minimal') ? "checked": "";  ?> > <?php echo xlt('Minimal'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2d" value="minimal" <?php echo ($check_res['goals_object_2_status'] == 'minimal') ? "checked": "";  ?> disabled> <?php echo xlt('Minimal'); ?>
                                         </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_2_status'] == 'regression'): ?>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2e" value="regression" <?php echo ($check_res['goals_object_2_status'] == 'regression') ? "checked": "";  ?> > <?php echo xlt('Regression'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2e" value="regression" <?php echo ($check_res['goals_object_2_status'] == 'regression') ? "checked": "";  ?> disabled> <?php echo xlt('Regression'); ?>
                                         </label>
-                                        <?php endif; ?>
-                                        
+                                        <small class="text-danger clearfix goals_object_2_status_error"></small>
                                     </div>  
                                 </div>
-
-                                </div>
-
-                                
-
-                                
 
                                 <div class="clearfix "></div>
 
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 3.1 (H2017):'); ?></strong></label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" name="goals_object_3" id="goals_object_3" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_3']); ?>" readonly>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" name="goals_object_3" id="goals_object_3" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_3']); ?>" disabled>
+                                        <small class="text-danger goals_object_3_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
-                                    <div class="col-sm-4" >
-                                    <div class="form-group padding-left-18">
-                                        <?php if($check_res['goals_object_3_status'] == 'completed'): ?>
-                                        <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_3_status" id="goals_object_3a" value="completed" <?php echo ($check_res['goals_object_3_status'] == 'completed') ? "checked": "";  ?>  > <?php echo xlt('Completed/Maintenance'); ?>
-                                        </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_3_status'] == 'substantial'): ?>
-                                        <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_3_status" id="goals_object_3b" value="substantial" <?php echo ($check_res['goals_object_3_status'] == 'substantial') ? "checked": "";  ?> > <?php echo xlt('Substantial'); ?>
-                                        </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_3_status'] == 'moderate'): ?>
-                                        <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_3_status" id="goals_object_3c" value="moderate" <?php echo ($check_res['goals_object_3_status'] == 'moderate') ? "checked": "";  ?> > <?php echo xlt('Moderate'); ?>
-                                        </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_3_status'] == 'minimal'): ?>
-                                        <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_3_status" id="goals_object_3d" value="minimal" <?php echo ($check_res['goals_object_3_status'] == 'minimal') ? "checked": "";  ?>  > <?php echo xlt('Minimal'); ?>
-                                        </label>
-                                        <?php endif; ?>
-
-                                        <?php if($check_res['goals_object_3_status'] == 'regression'): ?>                                      
-                                        <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_3_status" id="goals_object_3e" value="regression" <?php echo ($check_res['goals_object_3_status'] == 'regression') ? "checked": "";  ?> > <?php echo xlt('Regression'); ?>
-                                        </label>
-                                        <?php endif; ?>
-                                        
-                                    </div>  
                                 </div>
 
-                                </div>  <!-- form-group -->
+                                <div class="clearfix"></div>
 
-                                
-
-                                
+                                <div class="col-sm-10 col-sm-offset-2" >
+                                    <div class="form-group padding-left-18">
+                                        <label class="radio-inline margin-right-40">
+                                          <input type="radio" name="goals_object_3_status" id="goals_object_3a" value="completed" <?php echo ($check_res['goals_object_3_status'] == 'completed') ? "checked": "";  ?>  disabled> <?php echo xlt('Completed/Maintenance'); ?>
+                                        </label>
+                                        <label class="radio-inline margin-right-40">
+                                          <input type="radio" name="goals_object_3_status" id="goals_object_3b" value="substantial" <?php echo ($check_res['goals_object_3_status'] == 'substantial') ? "checked": "";  ?> disabled> <?php echo xlt('Substantial'); ?>
+                                        </label>
+                                        <label class="radio-inline margin-right-40">
+                                          <input type="radio" name="goals_object_3_status" id="goals_object_3c" value="moderate" <?php echo ($check_res['goals_object_3_status'] == 'moderate') ? "checked": "";  ?> disabled > <?php echo xlt('Moderate'); ?>
+                                        </label>
+                                        <label class="radio-inline margin-right-40">
+                                          <input type="radio" name="goals_object_3_status" id="goals_object_3d" value="minimal" <?php echo ($check_res['goals_object_3_status'] == 'minimal') ? "checked": "";  ?> disabled > <?php echo xlt('Minimal'); ?>
+                                        </label>
+                                        <label class="radio-inline margin-right-40">
+                                          <input type="radio" name="goals_object_3_status" id="goals_object_3e" value="regression" <?php echo ($check_res['goals_object_3_status'] == 'regression') ? "checked": "";  ?> disabled> <?php echo xlt('Regression'); ?>
+                                        </label>
+                                        <small class="text-danger clearfix goals_object_3_status_error"></small>
+                                    </div>  
+                                </div>
 
                             </div>
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20" style="margin-top: 30px">
+                            <div class="col-md-12 margin-top-20">
                                 <label for="narrative_services"><?php echo xlt('Narrative of Service:'); ?></label>
-                                <textarea name="narrative_services" id="narrative_services" rows="4" class="form-control" readonly><?php echo text($check_res['narrative_services']); ?></textarea>
+                                <textarea name="narrative_services" id="narrative_services" rows="4" class="form-control" disabled><?php echo text($check_res['narrative_services']); ?></textarea>
                                 <small class="text-danger narrative_services_error"></small>
                             </div>
 
@@ -375,19 +472,19 @@ if ($postCalendarCategoryACO) {
 
                             <div class="col-md-12 margin-top-20">
                                 <div class="form-group">
-                                    <label for="" class="col-sm-3 "><?php echo xlt('(P) State the plan. I will meet with them: '); ?></label>
-                                    <div class="col-sm-3">
+                                    <label for="" class="col-sm-3 line-block"><?php echo xlt('(P) State the plan. I will meet with them: '); ?></label>
+                                    <div class="col-sm-3 pull-left date-time-align">
                                         <span class="col-sm-3"><?php echo xlt('Date:'); ?> </span>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" name="meet_again_date" id="meet_again_date" value="<?php echo text($check_res['meet_again_date']); ?>" autocomplete="off" readonly>
+                                            <input type="text" class="form-control datepicker" name="meet_again_date" id="meet_again_date" value="<?php echo text($check_res['meet_again_date']); ?>" autocomplete="off" disabled>
                                             <small class="text-danger meet_again_date_error"></small>
                                         </div>                                        
                                     </div>
 
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-3 date-time-align">
                                         <span class="col-sm-3"><?php echo xlt('Time:'); ?> </span>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control " name="meet_again_time" id="meet_again_time" value="<?php echo text($check_res['meet_again_time']); ?>" autocomplete="off" readonly>
+                                            <input type="text" class="form-control timepicker" name="meet_again_time" id="meet_again_time" value="<?php echo text($check_res['meet_again_time']); ?>" autocomplete="off" disabled>
                                             <small class="text-danger meet_again_time_error"></small>
                                         </div>
                                     </div>                                     
@@ -396,10 +493,10 @@ if ($postCalendarCategoryACO) {
                             
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20">
+                            <div class="col-md-12 margin-top-20 work-on">
                                 <label for="work_on" class="col-sm-2"><?php echo xlt('To work on:'); ?> </label>
                                 <div >                                    
-                                    <textarea name="work_on" id="work_on"  rows="4" class="form-control" readonly><?php echo text($check_res['work_on']); ?></textarea>
+                                    <textarea name="work_on" id="work_on"  rows="4" class="form-control" disabled><?php echo text($check_res['work_on']); ?></textarea>
                                     <small class="text-danger work_on_error"></small>
                                 </div>
                             </div>
@@ -412,11 +509,9 @@ if ($postCalendarCategoryACO) {
 
                     <div class="form-group clearfix">
                         <div class="col-sm-12 col-sm-offset-1 position-override">
-                            <div class="btn-group oe-opt-btn-group-pinch" role="group">
-                                <!--
-                                <button type='button'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
-                                -->
-                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
+                            <div class="btn-group oe-opt-btn-group-pinch" role="group">                               
+                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
+                                <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
                     </div>
@@ -425,7 +520,15 @@ if ($postCalendarCategoryACO) {
         </div>
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+        <script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
         <script language="javascript">
+            function myFunction(){
+                return;
+            }
+            window.top.onbeforeunload = function() {
+                       return ;
+            };
+
             $(document).ready(function(){
 
                 $('.timepicker').timepicker({
@@ -450,7 +553,7 @@ if ($postCalendarCategoryACO) {
                   var endTime = e.replace(/\s+/g, '').trim();
                   if(startTime && endTime) {
                     
-                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate() + 1)).slice(-2);
+                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate())).slice(-2);
                     var date1 = new Date( date_today + " " + s ).getTime();
                     var date2 = new Date( date_today + " " + e ).getTime();
                     var msec = date2 - date1;
@@ -491,9 +594,48 @@ if ($postCalendarCategoryACO) {
 
 
 
-               
+                 //$('.css_button_small span').css({"font-size":"12px !important"});
+
+                 $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "CBRS Progress Note",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
             });
+
+
+            function form_close_tab()
+            {
+                var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
+                console.log('Session Dashboard: ' + session_dashboard);
+                if(session_dashboard) {
+                    //window.top.location.reload();
+                    window.top.location.href = window.top.location;
+                } else {
+                   top.restoreSession(); 
+                    parent.closeTab(window.name, false);
+                }                
+            }
 
 
         </script>
