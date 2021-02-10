@@ -61,6 +61,7 @@ if ($postCalendarCategoryACO) {
 }
 
 ?>
+<!DOCTYPE html>
 <html>
     <head>
         <title><?php echo xlt("CBRS Treatment Plan"); ?></title>
@@ -68,6 +69,150 @@ if ($postCalendarCategoryACO) {
         <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
+        <style>
+            .margin-left-40{
+                margin-left: 300px;
+            }
+            .margin-right-40{
+                margin-right: 40px;
+            }
+            .margin-top-20{
+                margin-top: 20px;
+            }
+            @media print{
+                .margin-left-40{
+                    margin-left: 40px;
+                }
+                .margin-right-40{
+                    margin-right: 20px;
+                }
+                .col-md-2 {
+                    width: 16.66666667%;
+                }
+                .col-md-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-md-4 {
+                    width: 33.3333%;
+                }
+                .col-md-3 {
+                    width: 25%;
+                }
+                .col-md-8 {
+                    width: 66.66666667%;
+                }
+                .col-md-9 {
+                    width: 75%;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: normal;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .row_other{
+                    margin-top: 60px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 40px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                input[type=text]{
+                    border: none;
+                    font-weight: bold;
+                    border-bottom: 1px solid #333;
+                    border-bottom-right-radius: 0;
+                    border-bottom-left-radius: 0;
+                }
+                .form-control{
+                    border: none;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background: none;
+                }
+                textarea.form-control{
+                    border: 1px solid #333;
+                }
+                .session-focus{
+                    margin-top: 100px;
+                    padding-top: 40px;
+                }
+                .col-md-offset-2 {
+                    margin-left: 0;
+                }
+                .checkbox-inline, .radio-inline {
+                    position: relative;
+                    display: inline-block;
+                    padding-left: 20px;
+                    margin-bottom: 0;
+                    font-weight: 400;
+                    vertical-align: middle;
+                    cursor: pointer;
+                }
+
+                .full-width{
+                    width: 100%;
+                    margin: 0;
+                }
+
+                .line-block{
+                    display: block;
+                    width: 100%;
+                }
+                .date-time-align{
+                    display: inline-block;
+                    margin-right: 10px;
+                }
+
+                .margin-top-60{
+                    margin-top: 60px;
+                }
+
+                .margin-top-80{
+                    margin-top: 80px;
+                }
+
+                .work-on{
+                    margin-top: 100px;
+                }
+
+                .margin-right-30{
+                    margin-right: 20px;
+               }
+
+            }
+            @page {
+              margin: 2cm;
+            }
+
+           .margin-right-30{
+                margin-right: 30px;
+           }
+        </style>
     </head>
     <body class="body_top">
         <div class="container">
@@ -135,7 +280,7 @@ if ($postCalendarCategoryACO) {
                     <input type="hidden" name="encounter" value="<?php echo $encounter; ?>">
                     <input type="hidden" name="user" value="<?php echo $_SESSION['authUser']; ?>">
                     
-                   <fieldset style="padding-top: 20px!important;">
+                   <fieldset style="padding-top: 20px!important;" class="form_content">
                             <div class="col-md-12" style="margin-bottom:30px;">
                                 <div class="col-md-3 center_align review_box" style="text-align: center; border: 1px solid #333;  padding: 3px 5px 5px;">
                                     <label class="radio-inline">
@@ -163,77 +308,79 @@ if ($postCalendarCategoryACO) {
                             <div class="clearfix"></div>
 
                             <div class="col-md-12 margin-top-30">
-                                <div class="col-md-5">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="participant_name" class="col-sm-4 "><?php echo xlt('Participant Name'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="participant_name" class="col-md-5 "><?php echo xlt('Name'); ?></label>
+                                        <div class="col-md-6">
                                             <input type="text" class="form-control" readonly value="<?php echo text($patient_full_name); ?>">
                                             <input type="hidden" class="form-control" id="participant_name" name="participant_name" value="<?php echo text($patient_full_name); ?>">
                                           <small class="text-danger participant_name_error"></small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
+                                    <div class="clearfix"></div>
                                     <div class="form-group">
-                                        <label for="medical_id" class="col-sm-5"><?php echo xlt('Medical ID#'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="medical_id" class="col-md-5"><?php echo xlt('Medical ID#'); ?></label>
+                                        <div class="col-md-6">
                                           <input type="text" class="form-control" id="medical_id" name="medical_id" value="<?php echo text($check_res['medical_id']); ?>">
                                           <small class="text-danger medical_id_error"></small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
+                                    <div class="clearfix"></div>
                                     <div class="form-group">
-                                        <label for="date_birth" class="col-sm-2"><?php echo xlt('DOB'); ?></label>
-                                        <div class="col-sm-10">
+                                        <label for="examiner" class="col-md-5"><?php echo xlt('Examiner'); ?></label>
+                                        <div class="col-md-6">
+                                          <input type="text" class="form-control" id="examiner" name="examiner" value="<?php echo text($check_res['examiner']); ?>">
+                                          <small class="text-danger examiner_error"></small>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class="form-group">
+                                        <label for="practitioner_id" class="col-md-5"><?php echo xlt('Practitioner ID'); ?></label>
+                                        <div class="col-md-6">
+                                          <input type="text" class="form-control" id="practitioner_id" name="practitioner_id" value="<?php echo text($check_res['practitioner_id']); ?>">
+                                          <small class="text-danger practitioner_id_error"></small>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="date" class="col-md-5"><?php echo xlt('Date'); ?></label>
+                                        <div class="col-md-6">
+                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo text(date('m/d/Y', strtotime($check_res['date']))); ?>">
+                                          <small class="text-danger date_error"></small>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class="form-group">
+                                        <label for="date_birth" class="col-md-5"><?php echo xlt('DOB'); ?></label>
+                                        <div class="col-md-6">
                                           <input type="text" class="form-control datepicker" id="date_birth" name="date_birth" autocomplete="off" value="<?php echo text($patient_DOB); ?>">
                                           <small class="text-danger date_birth_error"></small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
+                                    <div class="clearfix"></div>
                                     <div class="form-group">
-                                        <label for="age" class="col-sm-2"><?php echo xlt('Age'); ?></label>
-                                        <div class="col-sm-10">
+                                        <label for="age" class="col-md-5"><?php echo xlt('Age'); ?></label>
+                                        <div class="col-md-6">
                                           <input type="text" class="form-control" id="age" name="age" value="<?php echo text($patient_Age); ?>">
                                           <small class="text-danger age_error"></small>
                                         </div>
                                     </div>
+                                    <div class="clearfix"></div>
+
                                 </div>
+
+                                
+                                
+                               
                             </div>
 
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-10">
-                                <div class="col-md-5">
-                                    <div class="form-group">
-                                        <label for="examiner" class="col-sm-3"><?php echo xlt('Examiner'); ?></label>
-                                        <div class="col-sm-9">
-                                          <input type="text" class="form-control" id="examiner" name="examiner" value="<?php echo text($check_res['examiner']); ?>">
-                                          <small class="text-danger examiner_error"></small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <div class="form-group">
-                                        <label for="practitioner_id" class="col-sm-3"><?php echo xlt('Practitioner ID'); ?></label>
-                                        <div class="col-sm-9">
-                                          <input type="text" class="form-control" id="practitioner_id" name="practitioner_id" value="<?php echo text($check_res['practitioner_id']); ?>">
-                                          <small class="text-danger practitioner_id_error"></small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="date" class="col-sm-2"><?php echo xlt('Date'); ?></label>
-                                        <div class="col-sm-10">
-                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo text(date('Y-m-d', strtotime($check_res['date']))); ?>">
-                                          <small class="text-danger date_error"></small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            
 
                             <hr>
                             <div class="col-md-12 margin-top-20">
@@ -303,7 +450,7 @@ if ($postCalendarCategoryACO) {
                                     <label for="providers_medication_mgt"><?php echo xlt('Medication Management:'); ?></label>
                                     <textarea name="providers_medication_mgt" id="providers_medication_mgt" rows="3" class="form-control"><?php echo text($check_res['providers_medication_mgt']); ?></textarea>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group work-on">
                                     <label for="providers_psychotherapy"><?php echo xlt('Psychotherapy:'); ?></label>
                                     <textarea name="providers_psychotherapy" id="providers_psychotherapy" rows="3" class="form-control"><?php echo text($check_res['providers_psychotherapy']); ?></textarea>
                                 </div>
@@ -332,6 +479,7 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger educational_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="financial" class="col-sm-3"><?php echo xlt('Financial:'); ?></label>
                                     <div class="col-sm-9">
@@ -339,6 +487,7 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger financial_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="family" class="col-sm-3"><?php echo xlt('Family:'); ?></label>
                                     <div class="col-sm-9">
@@ -346,6 +495,7 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger family_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="social_support" class="col-sm-3"><?php echo xlt('Social Supports:'); ?></label>
                                     <div class="col-sm-9">
@@ -353,6 +503,7 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger social_support_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="housing" class="col-sm-3"><?php echo xlt('Housing:'); ?></label>
                                     <div class="col-sm-9">
@@ -360,6 +511,7 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger housing_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="living_skills" class="col-sm-3"><?php echo xlt('Basic Living Skills:'); ?></label>
                                     <div class="col-sm-9">
@@ -367,6 +519,7 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger living_skills_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="community" class="col-sm-3"><?php echo xlt('Community/Legal:'); ?></label>
                                     <div class="col-sm-9">
@@ -374,6 +527,7 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger community_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="relationships" class="col-sm-3"><?php echo xlt('Relationships:'); ?></label>
                                     <div class="col-sm-9">
@@ -425,7 +579,7 @@ if ($postCalendarCategoryACO) {
 
                             <div class="clearfix"></div>
                             
-                            <div class="padding-20">
+                            <div class="padding-20 row_other">
                                 <h4 class="field-heading"><?php echo xlt('GOALS/OBJECTIVES SECTION'); ?></h4>
                                 <p><?php echo xlt('Objectives must address the emotional, behavioral, and skill training needs identified by the member'); ?></p>
                             </div>
@@ -507,11 +661,11 @@ if ($postCalendarCategoryACO) {
                                 
                                 <div class="clearfix"></div>
                             </div>  
-                            <div class="clearfix"></div> <!-- end of Problem 1 -->
+                            <div class="clearfix ">&nbsp;</div> <!-- end of Problem 1 -->
 
-                            <hr>
+                            <hr class="row_other">
 
-                            <div class="col-md-12"> <!-- beginning of Problem 2 -->
+                            <div class="col-md-12 margin-top-60"> <!-- beginning of Problem 2 -->
                                 <h4><?php echo xlt('Problem Area 2#'); ?></h4>
                                 <div class="form-group">
                                     <label for="problem_2_description"><?php echo xlt('Choose (see above) (BRIEF description of issues will be addressed in the following goal)'); ?></label>
@@ -587,11 +741,11 @@ if ($postCalendarCategoryACO) {
                                 
                                 <div class="clearfix"></div>
                             </div>  
-                            <div class="clearfix"></div> <!-- end of Problem 2 -->
+                            <div class="clearfix">&nbsp;</div> <!-- end of Problem 2 -->
 
-                            <hr>
+                            <hr class="row_other">
 
-                            <div class="col-md-12"> <!-- beginning of Problem 3 -->
+                            <div class="col-md-12 margin-top-80"> <!-- beginning of Problem 3 -->
                                 <h4><?php echo xlt('Problem Area 3#'); ?></h4>
                                 <div class="form-group">
                                     <label for="problem_3_description"><?php echo xlt('Choose (see above) (BRIEF description of issues will be addressed in the following goal)'); ?></label>
@@ -707,6 +861,7 @@ if ($postCalendarCategoryACO) {
                                 ?>
                                 <button type='submit'  class="btn btn-default btn-save" name="save_treatment_plan"><?php echo xlt('Save'); ?></button>
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
+                                <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
                     </div>
@@ -715,6 +870,7 @@ if ($postCalendarCategoryACO) {
         </div>
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+        <script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
         <script language="javascript">
             $(document).ready(function(){
 
@@ -893,6 +1049,31 @@ if ($postCalendarCategoryACO) {
                 $('.esign-button-form').css({"width": "110px", "height":"25px", "line-height":"20px", "vertical-align":"middle", "margin-right":"25px"});
 
                 $('.esign-button-form span').html('Digitally Sign');
+
+                $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "CBRS Treatment Plan",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>CBRS Treatment Plan</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
             });
 

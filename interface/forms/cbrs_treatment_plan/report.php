@@ -24,11 +24,11 @@ function cbrs_treatment_plan_report($pid, $encounter, $cols, $id)
         <table style='border-collapse:collapse;border-spacing:0;width: 100%;'>
             <tr>
                 <td align='center' style='border:1px solid #ccc;padding:4px;'><span class=bold><?php echo xlt('Name'); ?></span></td>
-                <td align='center' style='border:1px solid #ccc;padding:4px;'><span class=bold><?php echo xlt('Billing Code'); ?></span></td>
+                <td align='center' style='border:1px solid #ccc;padding:4px;'><span class=bold><?php echo xlt('Medical ID'); ?></span></td>
             </tr>
             <tr>
-                <td style='border:1px solid #ccc;padding:4px;'><span class=text><?php echo nl2br(text($data['name'])); ?></span></td>
-                <td style='border:1px solid #ccc;padding:4px;'><span class=text><?php echo nl2br(text($data['billing_code'])); ?></span></td>
+                <td style='border:1px solid #ccc;padding:4px;'><span class=text><?php echo nl2br(text($data['participant_name'])); ?></span></td>
+                <td style='border:1px solid #ccc;padding:4px;'><span class=text><?php echo nl2br(text($data['medical_id'])); ?></span></td>
             </tr>
         </table>
         <?php
