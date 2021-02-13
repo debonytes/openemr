@@ -39,9 +39,15 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+/* checking the last record */
+$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
+$last_record = sqlQuery($last_record_query, array($pid));
+
+
 
 
 ?>
+<!DOCTYPE html>
 <html>
     <head>
         <title><?php echo xlt("Case Management Treatment Plan"); ?></title>
@@ -49,6 +55,141 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
         <?php Header::setupHeader(['datetime-picker', 'opener', 'esign', 'common']); ?>
         <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
         <link rel="stylesheet" href="../../../style_custom.css">
+        <style>
+            .margin-left-40{
+                margin-left: 300px;
+            }
+            .margin-right-40{
+                margin-right: 40px;
+            }
+            @media print{
+                .margin-left-40{
+                    margin-left: 40px;
+                }
+                .margin-right-40{
+                    margin-right: 20px;
+                }
+                .col-md-2 {
+                    width: 16.66666667%;
+                }
+                .col-md-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-md-4 {
+                    width: 33.3333%;
+                }
+                .col-md-3 {
+                    width: 25%;
+                }
+                .col-md-8 {
+                    width: 66.66666667%;
+                }
+                .col-md-9 {
+                    width: 75%;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: normal;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .row_other{
+                    margin-top: 40px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 40px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                input[type=text]{
+                    border: none;
+                    font-weight: bold;
+                    border-bottom: 1px solid #333;
+                    border-bottom-right-radius: 0;
+                    border-bottom-left-radius: 0;
+                    margin-top: -5px;
+                }
+                .form-control{
+                    border: none;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background: none;
+                }
+                textarea.form-control{
+                    border: 1px solid #333;
+                }
+                .session-focus{
+                    margin-top: 100px;
+                    padding-top: 40px;
+                }
+                .col-md-offset-2 {
+                    margin-left: 0;
+                }
+                .checkbox-inline, .radio-inline {
+                    position: relative;
+                    display: inline-block;
+                    padding-left: 20px;
+                    margin-bottom: 0;
+                    font-weight: 400;
+                    vertical-align: middle;
+                    cursor: pointer;
+                }
+
+                .full-width{
+                    width: 100%;
+                    margin: 0;
+                }
+
+                .margin-top-60{
+                    margin-top: 60px;
+                }
+
+                .margin-top-40{
+                    margin-top: 40px;
+                }
+
+                .margin-top-80{
+                    margin-top: 80px;
+                }
+
+                .work-on{
+                    margin-top: 100px;
+                }
+
+                .margin-right-30{
+                    margin-right: 20px;
+               }
+
+            }
+            @page {
+              margin: 2cm;
+            }
+
+           
+        </style>
     </head>
     <body class="body_top">
         <div class="container">
@@ -60,19 +201,27 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
             <?php
             $current_date = date('Y-m-d');
 
-            $patient_id = ( isset($_SESSION['alert_notify_pid']) && $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
-            $pid = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
-            $patient_full_name = '';
-            if($patient_id) {
-              $patient = getPatientData($patient_id);
-              $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-              $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-              $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
-              $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
-              if($patientInfo && array_filter($patientInfo)) {
-                $patient_full_name = implode( ' ', array_filter($patientInfo) );
-              }
+            if( $_SESSION['from_dashboard'] ){
+                $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+            } else {
+                $patient_id = ( $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
+                $pid = ( $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
+                $patient_full_name = '';
+                if($patient_id) {
+                  $patient = getPatientData($patient_id);
+                  $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
+                  $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
+                  $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+                  $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
+                  if($patientInfo && array_filter($patientInfo)) {
+                    $patient_full_name = implode( ' ', array_filter($patientInfo) );
+                  } else {
+                    $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+                  }
+                }
             }
+
+            
             $patient_DOB = ( isset($patient['DOB']) && $patient['DOB'] ) ? $patient['DOB'] : '';
             $patient_Age = '';
             if($patient_DOB) {
@@ -104,27 +253,27 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                     <input type="hidden" name="encounter" value="<?php echo $encounter; ?>">
                     <input type="hidden" name="user" value="<?php echo $_SESSION['authUser']; ?>">
 
-                    <fieldset style="padding-top: 20px!important;">
+                    <fieldset style="padding-top: 20px!important;" class="form_content">
                             <div class="col-md-12" style="margin-bottom:30px;">
                                 <div class="inner">
                                     <div class="col-md-3 center_align review_box" style="text-align: center; border: 1px solid #333;  padding: 3px 5px 5px;">
                                         <label class="radio-inline">
-                                            <input type="radio" name="review" value="90 Day Review" id="review1" <?php echo ($check_res['review'] == '90 Day Review') ? "checked": ""; ?> disabled> <?php echo xlt('90 Day Review'); ?>
+                                            <input type="radio" name="review" value="90 Day Review" id="review1" <?php echo ($check_res['review'] == '90 Day Review') ? "checked": ""; ?> > <?php echo xlt('90 Day Review'); ?>
                                         </label>                    
                                     </div>
                                     <div class="col-md-3 center_align review_box" style="text-align: center; border-right: 1px solid #333; border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 3px 5px 5px;">
                                         <label class="radio-inline">
-                                            <input type="radio" name="review"  value="180 Day Review" id="review2" <?php echo ($check_res['review'] == '180 Day Review') ? "checked": ""; ?> disabled> <?php echo xlt('180 Day Review'); ?>
+                                            <input type="radio" name="review"  value="180 Day Review" id="review2" <?php echo ($check_res['review'] == '180 Day Review') ? "checked": ""; ?>> <?php echo xlt('180 Day Review'); ?>
                                         </label>
                                     </div>
                                     <div class="col-md-3 center_align review_box" style="text-align: center;  border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 3px 5px 5px;">
                                         <label class="radio-inline">
-                                            <input type="radio" name="review" value="270 Day Review" id="review3" <?php echo ($check_res['review'] == '270 Day Review') ? "checked": ""; ?> disabled> <?php echo xlt('270 Day Review'); ?>
+                                            <input type="radio" name="review" value="270 Day Review" id="review3" <?php echo ($check_res['review'] == '270 Day Review') ? "checked": ""; ?>> <?php echo xlt('270 Day Review'); ?>
                                         </label>
                                     </div>
                                     <div class="col-md-3 center_align review_box" style="text-align: center; border: 1px solid #333;  padding: 3px 5px 5px;">
                                         <label class="radio-inline">
-                                            <input type="radio" name="review" value="Other Review" id="review4" <?php echo ($check_res['review'] == 'Other Review') ? "checked": ""; ?> disabled> <?php echo xlt('Other Review'); ?>
+                                            <input type="radio" name="review" value="Other Review" id="review4" <?php echo ($check_res['review'] == 'Other Review') ? "checked": ""; ?>> <?php echo xlt('Other Review'); ?>
                                         </label>
                                     </div>
                                     <div class="center_align text-danger review_error" style="width: 100%"></div>
@@ -133,78 +282,77 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-30">
-                                <div class="col-md-5">
+                            <div class="margin-top-30">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="participant_name" class="col-sm-4 "><?php echo xlt('Participant Name'); ?></label>
-                                        <div class="col-sm-8">
+                                        <label for="participant_name" class="col-md-5 "><?php echo xlt('Name'); ?></label>
+                                        <div class="col-md-6">
                                             <input type="text" class="form-control" readonly value="<?php echo text($patient_full_name); ?>" disabled>
-                                            <input type="hidden" class="form-control" id="participant_name" name="participant_name" value="<?php echo text($patient_full_name); ?>" disabled>
+                                            <input type="hidden" class="form-control" id="participant_name" name="participant_name" value="<?php echo text($patient_full_name); ?>">
                                           <small class="text-danger participant_name_error"></small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
+                                    <div class="clearfix"></div>
                                     <div class="form-group">
-                                        <label for="medical_id" class="col-sm-5"><?php echo xlt('Medical ID#'); ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="medical_id" class="col-md-5"><?php echo xlt('Medical ID#'); ?></label>
+                                        <div class="col-md-6">
                                           <input type="text" class="form-control" id="medical_id" name="medical_id" value="<?php echo text($check_res['medical_id']); ?>" disabled>
                                           <small class="text-danger medical_id_error"></small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
+                                    <div class="clearfix"></div>
                                     <div class="form-group">
-                                        <label for="date_birth" class="col-sm-2"><?php echo xlt('DOB'); ?></label>
-                                        <div class="col-sm-10">
-                                          <input type="text" class="form-control" id="date_birth" name="date_birth" autocomplete="off" value="<?php echo text($patient_DOB); ?>" disabled>
-                                          <small class="text-danger date_birth_error"></small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="age" class="col-sm-2"><?php echo xlt('Age'); ?></label>
-                                        <div class="col-sm-10">
-                                          <input type="text" class="form-control" id="age" name="age" value="<?php echo text($patient_Age); ?>" disabled>
-                                          <small class="text-danger age_error"></small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="clearfix"></div>
-
-                            <div class="col-md-12 margin-top-10">
-                                <div class="col-md-5">
-                                    <div class="form-group">
-                                        <label for="examiner" class="col-sm-3"><?php echo xlt('Examiner'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="examiner" class="col-md-5"><?php echo xlt('Examiner'); ?></label>
+                                        <div class="col-md-6">
                                           <input type="text" class="form-control" id="examiner" name="examiner" value="<?php echo text($check_res['examiner']); ?>" disabled>
                                           <small class="text-danger examiner_error"></small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-5">
+                                    <div class="clearfix"></div>
                                     <div class="form-group">
-                                        <label for="practitioner_id" class="col-sm-3"><?php echo xlt('Practitioner ID'); ?></label>
-                                        <div class="col-sm-9">
+                                        <label for="practitioner_id" class="col-md-5"><?php echo xlt('Practitioner ID'); ?></label>
+                                        <div class="col-md-6">
                                           <input type="text" class="form-control" id="practitioner_id" name="practitioner_id" value="<?php echo text($check_res['practitioner_id']); ?>" disabled>
                                           <small class="text-danger practitioner_id_error"></small>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="date" class="col-sm-2"><?php echo xlt('Date'); ?></label>
-                                        <div class="col-sm-10">
-                                          <input type="text" class="form-control" id="date" name="date" value="<?php echo text($check_res['date']); ?>" autocomplete="off" disabled>
+                                        <label for="date" class="col-md-5"><?php echo xlt('Date'); ?></label>
+                                        <div class="col-md-6">
+                                          <input type="text" class="form-control" id="date" name="date" value="<?php echo text(date('m/d/Y', strtotime($check_res['date']))); ?>" autocomplete="off" disabled>
                                           <small class="text-danger date_error"></small>
                                         </div>
                                     </div>
+                                    <div class="clearfix"></div>
+                                    <div class="form-group">
+                                        <label for="date_birth" class="col-md-5"><?php echo xlt('DOB'); ?></label>
+                                        <div class="col-md-6">
+                                          <input type="text" class="form-control" id="date_birth" name="date_birth" autocomplete="off" value="<?php echo text($patient_DOB); ?>" disabled>
+                                          <small class="text-danger date_birth_error"></small>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class="form-group">
+                                        <label for="age" class="col-md-5"><?php echo xlt('Age'); ?></label>
+                                        <div class="col-md-6">
+                                          <input type="text" class="form-control" id="age" name="age" value="<?php echo text($patient_Age); ?>" disabled>
+                                          <small class="text-danger age_error"></small>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+
                                 </div>
+
+                                
+                                
                             </div>
+
+
+                            <div class="clearfix"></div>
+
+                            
 
                             <hr>
                             <div class="col-md-12 margin-top-20">
@@ -244,13 +392,13 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                             <div class="col-md-12 padding-20 ">
                                 <p class="bold"><?php echo xlt('When was the cosumer\'s last history & physical examination?'); ?></p>
                                 <div class="form-group " style="padding-left: 20px">
-                                    <label class="radio-inline margin-right-30">
+                                    <label class="radio-inline margin-right-40">
                                         <input type="radio" name="last_examination" id="last_examination1" value="current_year" <?php echo ($check_res['last_examination'] == 'current_year') ? "checked": ""; ?> disabled> <?php echo xlt('Current Year'); ?>
                                     </label>
-                                    <label class="radio-inline margin-right-30">
+                                    <label class="radio-inline margin-right-40">
                                       <input type="radio" name="last_examination" id="last_examination2" value="prior_year" <?php echo ($check_res['last_examination'] == 'prior_year') ? "checked": ""; ?> disabled> <?php echo xlt('Prior Year'); ?>
                                     </label>
-                                    <label class="radio-inline margin-right-30">
+                                    <label class="radio-inline margin-right-40">
                                       <input type="radio" name="last_examination" id="last_examination3" value="longer_prior_year" <?php echo ($check_res['last_examination'] == 'longer_prior_year') ? "checked": ""; ?> disabled> <?php echo xlt('Longer Than Prior Year'); ?>
                                     </label>
                                     <label class="radio-inline">
@@ -277,10 +425,10 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                             <div class="clearfix"></div>
 
                             <hr>
-                            <div class="col-md-12">
+                            <div class="col-md-12 row_other">
                                 <div class="form-group">
                                     <label for="critical_strengths"><?php echo xlt('What are the consumer\'s critical strengths?'); ?></label>
-                                    <textarea name="critical_strengths" id="critical_strengths" rows="3" class="form-control" disabled ><?php echo text($check_res['critical_strengths']); ?></textarea>
+                                    <textarea name="critical_strengths" id="critical_strengths" rows="3" class="form-control" disabled><?php echo text($check_res['critical_strengths']); ?></textarea>
                                 </div>
                             </div>
 
@@ -297,6 +445,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger educational_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="financial" class="col-sm-3"><?php echo xlt('Financial:'); ?></label>
                                     <div class="col-sm-9">
@@ -304,6 +453,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger financial_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="family" class="col-sm-3"><?php echo xlt('Family:'); ?></label>
                                     <div class="col-sm-9">
@@ -311,6 +461,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger family_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="social_support" class="col-sm-3"><?php echo xlt('Social Supports:'); ?></label>
                                     <div class="col-sm-9">
@@ -318,6 +469,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger social_support_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="housing" class="col-sm-3"><?php echo xlt('Housing:'); ?></label>
                                     <div class="col-sm-9">
@@ -325,6 +477,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger housing_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="living_skills" class="col-sm-3"><?php echo xlt('Basic Living Skills:'); ?></label>
                                     <div class="col-sm-9">
@@ -332,6 +485,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger living_skills_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="community" class="col-sm-3"><?php echo xlt('Community/Legal:'); ?></label>
                                     <div class="col-sm-9">
@@ -339,6 +493,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <small class="text-danger community_error"></small>
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="relationships" class="col-sm-3"><?php echo xlt('Relationships:'); ?></label>
                                     <div class="col-sm-9">
@@ -350,7 +505,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 
                             <div class="clearfix"></div>
                             <hr>
-                            <div class="col-md-12">
+                            <div class="col-md-12 margin-top-40">
                                 <p class="bold"><?php echo xlt('Function areas to be addressed in this plan year:'); ?></p>
                                 <div class="form-group margin-top-20" style="padding-left: 20px;">
                                     <?php $areas_addressed = ($check_res['areas_to_be_addressed']) ? explode('|', $check_res['areas_to_be_addressed']) : array(); ?>
@@ -384,13 +539,14 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                       <input type="checkbox" name="areas_to_be_addressed[]" id="areas_to_be_addressed9" value="Relationships" <?php echo (in_array('Relationships', $areas_addressed) ) ? "checked": ""; ?> disabled> <?php echo xlt('Relationships'); ?>
                                     </label>
                                 </div>
-                                <p class="margin-top-20"><?php echo xlt('All areas checked above will be addressed as needed thoughout the plan year although they may not be outlined in the major problem areas focused on below.'); ?></p>
+                                <div class="clearfix">&nbsp;</div>
+                                <p class="margin-top-40"><?php echo xlt('All areas checked above will be addressed as needed thoughout the plan year although they may not be outlined in the major problem areas focused on below.'); ?></p>
                                 <p><?php echo xlt('This plan will be addressed both CBRS including skills training and symptom management as well as Case Management activities such as linking, coordinating and advocating for the person served.'); ?></p>
                             </div>
 
-                            <div class="clearfix"></div>
+                            <div class="clearfix">&nbsp;</div>
                             
-                            <div class="padding-20">
+                            <div class="padding-20 work-on">
                                 <h4 class="field-heading"><?php echo xlt('GOALS/OBJECTIVES SECTION'); ?></h4>
                                 <p><?php echo xlt('Objectives must address the emotional, behavioral, and skill training needs identified by the member'); ?></p>
                             </div>
@@ -490,7 +646,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 </div>
                                 <div class="form-group">
                                     <label for="problem_2_objectives"><?php echo xlt('TX Objectives (must be concrete and measurable)'); ?></label>
-                                    <textarea name="problem_2_objectives" id="problem_2_objectives" rows="3" class="form-control" disabled><?php echo text($check_res['problem_2_objectives']); ?></textarea>
+                                    <textarea name="problem_2_objectives" id="problem_2_objectives" rows="3" class="form-control" disabled ><?php echo text($check_res['problem_2_objectives']); ?></textarea>
                                     <small class="text-danger problem_2_objectives_error"></small>
                                 </div>
                                 <div class="form-group">
@@ -536,7 +692,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <div class="form-group">
                                             <label for="problem_2_date_target" class="col-sm-6"><?php echo xlt('Target Date for Attainment:'); ?></label>
                                             <div class="col-sm-6">
-                                                <input type="text" name="problem_2_date_target" class="form-control" autocomplete="off" value="<?php echo text($check_res['problem_2_date_target']); ?>" disabled>
+                                                <input type="text" name="problem_2_date_target" class="form-control " autocomplete="off" value="<?php echo text($check_res['problem_2_date_target']); ?>" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -544,7 +700,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <div class="form-group">
                                             <label for="problem_2_date_completion" class="col-sm-4"><?php echo xlt('Completion Date:'); ?></label>
                                             <div class="col-sm-8">
-                                                <input type="text" name="problem_2_date_completion" class="form-control" autocomplete="off" value="<?php echo text($check_res['problem_2_date_completion']); ?>" disabled>
+                                                <input type="text" name="problem_2_date_completion" class="form-control " autocomplete="off" value="<?php echo text($check_res['problem_2_date_completion']); ?>" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -625,7 +781,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                         <div class="form-group">
                                             <label for="problem_3_date_completion" class="col-sm-4"><?php echo xlt('Completion Date:'); ?></label>
                                             <div class="col-sm-8">
-                                                <input type="text" name="problem_3_date_completion" class="form-control datepicker" autocomplete="off" value="<?php echo text($check_res['problem_3_date_completion']); ?>" disabled>
+                                                <input type="text" name="problem_3_date_completion" class="form-control" autocomplete="off" value="<?php echo text($check_res['problem_3_date_completion']); ?>" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -665,6 +821,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                             <div class="btn-group oe-opt-btn-group-pinch" role="group">
                                 
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
+                                <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
                     </div>
@@ -673,6 +830,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
         </div>
         
         <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+        <script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
         <script language="javascript">
             $(document).ready(function(){
 
@@ -803,6 +961,31 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                 });
 
                 
+
+                $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "Case Management Treatment Plan",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>Case Management Treatment Plan</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
             });
 
