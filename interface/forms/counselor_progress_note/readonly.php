@@ -124,6 +124,10 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
               margin: 2cm;
             }
 
+            .margin-top-20 {
+                margin-top: 20px;
+            }
+
         </style>
     </head>
     <body class="body_top">
@@ -690,7 +694,18 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20 session-focus " style="margin-top: 30px">
+                            <div class="col-md-12 session-focus" style="padding-top: 30px">
+                                <div class="form-group">
+                                    <label for="translator_used" class="control-label col-md-4">Translator Used</label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="translator_used" id="translator_used" class="form-control" disabled value="<?php echo ($check_res['translator_used']) ? text($check_res['translator_used']) : text($last_record['translator_used']); ?>">
+                                    </div>  
+                                    <div class="clearfix"></div>                                  
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+
+                            <div class="col-md-12 margin-top-20  " >
                                 <h3><?php echo xlt('Session Focus and Interventions'); ?></h3>
                                 <p><?php echo xlt('(clinical assessment, session focus, treatment interventions; collateral contact, psycho-educational activities, homework assignments, treatment plan update and review, other):'); ?></p>
                                 <textarea name="session_focus" id="session_focus" rows="4" class="form-control" disabled><?php echo text($check_res['session_focus']); ?></textarea>

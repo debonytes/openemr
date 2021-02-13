@@ -198,6 +198,16 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                 background-color: <?php echo $color_270; ?> !important;
             }
 
+            .margin-top-20 {
+                margin-top: 20px;
+            }
+
+            .date_completed{
+                display: inline-block;
+                float: left;
+                padding-left: 10px;
+            }
+
         </style>
     </head>
     <body class="body_top">
@@ -495,21 +505,33 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                     <div class="form-group">
                                             <label for="plan_review_90" class="col-sm-3 control-label"><?php echo xlt('90 Day:'); ?> </label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control plan_review_90" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>" <?php echo $ninety_days_disabled; ?> >
+                                              <input type="text" class="form-control plan_review_90 pull-left" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>" <?php echo $ninety_days_disabled; ?> style="width:150px; margin-right: 10px">
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx90" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx90'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx90'])): '' ; ?>" style="width: 124px;">
+                                              </div>
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_180" class="col-sm-3 control-label"><?php echo xlt('180 Day: '); ?></label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control plan_review_180" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>"  <?php echo $one_eighty_disabled; ?> >
+                                              <input type="text" class="form-control plan_review_180 pull-left" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>"  <?php echo $one_eighty_disabled; ?> style="width:150px; margin-right: 10px">
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx180" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx180'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx180'])): '' ; ?>" style="width: 124px;">
+                                              </div>
                                             </div>
                                     </div>
 
                                     <div class="form-group">
                                             <label for="plan_review_270" class="col-sm-3 control-label"><?php echo xlt('270 Day:'); ?></label>
                                             <div class="col-sm-9">
-                                              <input type="text" class="form-control plan_review_270" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>"  <?php echo $two_seventy_disabled; ?> >
+                                              <input type="text" class="form-control plan_review_270 pull-left" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>"  <?php echo $two_seventy_disabled; ?> style="width:150px; margin-right: 10px">
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx270" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx270'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx270'])): '' ; ?>" style="width: 124px;">
+                                              </div>
                                             </div>
                                     </div>
 
@@ -768,12 +790,20 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
 
                             </div>
 
-                            
+                            <div class="clearfix"></div>
                                     
-
+                            <div class="col-md-12 session-focus" style="padding-top: 30px">
+                                <div class="form-group">
+                                    <label for="translator_used" class="control-label col-md-4">Translator Used</label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="translator_used" id="translator_used" class="form-control" value="<?php echo ($check_res['translator_used']) ? text($check_res['translator_used']) : text($last_record['translator_used']); ?>">
+                                    </div>  
+                                    <div class="clearfix"></div>                                  
+                                </div>
+                            </div>
                             <div class="clearfix"></div>
 
-                            <div class="col-md-12 margin-top-20 session-focus" style="margin-top: 30px">
+                            <div class="col-md-12 margin-top-20 " >
                                 <h3><?php echo xlt('Session Focus and Interventions'); ?></h3>
                                 <p><?php echo xlt('(clinical assessment, session focus, treatment interventions; collateral contact, psycho-educational activities, homework assignments, treatment plan update and review, other):'); ?></p>
                                 <textarea name="session_focus" id="session_focus" rows="4" class="form-control"><?php echo text($check_res['session_focus']); ?></textarea>
