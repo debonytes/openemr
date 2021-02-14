@@ -515,7 +515,7 @@ if ($postCalendarCategoryACO) {
                                               <input type="text" class="form-control plan_review_90 pull-left" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>" <?php echo $ninety_days_disabled; ?> style="width:150px; margin-right: 10px">
                                               <div class="date_completed">
                                                   <span class="pull-left" style="margin-right: 10px">Completed:</span>
-                                                  <input type="text" name="completed_date_tx90" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx90'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx90'])): '' ; ?>" style="width: 124px;">
+                                                  <input type="text" name="completed_date_tx90" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx90'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx90'])): '' ; ?>" style="width: 124px;" autocomplete="off">
                                               </div>
                                             </div>
                                     </div>
@@ -526,7 +526,7 @@ if ($postCalendarCategoryACO) {
                                               <input type="text" class="form-control plan_review_180 pull-left" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>"  <?php echo $one_eighty_disabled; ?> style="width:150px; margin-right: 10px">
                                               <div class="date_completed">
                                                   <span class="pull-left" style="margin-right: 10px">Completed:</span>
-                                                  <input type="text" name="completed_date_tx180" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx180'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx180'])): '' ; ?>" style="width: 124px;">
+                                                  <input type="text" name="completed_date_tx180" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx180'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx180'])): '' ; ?>" style="width: 124px;" autocomplete="off">
                                               </div>
                                             </div>
                                     </div>
@@ -537,7 +537,7 @@ if ($postCalendarCategoryACO) {
                                               <input type="text" class="form-control plan_review_270 pull-left" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>"  <?php echo $two_seventy_disabled; ?> style="width:150px; margin-right: 10px">
                                               <div class="date_completed">
                                                   <span class="pull-left" style="margin-right: 10px">Completed:</span>
-                                                  <input type="text" name="completed_date_tx270" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx270'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx270'])): '' ; ?>" style="width: 124px;">
+                                                  <input type="text" name="completed_date_tx270" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx270'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx270'])): '' ; ?>" style="width: 124px;" autocomplete="off">
                                               </div>
                                             </div>
                                     </div>
