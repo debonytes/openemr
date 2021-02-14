@@ -4145,5 +4145,27 @@ function dateDifference($date_1 , $date_2 , $differenceFormat = '%a' )
 }
 
 
+function getCDADateColor($today, $nth_days)
+{
+    $color = '';
+    $green = '#2ecc71';
+    $orange = '#ffa500';
+    $red = '#ff0000';
+    $gray = '#555555';
+    $different = dateDifference($today , $nth_days);
+    if($different > 30){
+        $color = $green;
+    } elseif( ($different <= 30) && ($different > 15) ){
+        $color = $orange;
+    } elseif( ($different <= 14) && ($different > 0) ){
+        $color = $red;
+    } elseif($different <= 0) {
+        $color = $gray;
+    } else {
+        $color = $green;
+    }
+    return $color;
+}
+
 
 ?>

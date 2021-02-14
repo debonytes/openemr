@@ -39,7 +39,29 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+$ninety_days_disabled = '';
+$one_eighty_disabled = '';
+$two_seventy_disabled = '';
 
+if($pid){
+    $patien_query = "SELECT CDA FROM patient_data WHERE id = ?";
+    $patient_data = sqlQuery($patien_query, array($pid));
+    $cda_date = trim($patient_data['CDA']);
+    $today = date('Y-m-d');
+    $ninety_days = date('Y-m-d', strtotime($cda_date . '+ 90 days'));
+    $one_eighty = date('Y-m-d', strtotime($cda_date . '+ 180 days'));
+    $two_seventy = date('Y-m-d', strtotime($cda_date . '+ 270 days'));
+    $after_one_year = date('Y-m-d', strtotime($cda_date . '+ 1 year'));
+
+    $color_90 =  (strtotime($ninety_days) > strtotime($today) ) ? getDateColor($today, $ninety_days) : $gray;
+    $color_180 = (strtotime($one_eighty) > strtotime($today) ) ? getDateColor($today, $one_eighty) : $gray;
+    $color_270 = (strtotime($two_seventy) > strtotime($today) ) ? getDateColor($today, $two_seventy) : $gray;
+    $color_cda = (strtotime($after_one_year) > strtotime($today) ) ? getCDADateColor($today, $after_one_year) : $gray;
+    
+    $ninety_days_disabled = (strtotime($ninety_days) < strtotime($today)) ? ' disabled ' : '';
+    $one_eighty_disabled = (strtotime($one_eighty) < strtotime($today)) ? ' disabled' : '';
+    $two_seventy_disabled = (strtotime($two_seventy) < strtotime($today)) ? ' disabled' : '';
+}
 ?>
 <html>
     <head>
@@ -128,6 +150,35 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                 margin-top: 20px;
             }
 
+            .plan_review_90, .plan_review_90[disabled]{
+                color: white;
+                background-color: <?php echo $color_90; ?> !important;
+            }
+
+            .plan_review_180, .plan_review_180[disabled]{
+                color: white;
+                background-color: <?php echo $color_180; ?> !important;
+            }
+            .plan_review_270, .plan_review_270[disabled]{
+                color: white;
+                background-color: <?php echo $color_270; ?> !important;
+            }
+
+            .cda_date, .cda_date[disabled]{
+                color: white;
+                background-color: <?php echo $color_cda; ?> !important;
+            }
+
+            .margin-top-20 {
+                margin-top: 20px;
+            }
+
+            .date_completed{
+                display: inline-block;
+                float: left;
+                padding-left: 10px;
+            }
+
         </style>
     </head>
     <body class="body_top">
@@ -197,7 +248,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 <div class="form-group">
                                     <label for="cda_date" class="col-sm-3 "><?php echo xlt('CDA Date'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="cda_date" id="cda_date" class="form-control" value="<?php echo ($check_res['cda_date']) ? text($check_res['cda_date']) : ''; ?>" disabled>
+                                        <input type="text" name="cda_date" id="cda_date" class="form-control cda_date" value="<?php echo ($cda_date) ? date('m/d/Y', strtotime($cda_date)) : ''; ?>" disabled>
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
@@ -414,23 +465,35 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                     <h4><?php echo xlt('Tx Plan Review:'); ?></h4>
 
                                     <div class="form-group">
-                                            <label for="plan_review_90" class="col-sm-2 control-label"><?php echo xlt('90 Day:'); ?> </label>
-                                            <div class="col-sm-10">
-                                              <input type="text" class="form-control plan_review_90" name="plan_review_90" id="plan_review_90" value="<?php echo text($check_res['plan_review_90']); ?>" disabled >
+                                            <label for="plan_review_90" class="col-sm-3 control-label"><?php echo xlt('90 Day:'); ?> </label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_90 pull-left" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>" disabled style="width:150px; margin-right: 10px">
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx90" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx90'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx90'])): '' ; ?>" style="width: 124px;" disabled>
+                                              </div>
                                             </div>
                                     </div>
 
                                     <div class="form-group">
-                                            <label for="plan_review_180" class="col-sm-2 control-label"><?php echo xlt('180 Day: '); ?></label>
-                                            <div class="col-sm-10">
-                                              <input type="text" class="form-control plan_review_180" name="plan_review_180" id="plan_review_180" value="<?php echo text($check_res['plan_review_180']); ?>" disabled>
+                                            <label for="plan_review_180" class="col-sm-3 control-label"><?php echo xlt('180 Day: '); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_180 pull-left" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>"  disabled style="width:150px; margin-right: 10px">
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx180" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx180'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx180'])): '' ; ?>" style="width: 124px;" disabled>
+                                              </div>
                                             </div>
                                     </div>
 
                                     <div class="form-group">
-                                            <label for="plan_review_270" class="col-sm-2 control-label"><?php echo xlt('270 Day:'); ?></label>
-                                            <div class="col-sm-10">
-                                              <input type="text" class="form-control plan_review_270" name="plan_review_270" id="plan_review_270" value="<?php echo text($check_res['plan_review_270']); ?>" disabled>
+                                            <label for="plan_review_270" class="col-sm-3 control-label"><?php echo xlt('270 Day:'); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_270 pull-left" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>"  disabled style="width:150px; margin-right: 10px">
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx270" class="form-control newDatePicker" value="<?php echo ( $check_res['completed_date_tx270'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx270'])): '' ; ?>" style="width: 124px;" disabled>
+                                              </div>
                                             </div>
                                     </div>
 

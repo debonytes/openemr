@@ -67,10 +67,12 @@ if($pid){
     $ninety_days = date('Y-m-d', strtotime($cda_date . '+ 90 days'));
     $one_eighty = date('Y-m-d', strtotime($cda_date . '+ 180 days'));
     $two_seventy = date('Y-m-d', strtotime($cda_date . '+ 270 days'));
+    $after_one_year = date('Y-m-d', strtotime($cda_date . '+ 1 year'));
 
     $color_90 =  (strtotime($ninety_days) > strtotime($today) ) ? getDateColor($today, $ninety_days) : $gray;
     $color_180 = (strtotime($one_eighty) > strtotime($today) ) ? getDateColor($today, $one_eighty) : $gray;
     $color_270 = (strtotime($two_seventy) > strtotime($today) ) ? getDateColor($today, $two_seventy) : $gray;
+    $color_cda = (strtotime($after_one_year) > strtotime($today) ) ? getCDADateColor($today, $after_one_year) : $gray;
     
     $ninety_days_disabled = (strtotime($ninety_days) < strtotime($today)) ? ' disabled ' : '';
     $one_eighty_disabled = (strtotime($one_eighty) < strtotime($today)) ? ' disabled' : '';
@@ -97,7 +99,7 @@ if ($postCalendarCategoryACO) {
     $authPostCalendarCategoryWrite = true;
 }
 
-$path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -198,6 +200,11 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                 background-color: <?php echo $color_270; ?> !important;
             }
 
+            .cda_date, .cda_date[disabled]{
+                color: white;
+                background-color: <?php echo $color_cda; ?> !important;
+            }
+
             .margin-top-20 {
                 margin-top: 20px;
             }
@@ -286,7 +293,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                                 <div class="form-group">
                                     <label for="cda_date" class="col-sm-3 "><?php echo xlt('CDA Date'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="cda_date" id="cda_date" class="form-control" value="<?php echo ($cda_date) ? date('m/d/Y', strtotime($cda_date)) : ''; ?>">
+                                        <input type="text" name="cda_date" id="cda_date" class="form-control cda_date" value="<?php echo ($cda_date) ? date('m/d/Y', strtotime($cda_date)) : ''; ?>">
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
