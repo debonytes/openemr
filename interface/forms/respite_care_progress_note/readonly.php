@@ -55,6 +55,7 @@ if($userArrs && array_filter($userArrs)) {
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+
 $data = '';
 $obj = $data;
 if( isset($obj['user']) && $obj['user'] ) {
@@ -69,31 +70,11 @@ if( isset($obj['user']) && $obj['user'] ) {
 }
 
 
-$is_group = ($attendant_type == 'gid') ? true : false;
 
-$formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
-$form = sqlQuery($formStmt, array($formid, $folderName));
-
-$esignApi = new Api();
-// Create the ESign instance for this form
-//$esign = $esignApi->createFormESign($iter['id'], $formdir, $encounter);
-
-$esign = $esignApi->createFormESign($form['id'], $folderName, $encounter);
-
-//fetch acl for category of given encounter
-$pc_catid = fetchCategoryIdByEncounter($encounter);
-$postCalendarCategoryACO = fetchPostCalendarCategoryACO($pc_catid);
-if ($postCalendarCategoryACO) {
-    $postCalendarCategoryACO = explode('|', $postCalendarCategoryACO);
-    $authPostCalendarCategory = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1]);
-    $authPostCalendarCategoryWrite = acl_check($postCalendarCategoryACO[0], $postCalendarCategoryACO[1], '', 'write');
-} else { // if no aco is set for category
-    $authPostCalendarCategory = true;
-    $authPostCalendarCategoryWrite = true;
-}
 
 
 ?>
+<!DOCTYPE html>
 <html>
 <head>
     <?php Header::setupHeader(['datetime-picker', 'opener','esign', 'common']); ?>
@@ -121,6 +102,128 @@ if ($postCalendarCategoryACO) {
     ?>
   <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
   <link rel="stylesheet" href="../../../style_custom.css">
+  <style>
+            .margin-left-40{
+                margin-left: 300px;
+            }
+            .margin-right-40{
+                margin-right: 40px;
+            }
+            @media print{
+                .margin-left-40{
+                    margin-left: 40px;
+                }
+                .margin-right-40{
+                    margin-right: 20px;
+                }
+                .col-md-2 {
+                    width: 16.66666667%;
+                }
+                .col-md-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-md-4 {
+                    width: 33.3333%;
+                }
+                .col-md-3 {
+                    width: 25%;
+                }
+                .col-md-8 {
+                    width: 66.66666667%;
+                }
+                .col-md-9 {
+                    width: 75%;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: normal;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .row_other{
+                    margin-top: 40px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 40px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                input[type=text]{
+                    border: none;
+                    font-weight: bold;
+                    border-bottom: 1px solid #333;
+                    border-bottom-right-radius: 0;
+                    border-bottom-left-radius: 0;
+                }
+                .form-control{
+                    border: none;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background: none;
+                }
+                textarea.form-control{
+                    border: 1px solid #333;
+                }
+                .session-focus{
+                    margin-top: 100px;
+                    padding-top: 40px;
+                }
+                .col-md-offset-2 {
+                    margin-left: 0;
+                }
+                .checkbox-inline, .radio-inline {
+                    position: relative;
+                    display: inline-block;
+                    padding-left: 20px;
+                    margin-bottom: 0;
+                    font-weight: 400;
+                    vertical-align: middle;
+                    cursor: pointer;
+                }
+
+                .full-width{
+                    width: 100%;
+                    margin: 0;
+                }
+
+                .margin-top-30{
+                  margin-top: 30px;
+                }
+
+                .margin-right-20{
+                  margin-right: 20px;
+                }
+
+            }
+            @page {
+              margin: 2cm;
+            }
+
+           
+        </style>
 </head>
 <body class="body_top">
 <div id="container_div" class="<?php echo attr($oemr_ui->oeContainer()); ?>">
@@ -131,38 +234,11 @@ if ($postCalendarCategoryACO) {
             </div>
         </div>
     </div>
+   
     <div class="row">
         <div class="col-sm-12">
 
-            <?php  
-            /* FROM $_SESSION
-              Array
-              (
-                  [site_id] => default
-                  [language_choice] => 1
-                  [language_direction] => ltr
-                  [authUser] => chris
-                  [authPass] => $2a$05$QO2MWl/5j2PcGI16rroNJOTJODnhiDnXVK/wXLGW/K/xweNCqS9m2
-                  [authGroup] => Default
-                  [authUserID] => 15
-                  [authProvider] => Default
-                  [authId] => 15
-                  [userauthorized] => 1
-                  [last_update] => 1600928448
-                  [csrf_private_key] => rC�m����4*iZGSHi�C�wT�`(��
-                  [encounter] => 21
-                  [frame1url] => ../../interface/patient_tracker/patient_tracker.php?skip_timeout_reset=1
-                  [frame1target] => flb
-                  [frame2url] => ../../interface/main/messages/messages.php?form_active=1
-                  [frame2target] => msg
-                  [pid] => 2
-                  [alert_notify_pid] => 2
-              )
-
-              // echo "<pre>";
-              // print_r( $_SESSION );
-              // echo "</pre>";
-            */
+            <?php             
 
             $patient_id = ( isset($_SESSION['pid']) && $_SESSION['pid'] ) ? $_SESSION['pid'] : '';
             $user_id = ( isset($_SESSION['authUserID']) && $_SESSION['authUserID'] ) ? $_SESSION['authUserID'] : '';
@@ -172,19 +248,29 @@ if ($postCalendarCategoryACO) {
             $datetime = ( isset($obj['date']) && $obj['date'] ) ? $obj['date'] : $current_datetime;
             $patient_full_name = '';
 
-            if($patient_id) {
-              $patient = getPatientData($patient_id);
-              $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
-              $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
-              $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
-              $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
-              if($patientInfo && array_filter($patientInfo)) {
-                $patient_full_name = implode( ' ', array_filter($patientInfo) );
+            if( $_SESSION['from_dashboard'] ){
+                $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+            } else {
+
+              if($patient_id) {
+                $patient = getPatientData($patient_id);
+                $patient_fname = ( isset($patient['fname']) && $patient['fname'] ) ? $patient['fname'] : '';
+                $patient_mname = ( isset($patient['mname']) && $patient['mname'] ) ? $patient['mname'] : '';
+                $patient_lname = ( isset($patient['lname']) && $patient['lname'] ) ? $patient['lname'] : '';
+                $patientInfo = array($patient_fname,$patient_mname,$patient_lname);
+                if($patientInfo && array_filter($patientInfo)) {
+                  $patient_full_name = implode( ' ', array_filter($patientInfo) );
+                } else {
+                  $patient_full_name = ($check_res['name']) ? $check_res['name'] : '';
+                }
               }
+
             }
+
+
             
             ?>
-            <form method=post >
+            <form method=post <?php echo "name='my_form' " . "action='$rootdir/forms/$folderName/save.php?id=" . attr_url($formid) . "'\n"; ?>>
               <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
               <input type="hidden" name="date" value="<?php echo $datetime; ?>">
               <input type="hidden" name="pid" value="<?php echo $patient_id; ?>">
@@ -192,7 +278,7 @@ if ($postCalendarCategoryACO) {
               <input type="hidden" name="user" value="<?php echo $user_id; ?>">
               <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
               <input type="hidden" name="activity" value="1">
-              <fieldset>
+              <fieldset class="form_content">
 
                 <div class="field-group-wrapper">
 
@@ -213,10 +299,10 @@ if ($postCalendarCategoryACO) {
                         </div>
                       </div>
                       <div class="form-group">
-                        <?php $billing_code =  ( isset($obj['billing_code']) && $obj['billing_code'] ) ? $obj['billing_code'] : 'Respite S5150' ; ?>
+                        <?php $billing_code =  ( $check_res['billing_code'] ) ? $check_res['billing_code'] : 'Respite S5150' ; ?>
                         <label>Billing Code:</label>
-                        <input type="text" readonly disabled class="form-control" value="<?php echo $billing_code; ?>">
-                        <input type="hidden" id="billing_code" class="form-control" name="billing_code" value="<?php echo $billing_code; ?>">
+                        <input type="text" readonly disabled class="form-control" value="<?php echo text($billing_code); ?>">
+                        <input type="hidden" id="billing_code" class="form-control" name="billing_code" value="<?php echo text($billing_code); ?>">
                       </div>
                     </div>
 
@@ -227,7 +313,7 @@ if ($postCalendarCategoryACO) {
                         //$date_service_format = ($dateofservice) ? date('d/m/Y',strtotime($dateofservice)) : '';
                         ?>
                         <label>Date of Service:</label>
-                        <input type="text" id="dateofservice" class="form-control " name="dateofservice" value="<?php echo text($dateofservice); ?>" autocomplete="off" readonly disabled>
+                        <input type="text" id="dateofservice" class="form-control" name="dateofservice" disabled value="<?php echo text($dateofservice); ?>" autocomplete="off">
                       </div>
 
                       <div class="row">
@@ -238,7 +324,7 @@ if ($postCalendarCategoryACO) {
                               //$start_time_format = ($starttime) ? date('h:i A',strtotime($starttime)) : '';
                             ?>
                             <label>Start Time:</label>
-                            <input type="text" id="starttime" class="form-control " name="starttime" value="<?php echo $starttime; ?>" autocomplete="off" readonly disabled>
+                            <input type="text" id="starttime" class="form-control " name="starttime" disabled value="<?php echo $starttime; ?>" autocomplete="off">
                           </div>
                         </div>
 
@@ -249,7 +335,7 @@ if ($postCalendarCategoryACO) {
                               //$end_time_format = ($endtime) ? date('h:i A',strtotime($endtime)) : '';
                             ?>
                             <label>End Time:</label>
-                            <input type="text" id="endtime" class="form-control " name="endtime" value="<?php echo $endtime; ?>" autocomplete="off" readonly disabled>
+                            <input type="text" id="endtime" class="form-control" disabled name="endtime" value="<?php echo $endtime; ?>" autocomplete="off">
                           </div>
                         </div>
                       </div>
@@ -259,7 +345,7 @@ if ($postCalendarCategoryACO) {
                           $duration =  ( $check_res['duration'] ) ? text($check_res['duration']) : '' ; 
                         ?>
                         <label>Duration:</label>
-                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo $duration; ?>" autocomplete="off" readonly disabled>
+                        <input type="text" id="duration" class="form-control" name="duration" disabled value="<?php echo $duration; ?>" autocomplete="off">
                       </div>
 
                     </div>
@@ -267,42 +353,48 @@ if ($postCalendarCategoryACO) {
 
                   </div>
 
-                  <div class="field-row">
+                  <div class="clearfix"></div>
+
+                  <div class="field-row margin-top-30">
                     <div class="col-lg-12">
                       <h4 class="field-heading">Descriptions of Intervention</h4>
                   
-                      <div class="form-group form-checkbox-field">
+                      <div class="form-group form-checkbox-field margin-top-30">
                         <?php
                           $service_locations = array("Home","Community");
                           $selected_service_loc = ( $check_res['service_local'] ) ? $check_res['service_local'] : '';
-                        ?>
-                        <label style="margin-bottom:15px">
-                          <strong>State where the services took place:</strong>
-                          <span class="span-field-group">
+                        ?>       
+                          <div class="col-md-5">
+                            <strong>State where the services took place:</strong>
+                          </div>                 
+                          
+                          <div class="col-md-7" style="display: block;">
                             <?php foreach ($service_locations as $loc) { 
-                              $is_selected_service_loc = ($loc == $selected_service_loc) ? ' checked':'';
+                              $is_selected_service_loc = ($loc == $selected_service_loc) ? ' checked': '';
                               ?>
-                              <span class="option-field">
-                                <input type="radio" name="service_local" value="<?php echo $loc; ?>"<?php echo $is_selected_service_loc; ?> disabled>
-                                <span class="field-text"><?php echo $loc; ?></span>
-                              </span>
+                              <label class="radio-inline margin-right-20" style="width: 20%; display: inline-block;" >
+                                <input type="radio" name="service_local" disabled value="<?php echo $loc; ?>"<?php echo $is_selected_service_loc; ?>> <?php echo $loc; ?>
+                              </label> 
                             <?php } ?>
-                          </span>
-                        </label> 
+                          </div>
+                        
                       </div>
 
-                      <div class="form-group">
+                      <div class="clearfix"></div>
+
+                      <div class="form-group" style="margin-top: 20px">
                         <p>
                           <strong>Objective(s) Addressed and Targeted Skill Area:</strong> Provide relief and de-escalation of stressful situations for the caregiver(s) as evidenced by child spending at least 5 hours per month with Respite Provider for the next 3 months.
                         </p>
                       </div>
 
-                      <div class="form-group">
+                      <div class="clearfix"></div>
+                      <div class="form-group margin-top-30">
                         <?php 
                           $intervention_type =  ( $check_res['intervention_type'] ) ? text($check_res['intervention_type']) : '' ; 
                         ?>
                         <label>Type of Intervention:</label>
-                        <textarea name="intervention_type" class="form-control" rows="4" readonly disabled><?php echo $intervention_type ?></textarea>
+                        <textarea name="intervention_type" class="form-control" rows="4" disabled><?php echo $intervention_type ?></textarea>
                       </div>
 
                       <div class="form-group">
@@ -312,15 +404,17 @@ if ($postCalendarCategoryACO) {
                         
                       </div>
 
-                      <div class="form-group">
+                      <div class="clearfix"></div>
+                      <div class="form-group margin-top-30">
                         <?php 
                           $progress_narrative =  ( $check_res['progress_narrative'] ) ? text($check_res['progress_narrative']) : '' ; 
                         ?>
                         <label>Narrative:</label>
-                        <textarea name="progress_narrative" class="form-control" rows="4" readonly disabled><?php echo $progress_narrative ?></textarea>
+                        <textarea name="progress_narrative" class="form-control" rows="4" disabled><?php echo $progress_narrative ?></textarea>
                       </div>
 
-                      <div class="form-group " style="margin-top:20px;">
+                      <div class="clearfix">&nbsp;</div>
+                      <div class="form-group margin-top-30" style="margin-top:20px;">
                         <?php
                           $critical_incidents_options = array(0=>"No",1=>"Yes");
                           //$crit_incidents = $check_res['crit_incidents'];
@@ -334,7 +428,7 @@ if ($postCalendarCategoryACO) {
                               //$is_selected_crit_incidents = ($val === $crit_incidents) ? ' checked':'';
                               ?>
                               <label class="radio-inline" style="width: 50px">                              
-                                <input type="radio" name="crit_incidents" value="<?php echo $val; ?>" <?php echo ($val == $check_res['crit_incidents']) ? ' checked' : ''; ?> disabled>
+                                <input type="radio" name="crit_incidents" disabled value="<?php echo $val; ?>" <?php echo ($val == $check_res['crit_incidents']) ? ' checked' : ''; ?> >
                                 <?php echo $label; ?>                              
                               </label> 
                             <?php } ?>
@@ -347,7 +441,7 @@ if ($postCalendarCategoryACO) {
                           $critical_incidents_explan =  ( $check_res['critical_incidents_explan'] ) ? text($check_res['critical_incidents_explan']) : '';
                         ?>
                         <label>If yes please explain:</label>
-                        <textarea name="critical_incidents_explan" class="form-control" rows="4" readonly disabled><?php echo $critical_incidents_explan ?></textarea>
+                        <textarea name="critical_incidents_explan" class="form-control" rows="4" disabled><?php echo $critical_incidents_explan ?></textarea>
                       </div>
 
                     </div>
@@ -360,10 +454,10 @@ if ($postCalendarCategoryACO) {
             
               <div class="form-group clearfix">
                   <div class="col-sm-offset-1 col-sm-12 position-override">
-                      <div class="btn-group btn-pinch" role="group">
-                          
+                      <div class="btn-group btn-pinch" role="group">                          
                           <button type="button"
                                   class="dontsave btn btn-link btn-cancel btn-separate-left"><?php echo xla('Cancel'); ?></button>
+                          <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                       </div>
                   </div>
               </div>
@@ -375,6 +469,7 @@ if ($postCalendarCategoryACO) {
 </div><!--End of container div-->
 <?php $oemr_ui->oeBelowContainerDiv();?>
 <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+<script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
 <script language="javascript">
     // jQuery stuff to make the page a little easier to use
     $(function () {
@@ -403,7 +498,7 @@ if ($postCalendarCategoryACO) {
           var endTime = e.replace(/\s+/g, '').trim();
           if(startTime && endTime) {
             
-            var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate() + 1)).slice(-2);
+            var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate())).slice(-2);
             var date1 = new Date( date_today + " " + s ).getTime();
             var date2 = new Date( date_today + " " + e ).getTime();
             var msec = date2 - date1;
@@ -443,53 +538,32 @@ if ($postCalendarCategoryACO) {
         });
 
 
-        // esign API
-        var formConfig = <?php echo $esignApi->formConfigToJson(); ?>;
-        $(".esign-button-form").esign(
-            formConfig,
-            {
-                afterFormSuccess : function( response ) {
-                    if ( response.locked ) {
-                        var editButtonId = "form-edit-button-"+response.formDir+"-"+response.formId;
-                        $("#"+editButtonId).replaceWith( response.editButtonHtml );
-                    }
+        
 
-                    var logId = "esign-signature-log-"+response.formDir+"-"+response.formId;
-                    $.post( formConfig.logViewAction, response, function( html ) {
-                        $("#"+logId).replaceWith( html );
+        $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "Respite Care Progress Note",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>Respite Care Progress Note</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
                     });
-                }
-            }
-        );
-
-        var encounterConfig = <?php echo $esignApi->encounterConfigToJson(); ?>;
-        $(".esign-button-encounter").esign(
-            encounterConfig,
-            {
-                afterFormSuccess : function( response ) {
-                    // If the response indicates a locked encounter, replace all
-                    // form edit buttons with a "disabled" button, and "disable" left
-                    // nav visit form links
-                    if ( response.locked ) {
-                        // Lock the form edit buttons
-                        $(".form-edit-button").replaceWith( response.editButtonHtml );
-                        // Disable the new-form capabilities in left nav
-                        top.window.parent.left_nav.syncRadios();
-                        // Disable the new-form capabilities in top nav of the encounter
-                        $(".encounter-form-category-li").remove();
-                    }
-
-                    var logId = "esign-signature-log-encounter-"+response.encounterId;
-                    $.post( encounterConfig.logViewAction, response, function( html ) {
-                        $("#"+logId).replaceWith( html );
-                    });
-                }
-            }
-        );
-
-        $('.esign-button-form').css({"width": "110px", "height":"25px", "line-height":"20px", "vertical-align":"middle", "margin-right":"25px"});
-
-        $('.esign-button-form span').html('Digitally Sign');
+                });
 
     });
 </script>

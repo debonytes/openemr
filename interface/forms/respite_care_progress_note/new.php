@@ -55,8 +55,11 @@ if($userArrs && array_filter($userArrs)) {
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
-$last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
-$last_record = sqlQuery($last_record_query, array($pid));
+/* checking the last record */
+if( empty($check_res) ){
+    $last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
+    $last_record = sqlQuery($last_record_query, array($pid));
+} 
 
 $data = '';
 $obj = $data;
@@ -97,6 +100,7 @@ if ($postCalendarCategoryACO) {
 
 
 ?>
+<!DOCTYPE html>
 <html>
 <head>
     <?php Header::setupHeader(['datetime-picker', 'opener','esign', 'common']); ?>
@@ -124,6 +128,128 @@ if ($postCalendarCategoryACO) {
     ?>
   <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
   <link rel="stylesheet" href="../../../style_custom.css">
+  <style>
+            .margin-left-40{
+                margin-left: 300px;
+            }
+            .margin-right-40{
+                margin-right: 40px;
+            }
+            @media print{
+                .margin-left-40{
+                    margin-left: 40px;
+                }
+                .margin-right-40{
+                    margin-right: 20px;
+                }
+                .col-md-2 {
+                    width: 16.66666667%;
+                }
+                .col-md-10 {
+                    width: 83.33333333%;
+                }
+                .col-md-6 {
+                    width: 50%;
+                }
+                .col-md-4 {
+                    width: 33.3333%;
+                }
+                .col-md-3 {
+                    width: 25%;
+                }
+                .col-md-8 {
+                    width: 66.66666667%;
+                }
+                .col-md-9 {
+                    width: 75%;
+                }
+                .col-md-12 {
+                    width: 100%;
+                }
+                .form-group {
+                    margin-bottom: 5px!important;
+                }
+                label {
+                    padding: 0 5px!important;
+                }
+                label {
+                    display: inline-block;
+                    max-width: 100%;
+                    margin-bottom: 5px;
+                    font-weight: normal;
+                }
+                .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                    float: left;
+                }
+                .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+                    float: left;
+                }
+                .row_other{
+                    margin-top: 40px;
+                }
+                h3{
+                    font-size: 20px;
+                }
+                .brief_mental_status{
+                    margin-top: 40px;
+                    padding-top: 20px;
+                }
+                .treatment_diagnostic_row{
+                    margin-top: 30px;
+                }
+                input[type=text]{
+                    border: none;
+                    font-weight: bold;
+                    border-bottom: 1px solid #333;
+                    border-bottom-right-radius: 0;
+                    border-bottom-left-radius: 0;
+                }
+                .form-control{
+                    border: none;
+                    font-size: 16px;
+                    font-weight: bold;
+                    background: none;
+                }
+                textarea.form-control{
+                    border: 1px solid #333;
+                }
+                .session-focus{
+                    margin-top: 100px;
+                    padding-top: 40px;
+                }
+                .col-md-offset-2 {
+                    margin-left: 0;
+                }
+                .checkbox-inline, .radio-inline {
+                    position: relative;
+                    display: inline-block;
+                    padding-left: 20px;
+                    margin-bottom: 0;
+                    font-weight: 400;
+                    vertical-align: middle;
+                    cursor: pointer;
+                }
+
+                .full-width{
+                    width: 100%;
+                    margin: 0;
+                }
+
+                .margin-top-30{
+                  margin-top: 30px;
+                }
+
+                .margin-right-20{
+                  margin-right: 20px;
+                }
+
+            }
+            @page {
+              margin: 2cm;
+            }
+
+           
+        </style>
 </head>
 <body class="body_top">
 <div id="container_div" class="<?php echo attr($oemr_ui->oeContainer()); ?>">
@@ -178,7 +304,7 @@ if ($postCalendarCategoryACO) {
               <input type="hidden" name="user" value="<?php echo $user_id; ?>">
               <input type="hidden" name="authorized" value="<?php echo $userauthorized; ?>">
               <input type="hidden" name="activity" value="1">
-              <fieldset>
+              <fieldset class="form_content">
 
                 <div class="field-group-wrapper">
 
@@ -199,17 +325,17 @@ if ($postCalendarCategoryACO) {
                         </div>
                       </div>
                       <div class="form-group">
-                        <?php $billing_code =  ( isset($obj['billing_code']) && $obj['billing_code'] ) ? $obj['billing_code'] : 'Respite S5150' ; ?>
+                        <?php $billing_code =  ( $check_res['billing_code'] ) ? $check_res['billing_code'] : 'Respite S5150' ; ?>
                         <label>Billing Code:</label>
-                        <input type="text" readonly disabled class="form-control" value="<?php echo $billing_code; ?>">
-                        <input type="hidden" id="billing_code" class="form-control" name="billing_code" value="<?php echo $billing_code; ?>">
+                        <input type="text" readonly disabled class="form-control" value="<?php echo text($billing_code); ?>">
+                        <input type="hidden" id="billing_code" class="form-control" name="billing_code" value="<?php echo text($billing_code); ?>">
                       </div>
                     </div>
 
                     <div class="col-md-6">
                       <div class="form-group">
                         <?php 
-                        $dateofservice =  ( $check_res['dateofservice'] ) ? $check_res['dateofservice'] : date('Y-m-d') ; 
+                        $dateofservice =  ( $check_res['dateofservice'] ) ? $check_res['dateofservice'] : $last_record['dateofservice'] ; 
                         //$date_service_format = ($dateofservice) ? date('d/m/Y',strtotime($dateofservice)) : '';
                         ?>
                         <label>Date of Service:</label>
@@ -220,7 +346,7 @@ if ($postCalendarCategoryACO) {
                         <div class="col-md-6">
                           <div class="form-group">
                             <?php 
-                              $starttime =  ( $check_res['starttime'] ) ? text($check_res['starttime']) : '' ; 
+                              $starttime =  ( $check_res['starttime'] ) ? text($check_res['starttime']) : text($last_record['starttime']) ; 
                               //$start_time_format = ($starttime) ? date('h:i A',strtotime($starttime)) : '';
                             ?>
                             <label>Start Time:</label>
@@ -231,7 +357,7 @@ if ($postCalendarCategoryACO) {
                         <div class="col-md-6">
                           <div class="form-group">
                             <?php 
-                              $endtime =  ( $check_res['endtime'] ) ? text($check_res['endtime']) : '' ; 
+                              $endtime =  ( $check_res['endtime'] ) ? text($check_res['endtime']) : text($last_record['endtime']) ; 
                               //$end_time_format = ($endtime) ? date('h:i A',strtotime($endtime)) : '';
                             ?>
                             <label>End Time:</label>
@@ -242,7 +368,7 @@ if ($postCalendarCategoryACO) {
 
                       <div class="form-group">
                         <?php 
-                          $duration =  ( $check_res['duration'] ) ? text($check_res['duration']) : '' ; 
+                          $duration =  ( $check_res['duration'] ) ? text($check_res['duration']) : text($last_record['duration']) ; 
                         ?>
                         <label>Duration:</label>
                         <input type="text" id="duration" class="form-control" name="duration" value="<?php echo $duration; ?>" autocomplete="off">
@@ -253,24 +379,26 @@ if ($postCalendarCategoryACO) {
 
                   </div>
 
-                  <div class="field-row">
+                  <div class="clearfix"></div>
+
+                  <div class="field-row margin-top-30">
                     <div class="col-lg-12">
                       <h4 class="field-heading">Descriptions of Intervention</h4>
                   
-                      <div class="form-group form-checkbox-field">
+                      <div class="form-group form-checkbox-field margin-top-30">
                         <?php
                           $service_locations = array("Home","Community");
-                          $selected_service_loc = ( $check_res['service_local'] ) ? $check_res['service_local'] : '';
+                          $selected_service_loc = ( $check_res['service_local'] ) ? $check_res['service_local'] : $last_record['service_local'];
                         ?>       
-                          <div class="col-sm-4">
+                          <div class="col-md-5">
                             <strong>State where the services took place:</strong>
                           </div>                 
                           
-                          <div class="col-sm-8" style="display: block;">
+                          <div class="col-md-7" style="display: block;">
                             <?php foreach ($service_locations as $loc) { 
                               $is_selected_service_loc = ($loc == $selected_service_loc) ? ' checked': ($last_record['service_local'] == $loc) ? ' checked ' : '';
                               ?>
-                              <label class="radio-inline" style="width: 20%; display: inline-block;" >
+                              <label class="radio-inline margin-right-20" style="width: 20%; display: inline-block;" >
                                 <input type="radio" name="service_local" value="<?php echo $loc; ?>"<?php echo $is_selected_service_loc; ?>> <?php echo $loc; ?>
                               </label> 
                             <?php } ?>
@@ -286,9 +414,10 @@ if ($postCalendarCategoryACO) {
                         </p>
                       </div>
 
-                      <div class="form-group">
+                      <div class="clearfix"></div>
+                      <div class="form-group margin-top-30">
                         <?php 
-                          $intervention_type =  ( $check_res['intervention_type'] ) ? text($check_res['intervention_type']) : $last_record['intervention_type'] ; 
+                          $intervention_type =  ( $check_res['intervention_type'] ) ? text($check_res['intervention_type']) : text($last_record['intervention_type']) ; 
                         ?>
                         <label>Type of Intervention:</label>
                         <textarea name="intervention_type" class="form-control" rows="4"><?php echo $intervention_type ?></textarea>
@@ -301,15 +430,17 @@ if ($postCalendarCategoryACO) {
                         
                       </div>
 
-                      <div class="form-group">
+                      <div class="clearfix"></div>
+                      <div class="form-group margin-top-30">
                         <?php 
-                          $progress_narrative =  ( $check_res['progress_narrative'] ) ? text($check_res['progress_narrative']) : $last_record['progress_narrative'] ; 
+                          $progress_narrative =  ( $check_res['progress_narrative'] ) ? text($check_res['progress_narrative']) : text($last_record['progress_narrative']) ; 
                         ?>
                         <label>Narrative:</label>
                         <textarea name="progress_narrative" class="form-control" rows="4"><?php echo $progress_narrative ?></textarea>
                       </div>
 
-                      <div class="form-group " style="margin-top:20px;">
+                      <div class="clearfix">&nbsp;</div>
+                      <div class="form-group margin-top-30" style="margin-top:20px;">
                         <?php
                           $critical_incidents_options = array(0=>"No",1=>"Yes");
                           //$crit_incidents = $check_res['crit_incidents'];
@@ -323,7 +454,7 @@ if ($postCalendarCategoryACO) {
                               //$is_selected_crit_incidents = ($val === $crit_incidents) ? ' checked':'';
                               ?>
                               <label class="radio-inline" style="width: 50px">                              
-                                <input type="radio" name="crit_incidents" value="<?php echo $val; ?>" <?php echo ($val == $check_res['crit_incidents']) ? ' checked' : ''; ?> >
+                                <input type="radio" name="crit_incidents" value="<?php echo $val; ?>" <?php echo ($val == $check_res['crit_incidents']) ? ' checked' : ($val == $last_record['crit_incidents']) ? ' checked ' : ''; ?> >
                                 <?php echo $label; ?>                              
                               </label> 
                             <?php } ?>
@@ -333,7 +464,7 @@ if ($postCalendarCategoryACO) {
 
                       <div class="form-group">
                         <?php 
-                          $critical_incidents_explan =  ( $check_res['critical_incidents_explan'] ) ? text($check_res['critical_incidents_explan']) : $last_record['critical_incidents_explan'];
+                          $critical_incidents_explan =  ( $check_res['critical_incidents_explan'] ) ? text($check_res['critical_incidents_explan']) : text($last_record['critical_incidents_explan']);
                         ?>
                         <label>If yes please explain:</label>
                         <textarea name="critical_incidents_explan" class="form-control" rows="4"><?php echo $critical_incidents_explan ?></textarea>
@@ -361,6 +492,7 @@ if ($postCalendarCategoryACO) {
                           <button type="submit" class="btn btn-default btn-save save"> <?php echo xla('Save'); ?></button>
                           <button type="button"
                                   class="dontsave btn btn-link btn-cancel btn-separate-left"><?php echo xla('Cancel'); ?></button>
+                          <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                       </div>
                   </div>
               </div>
@@ -372,6 +504,7 @@ if ($postCalendarCategoryACO) {
 </div><!--End of container div-->
 <?php $oemr_ui->oeBelowContainerDiv();?>
 <script src="<?php echo $web_root; ?>/library/js/bootstrap-timepicker.min.js"></script>
+<script src="<?php echo $web_root; ?>/library/js/printThis.js"></script>
 <script language="javascript">
     // jQuery stuff to make the page a little easier to use
     $(function () {
@@ -487,6 +620,31 @@ if ($postCalendarCategoryACO) {
         $('.esign-button-form').css({"width": "110px", "height":"25px", "line-height":"20px", "vertical-align":"middle", "margin-right":"25px"});
 
         $('.esign-button-form span').html('Digitally Sign');
+
+        $("#print").on('click', function(){
+                    $('.form_content').printThis({
+                        debug: false,               // show the iframe for debugging
+                        importCSS: true,            // import parent page css
+                        importStyle: true,         // import style tags
+                        printContainer: false,       // print outer container/$.selector
+                        loadCSS: "",                // path to additional css file - use an array [] for multiple
+                        pageTitle: "Respite Care Progress Note",              // add title to print page
+                        removeInline: false,        // remove inline styles from print elements
+                        removeInlineSelector: "*",  // custom selectors to filter inline styles. removeInline must be true
+                        printDelay: 333,            // variable print delay
+                        header: "<h2>Respite Care Progress Note</h2>",               // prefix to html
+                        footer: null,               // postfix to html
+                        base: false,                // preserve the BASE tag or accept a string for the URL
+                        formValues: true,           // preserve input/form values
+                        canvas: false,              // copy canvas content
+                        doctypeString: '<!DOCTYPE html>',       // enter a different doctype for older markup
+                        removeScripts: false,       // remove script tags from print content
+                        copyTagClasses: false,      // copy classes from the html & body tag
+                        beforePrintEvent: null,     // function for printEvent in iframe
+                        beforePrint: null,          // function called before iframe is filled
+                        afterPrint: null            // function called before iframe is removed
+                    });
+                });
 
     });
 </script>
