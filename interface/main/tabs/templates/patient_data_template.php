@@ -102,7 +102,7 @@ if ($search_any_type == 'dual') {
                         type="button" id="pastEncounters"
                         data-toggle="dropdown"
                         aria-haspopup="true"
-                        aria-expanded="true">
+                        aria-expanded="true" style="font-size: 14px !important">
                     <?php echo xlt("View Notes"); ?>&nbsp;
                     (<span data-bind="text:encounterArray().length"></span>)
                     <span class="caret"></span>
