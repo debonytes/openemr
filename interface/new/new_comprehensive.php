@@ -632,8 +632,8 @@ $constraints = LBF_Validation::generate_validate_constraints("DEM");
                                             echo ">" . text($iname) . "</option>\n";
                                         }
                                         ?>
-                                    </select>&nbsp;<a class='medium_modal' href='../practice/ins_search.php' onclick='ins_search(<?php echo attr($i); ?>)'>
-                                    <span> <?php echo xlt('Search/Add Insurer'); ?></span></a>
+                                    </select>&nbsp;<a class='medium_modal btn btn-default' href='../practice/ins_search.php' onclick='ins_search(<?php echo attr($i); ?>)'>
+                                    <span style="color: white"><?php echo xlt('Search/Add Insurer'); ?></span></a>
                                 </td>
                             </tr>
                             <tr>
