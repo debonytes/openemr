@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2020-10-28 04:40:59
+<?php /* Smarty version 2.6.31, created on 2021-02-18 10:27:03
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -775,7 +775,7 @@ foreach ($providers as $provider) {
                         }
                     }
                     if ($catid == 1) $content .= "</strike>";
-                    $content .= "</a>";
+                    $content .= "</a>";                    
                     $content .= '<a class="show-appointment shown"></a>';
                 }
                 elseif($groupid){
@@ -796,8 +796,7 @@ foreach ($providers as $provider) {
                         }
                     }
                     if ($catid == 1) $content .= "</strike>";
-                    $content .= "</a>";
-
+                    $content .= "</a>";                    
                     //Add class to wrapping div so EditEvent js function can differentiate between click on group and patient
                     $evtClass .= ' groups ';
 
@@ -812,6 +811,11 @@ foreach ($providers as $provider) {
                     }
                 }
                 $content .= "</span>";
+
+                if($patient_age < 18){
+                    $patient = getPatientData($patientid);
+                    $content .= "<div>Guardian: ". $patient['guardiansname'] ."</div>";
+                }
             }
 
             $divTitle .= "\n(" . xl('double click to edit') . ")";
@@ -1008,4 +1012,4 @@ foreach ($providers as $provider) {
 </script>
 
 </body>
-</html>
+</html>

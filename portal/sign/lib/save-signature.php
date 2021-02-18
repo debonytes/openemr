@@ -21,6 +21,8 @@ $isPortal = $data['is_portal'];
 $output = urldecode($data['output']);
 $ignoreAuth = false;
 
+
+
 // this script is used by both the patient portal and main openemr; below does authorization.
 if ($isPortal) {
     require_once(dirname(__FILE__) . "/../../../src/Common/Session/SessionUtil.php");

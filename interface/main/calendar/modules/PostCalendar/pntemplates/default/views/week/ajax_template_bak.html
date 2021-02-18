@@ -774,8 +774,12 @@ foreach ($providers as $provider) {
                             $content .= ")";
                         }
                     }
+                    
                     if ($catid == 1) $content .= "</strike>";
-                    $content .= "</a>";                    
+                    $content .= "</a>";
+                    if($patient_age < 18){
+                      $content .= "<span>Minor</span>";
+                    }
                     $content .= '<a class="show-appointment shown"></a>';
                 }
                 elseif($groupid){
@@ -795,8 +799,12 @@ foreach ($providers as $provider) {
                             $content .= ")";
                         }
                     }
+                    
                     if ($catid == 1) $content .= "</strike>";
-                    $content .= "</a>";                    
+                    $content .= "</a>";
+                    if($patient_age < 18){
+                      $content .= "<span>Minor</span>";
+                    }
                     //Add class to wrapping div so EditEvent js function can differentiate between click on group and patient
                     $evtClass .= ' groups ';
 
@@ -811,11 +819,6 @@ foreach ($providers as $provider) {
                     }
                 }
                 $content .= "</span>";
-
-                if($patient_age < 18){
-                    $patient = getPatientData($patientid);
-                    $content .= "<div>Guardian: ". $patient['guardiansname'] ."</div>";
-                }
             }
 
             $divTitle .= "\n(" . xl('double click to edit') . ")";
