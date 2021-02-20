@@ -803,7 +803,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="translator_used" class="control-label col-md-4">Translator Used</label>
                                     <div class="col-md-6">
-                                        <input type="text" name="translator_used" id="translator_used" class="form-control" value="<?php echo ($check_res['translator_used']) ? text($check_res['translator_used']) : text($last_record['translator_used']); ?>">
+                                        <input type="text" name="translator_used" id="translator_used" class="form-control" value="<?php echo ($check_res['translator_used']) ? text($check_res['translator_used']) : ''; ?>">
                                     </div>  
                                     <div class="clearfix"></div>                                  
                                 </div>
