@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2021-02-18 10:27:03
+<?php /* Smarty version 2.6.31, created on 2021-02-20 08:23:38
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -706,6 +706,8 @@ foreach ($providers as $provider) {
             $grouptype = $event['group_type'];
             $groupstatus = $event['group_status'];
             $groupcounselors = '';
+            $apptstatus = $event['apptstatus'];
+
             foreach($event['group_counselors'] as $counselor){
                 $groupcounselors .= getUserNameById($counselor) . " \n ";
             }
@@ -763,7 +765,7 @@ foreach ($providers as $provider) {
                                       onmouseout=\"javascript:HideImage();\"
                                       border='0' title='". attr($link_title) . "' alt='View Patient' />";
 
-                    if ($catid == 1) $content .= "<strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike>";
                     $content .= text($lname);
                     if ($GLOBALS['calendar_appt_style'] != 1) {
                         $content .= "," . text($fname);
@@ -774,7 +776,7 @@ foreach ($providers as $provider) {
                             $content .= ")";
                         }
                     }
-                    if ($catid == 1) $content .= "</strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</strike>";
                     $content .= "</a>";                    
                     $content .= '<a class="show-appointment shown"></a>';
                 }
@@ -785,7 +787,7 @@ foreach ($providers as $provider) {
                     $link_title .= "(" . xl('Click to view') . ")";
                     $content .= "<a href='javascript:goGid(" . attr_js($groupid) . ")' title='" . attr($link_title) . "'>";
                     $content .= "<img src='{$this->_tpl_vars['TPL_IMAGE_PATH']}/user-blue.gif' border='0' title='" . attr($link_title) . "' alt='View Patient' />";
-                    if ($catid == 1) $content .= "<strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike>";
                     $content .= text($groupname);
                     if ($GLOBALS['calendar_appt_style'] != 1) {
                         if ($event['title'] && $GLOBALS['calendar_appt_style'] >= 3) {
@@ -795,7 +797,7 @@ foreach ($providers as $provider) {
                             $content .= ")";
                         }
                     }
-                    if ($catid == 1) $content .= "</strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</strike>";
                     $content .= "</a>";                    
                     //Add class to wrapping div so EditEvent js function can differentiate between click on group and patient
                     $evtClass .= ' groups ';
@@ -814,7 +816,9 @@ foreach ($providers as $provider) {
 
                 if($patient_age < 18){
                     $patient = getPatientData($patientid);
-                    $content .= "<div>Guardian: ". $patient['guardiansname'] ."</div>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike>";
+                      $content .= "<div>Guardian: ". $patient['guardiansname'] ."</div>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</strike>";
                 }
             }
 
