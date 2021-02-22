@@ -969,9 +969,9 @@ if (!$_REQUEST['flb_table']) { ?>
                                 $form_notes = array();
 
                                 foreach($form_names as $name){
-                                    if(strpos($name, 'progress_note')){
+                                    //if(strpos($name, 'progress_note')){
                                         $form_notes[] = $name;
-                                    }
+                                    //}
                                 }
                                 $forms = array();
 

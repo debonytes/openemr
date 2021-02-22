@@ -297,6 +297,9 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
+
+                                
+
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -330,6 +333,9 @@ if ($postCalendarCategoryACO) {
                                         <small class="text-danger session_number_error"></small>
                                     </div>                                    
                                 </div>
+
+                                
+
                             </div>
 
                             <div class="clearfix"></div>
@@ -541,6 +547,10 @@ if ($postCalendarCategoryACO) {
                                               </div>
                                             </div>
                                     </div>
+
+
+                                    
+
 
                                 </div>
                                 <div class="col-md-6">

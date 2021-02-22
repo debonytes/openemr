@@ -2173,7 +2173,7 @@ if ($postCalendarCategoryACO) {
                                     }
                                 ?>
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
-                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
+                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
                                 <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
@@ -2280,6 +2280,20 @@ if ($postCalendarCategoryACO) {
                 });
 
             });
+
+            function form_close_tab()
+            {
+                var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
+                //console.log('Session Dashboard: ' + session_dashboard);
+                if(session_dashboard) {
+                    //window.top.location.reload();
+                    <?php //$_SESSION['from_dashboard'] = false; ?>
+                    window.top.location.href = window.top.location;
+                } else {
+                   top.restoreSession(); 
+                    parent.closeTab(window.name, false);
+                }                
+            }
         </script>
     </body>
 </html>

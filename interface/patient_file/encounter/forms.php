@@ -606,11 +606,27 @@ function findPosX(id)
 <?php //DYNAMIC FORM RETREIVAL
 include_once("$srcdir/registry.inc");
 
+function isPatientNew($pid)
+{
+    $status = true;
+    $sql = "SELECT * FROM form_counselor_comprehensive_assessment WHERE pid = ?";
+    $res = sqlStatement($sql, array($pid));
+    if($res){
+      $row = sqlFetchArray($res);
+      $status = (!empty($row)) ? false : true;
+    }    
+    return $status;
+}
+
 function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
 {
-    global $attendant_type;
+    global $attendant_type, $pid;
+    $isNewPatient = "";
+    if(isPatientNew($pid)){
+      $isNewPatient = "id = 36 AND ";
+    }
     $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
-    "unpackaged, date, aco_spec FROM registry WHERE ";
+    "unpackaged, date, aco_spec FROM registry WHERE {$isNewPatient}";
   // select different forms for groups
     if ($attendant_type == 'pid') {
         $sql .= "patient_encounter = 1 AND ";
@@ -631,6 +647,13 @@ function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
     }
     return $all;
 }
+
+/*
+function isNewPatient()
+{
+
+}
+*/
 
 $reg = myGetRegistered();
 $old_category = '';
@@ -782,7 +805,7 @@ if ($StringEcho) {
 <!-- Form menu stop -->
 <!-- *************** -->
 
-<div id="encounter_forms">
+<div id="encounter_forms"> 
 
 <?php
 $dateres = getEncounterDateByEncounter($encounter);
