@@ -609,7 +609,9 @@ include_once("$srcdir/registry.inc");
 function isPatientNew($pid)
 {
     $status = true;
-    $sql = "SELECT * FROM form_counselor_comprehensive_assessment WHERE pid = ?";
+    //$sql = "SELECT id FROM form_counselor_comprehensive_assessment WHERE pid = ?";
+    $sql = "SELECT cda.id, forms.id, forms.form_name, esign.amendment FROM ((form_counselor_comprehensive_assessment as cda INNER JOIN forms as forms ON cda.id = forms.form_id)
+INNER JOIN esign_signatures as esign ON forms.id = esign.tid) WHERE cda.pid = ?";
     $res = sqlStatement($sql, array($pid));
     if($res){
       $row = sqlFetchArray($res);
