@@ -1038,7 +1038,6 @@ if ($_GET['group'] == true) {
     $cattype=3;
 }
 
-/*
 $cres = sqlStatement("SELECT pc_catid, pc_cattype, pc_catname, " .
 "pc_recurrtype, pc_duration, pc_end_all_day " .
 "FROM openemr_postcalendar_categories where pc_active = 1 ORDER BY pc_seq");
@@ -1087,7 +1086,6 @@ while ($crow = sqlFetchArray($cres)) {
 
     $catoptions .= ">" . text(xl_appt_category($crow['pc_catname'])) . "</option>\n";
 }
-*/
 ?>
 
 <?php require($GLOBALS['srcdir'] . "/restoreSession.php"); ?>
@@ -1483,35 +1481,11 @@ $classpati='';
 <input type="hidden" name="old_repeats" id="old_repeats" value="<?php echo attr($repeats); ?>">
 <input type="hidden" name="rt2_flag2" id="rt2_flag2" value="<?php echo attr(isset($rspecs['rt2_pf_flag']) ? $rspecs['rt2_pf_flag'] : '0'); ?>">
 <!-- End of addition by epsdky -->
-
-<?php if( ($_GET['prov'] == false) && ($_GET['group'] == false) ): ?>
-<div class="row patient_type_row">
-    <div class="radio" style="display: inline-block; margin-right: 40px">
-        <span style="margin-right: 20px"><strong><?php echo xlt('Type of Patient:'); ?></strong></span>
-        <label for="type_patient_medicaid" class="radio-inline">
-            <input type="radio" name="type_patient" id="type_patient_medicaid" value="medicaid" class="form-control type_patient"> <?php echo xlt('Medicaid'); ?>
-        </label>
-        <label for="type_patient_private" class="radio-inline">
-            <input type="radio" name="type_patient" id="type_patient_private" value="private" class="form-control type_patient"> <?php echo xlt('Private'); ?>
-        </label>
-    </div>
-
-    <div class="checkbox" style="display: inline-block; ">
-        <span style="margin-right: 20px"><strong><?php echo xlt('Status:'); ?></strong></span>
-        <label for="new_patient">
-            <input type="checkbox" name="new_patient" id="new_patient" value="1" class="form-control"> <?php echo xlt('New Patient'); ?>
-        </label>
-    </div>
-
-    
-</div>
-
-<?php endif; ?>
 <div class="row">
     <div class="form-group">
         <label><?php echo xlt('Category'); ?>:</label>
         <select class='form-control' name='form_category' id='form_category' onchange='set_category()'>
-            <option value="">Select</option>
+            <?php echo $catoptions ?>
         </select>
     </div>
     <div class="form-group">
@@ -1978,113 +1952,7 @@ $(function (){
     // add wanted classes to api generated elements.
     $("#form_apptstatus").addClass('input-sm');
     $("#form_room").addClass('input-sm');
-
-    /*$('#form_category').on('load', function(){
-        console.log('Form category');
-        var eid = '<?php echo ($eid) ? $eid : ""; ?>';
-        var cattype = <?php echo $cattype; ?>;
-        var default_catid = <?php echo $default_catid; ?>;
-        $.ajax({
-            method: 'POST',
-            url: '/interface/main/calendar/get_categories.php',
-            data: {
-                eid: eid, 
-                type_patient: null, 
-                status: 0,
-                cattype: cattype,
-                default_catid: default_catid
-            },
-            success: function(response){
-                console.log('Success: ');
-                $(this).empty().append(response);
-                console.log(response);
-            },
-            error: function(response){
-                console.log('Error: ');
-                console.log(response);
-            }
-        });
-    });*/
-
-    get_all_categories();
-
-    var status = 0;
-    
-    
-
-    $('input[type=radio][name=type_patient]').change(function() {
-        var eid = '<?php echo ($eid) ? $eid : ""; ?>';
-        var type_patient = $(this).val();
-        var default_catid = <?php echo $default_catid; ?>;
-        var cattype = <?php echo $cattype; ?>;
-        
-        status = get_patient_status();
-
-        $.ajax({
-            method: 'POST',
-            url: '/interface/main/calendar/get_categories.php',
-            data: {
-                eid: eid, 
-                type_patient: type_patient, 
-                status: status,
-                cattype: cattype,
-                default_catid: default_catid
-            },
-            success: function(response){
-                //console.log('Success: ');
-                $('#form_category').empty().append(response);
-                //console.log(response);
-            },
-            error: function(response){
-                console.log('Error: ');
-                console.log(response);
-            }
-        });
-    });
-
-    
-    
 });
-
-function get_patient_status()
-{
-    var status = 0;
-    if($('#new_patient').prop("checked") == true){
-        status = 1;
-    } 
-    return status;
-}
-
-function get_all_categories()
-{
-        var options = '';
-        var eid = '<?php echo ($eid) ? $eid : ""; ?>';
-        var cattype = <?php echo $cattype; ?>;
-        var default_catid = <?php echo $default_catid; ?>;
-        $.ajax({
-            method: 'POST',
-            url: '/interface/main/calendar/get_categories.php',
-            data: {
-                eid: eid, 
-                type_patient: null, 
-                status: 0,
-                cattype: cattype,
-                default_catid: default_catid
-            },
-            success: function(response){
-                //console.log('Success: ');
-                //options = response;
-                $('#form_category').empty().append(response);
-                //console.log(response);
-            },
-            error: function(response){
-                //console.log('Error: ');
-                //console.log(response);
-            }
-        });
-
-
-}
 
 function are_days_checked(){
     var days = document.getElementById("days").getElementsByTagName('input');
