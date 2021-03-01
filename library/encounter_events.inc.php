@@ -720,6 +720,8 @@ function InsertEvent($args, $from = 'general')
             $args['locationspec'],(int)$args['facility'],(int)$args['billing_facility'],$form_room)
         );
 
+        $event_addl = sqlInsert("INSERT INTO openemr_postcalendar_events_additional (pc_eid, type_patient, new_patient) VALUES (?,?,?)", array($pc_eid, $args['type_patient'], $args['new_patient']));
+
             //Manage tracker status.
         if (!empty($form_pid)) {
             manage_tracker_status($args['event_date'], $args['starttime'], $pc_eid, $form_pid, $_SESSION['authUser'], $args['form_apptstatus'], $args['form_room']);

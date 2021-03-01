@@ -19,6 +19,7 @@ $eid            = $_POST['eid'];
 $type_patient   = $_POST['type_patient'];
 $status         = $_POST['status'];
 $cattype        = $_POST['cattype'];
+$pc_catid       = $_POST['pc_catid'];
 
 //die('<option>'.$status.'</option>');
 
@@ -36,26 +37,11 @@ if($type_patient == 'medicaid' AND $status == 1){
         "FROM openemr_postcalendar_categories where pc_active = 1 ORDER BY pc_seq");
 }
 
-
-
 $catoptions = "";
-$prefcat_options = "    <option value='0'>-- " . xlt("None{{Category}}") . " --</option>\n";
-
 
 while ($crow = sqlFetchArray($cres)) {
     $duration = round($crow['pc_duration'] / 60);
-    
-    // This section is to build the list of preferred categories:
-    if ($duration) {
-        $prefcat_options .= "    <option value='" . attr($crow['pc_catid']) . "'";
-        if ($eid) {
-            if ($crow['pc_catid'] == $row['pc_prefcatid']) {
-                $prefcat_options .= " selected";
-            }
-        }
-
-        $prefcat_options .= ">" . text(xl_appt_category($crow['pc_catname'])) . "</option>\n";
-    }
+      
 
     if ($crow['pc_cattype'] != $cattype) {
         continue;
@@ -65,7 +51,7 @@ while ($crow = sqlFetchArray($cres)) {
     // echo " rectypes[" . $crow['pc_catid'] . "] = " . $crow['pc_recurrtype'] . "\n";
     $catoptions .= "    <option value='" . attr($crow['pc_catid']) . "'";
     if ($eid) {
-        if ($crow['pc_catid'] == $row['pc_catid']) {
+        if ($crow['pc_catid'] == $pc_catid) {
             $catoptions .= " selected";
         }
     } else {

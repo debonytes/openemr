@@ -898,10 +898,7 @@ if ($_REQUEST['groupid']) {
 if ($eid) {
     // $row = sqlQuery("SELECT * FROM openemr_postcalendar_events WHERE pc_eid = $eid");
 
-    $row = sqlQuery("SELECT e.*, u.fname, u.mname, u.lname " .
-      "FROM openemr_postcalendar_events AS e " .
-      "LEFT OUTER JOIN users AS u ON u.id = e.pc_informant " .
-      "WHERE pc_eid = ?", array($eid));
+    $row = sqlQuery("SELECT e.*, u.fname, u.mname, u.lname, addl.type_patient, addl.new_patient FROM openemr_postcalendar_events AS e LEFT OUTER JOIN users AS u ON u.id = e.pc_informant  LEFT OUTER JOIN openemr_postcalendar_events_additional AS addl ON addl.pc_eid = e.pc_eid WHERE e.pc_eid = ?", array($eid));
     $informant = $row['fname'] . ' ' . $row['mname'] . ' ' . $row['lname'];
 
     // instead of using the event's starting date, keep what has been provided
@@ -1038,11 +1035,11 @@ if ($_GET['group'] == true) {
     $cattype=3;
 }
 
-/*
+
 $cres = sqlStatement("SELECT pc_catid, pc_cattype, pc_catname, " .
 "pc_recurrtype, pc_duration, pc_end_all_day " .
 "FROM openemr_postcalendar_categories where pc_active = 1 ORDER BY pc_seq");
-$catoptions = "";
+
 $prefcat_options = "    <option value='0'>-- " . xlt("None{{Category}}") . " --</option>\n";
 $thisduration = 0;
 if ($eid) {
@@ -1073,21 +1070,9 @@ while ($crow = sqlFetchArray($cres)) {
 
     echo " durations[" . attr($crow['pc_catid']) . "] = " . attr($duration) . "\n";
     // echo " rectypes[" . $crow['pc_catid'] . "] = " . $crow['pc_recurrtype'] . "\n";
-    $catoptions .= "    <option value='" . attr($crow['pc_catid']) . "'";
-    if ($eid) {
-        if ($crow['pc_catid'] == $row['pc_catid']) {
-            $catoptions .= " selected";
-        }
-    } else {
-        if ($crow['pc_catid'] == $default_catid) {
-            $catoptions .= " selected";
-            $thisduration = $duration;
-        }
-    }
-
-    $catoptions .= ">" . text(xl_appt_category($crow['pc_catname'])) . "</option>\n";
+    
 }
-*/
+
 ?>
 
 <?php require($GLOBALS['srcdir'] . "/restoreSession.php"); ?>
@@ -1489,17 +1474,21 @@ $classpati='';
     <div class="radio" style="display: inline-block; margin-right: 40px">
         <span style="margin-right: 20px"><strong><?php echo xlt('Type of Patient:'); ?></strong></span>
         <label for="type_patient_medicaid" class="radio-inline">
-            <input type="radio" name="type_patient" id="type_patient_medicaid" value="medicaid" class="form-control type_patient"> <?php echo xlt('Medicaid'); ?>
+            <input type="radio" name="type_patient" id="type_patient_medicaid" value="medicaid" class="form-control type_patient" <?php echo ($row['type_patient'] == 'medicaid') ? " checked ": ""; ?> 
+            <?php echo ($eid) ? " disabled ": "" ?>
+            > <?php echo xlt('Medicaid'); ?>
         </label>
         <label for="type_patient_private" class="radio-inline">
-            <input type="radio" name="type_patient" id="type_patient_private" value="private" class="form-control type_patient"> <?php echo xlt('Private'); ?>
+            <input type="radio" name="type_patient" id="type_patient_private" value="private" class="form-control type_patient" <?php echo ($row['type_patient'] == 'private') ? " checked ": ""; ?> 
+            <?php echo ($eid) ? " disabled ": "" ?>
+            > <?php echo xlt('Private'); ?>
         </label>
     </div>
 
     <div class="checkbox" style="display: inline-block; ">
         <span style="margin-right: 20px"><strong><?php echo xlt('Status:'); ?></strong></span>
         <label for="new_patient">
-            <input type="checkbox" name="new_patient" id="new_patient" value="1" class="form-control"> <?php echo xlt('New Patient'); ?>
+            <input type="checkbox" name="new_patient" id="new_patient" value="1" class="form-control" <?php echo ($row['new_patient'] == 1) ? " checked ": ""; ?> <?php echo ($eid) ? " disabled ": "" ?>> <?php echo xlt('New Patient'); ?>
         </label>
     </div>
 
@@ -1510,13 +1499,13 @@ $classpati='';
 <div class="row">
     <div class="form-group">
         <label><?php echo xlt('Category'); ?>:</label>
-        <select class='form-control' name='form_category' id='form_category' onchange='set_category()'>
+        <select class='form-control' name='form_category' id='form_category' onchange='set_category()' <?php echo ($eid) ? " readonly ": "" ?>>
             <option value="">Select</option>
         </select>
     </div>
     <div class="form-group">
         <label><?php echo xlt('Title'); ?>:</label>
-        <input class="form-control" type='text' size='10' name='form_title' value='<?php echo attr($row['pc_title']); ?>'
+        <input class="form-control" type='text' size='10' name='form_title' value='<?php echo attr($row['pc_title']); ?>'  <?php echo ($eid) ? " readonly ": "" ?>
             title='<?php echo xla('Event title'); ?>' />
     </div>
 </div>
@@ -2016,9 +2005,9 @@ $(function (){
         var eid = '<?php echo ($eid) ? $eid : ""; ?>';
         var type_patient = $(this).val();
         var default_catid = <?php echo $default_catid; ?>;
-        var cattype = <?php echo $cattype; ?>;
-        
-        status = get_patient_status();
+        var cattype = <?php echo $cattype; ?>;    
+        var pc_catid = '<?php echo ($row['pc_catid']) ? $row['pc_catid'] : "";   ?>';    
+        var status = get_patient_status();
 
         $.ajax({
             method: 'POST',
@@ -2028,7 +2017,8 @@ $(function (){
                 type_patient: type_patient, 
                 status: status,
                 cattype: cattype,
-                default_catid: default_catid
+                default_catid: default_catid,
+                pc_catid: pc_catid
             },
             success: function(response){
                 //console.log('Success: ');
@@ -2061,15 +2051,19 @@ function get_all_categories()
         var eid = '<?php echo ($eid) ? $eid : ""; ?>';
         var cattype = <?php echo $cattype; ?>;
         var default_catid = <?php echo $default_catid; ?>;
+        var type_patient = '<?php echo ($row['type_patient']) ? $row['type_patient']: null; ?>';
+        var status = '<?php echo ($row['new_patient']) ? $row['new_patient']: null;   ?>';
+        var pc_catid = '<?php echo ($row['pc_catid']) ? $row['pc_catid']: null;   ?>';
         $.ajax({
             method: 'POST',
             url: '/interface/main/calendar/get_categories.php',
             data: {
                 eid: eid, 
-                type_patient: null, 
-                status: 0,
+                type_patient: type_patient, 
+                status: status,
                 cattype: cattype,
-                default_catid: default_catid
+                default_catid: default_catid, 
+                pc_catid: pc_catid
             },
             success: function(response){
                 //console.log('Success: ');

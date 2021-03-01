@@ -56,7 +56,22 @@ if(empty($catTblResult)) {
     $catTblResult = array_column(mysqli_fetch_all($dbLink->query($catTblSql)),0);
 }
 
-
+$addlEventTable = 'openemr_postcalendar_events_additional';
+$eventTblSql = "SHOW TABLES LIKE '".$addlEventTable."'";
+$eventTblResult = array_column(mysqli_fetch_all($dbLink->query($eventTblSql)),0);
+if(empty($eventTblResult)) { 
+    $sqlEventStr = "CREATE TABLE IF NOT EXISTS `$addlEventTable` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `pc_eid` bigint(20) DEFAULT NULL,
+      `type_patient` varchar(100) DEFAULT NULL,
+      `new_patient` tinyint(1) DEFAULT 0,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB";
+    
+    sqlStatement(rtrim("$sqlEventStr"));
+    $eventTblSql = "SHOW TABLES LIKE '".$addlEventTable."'";
+    $eventTblResult = array_column(mysqli_fetch_all($dbLink->query($eventTblSql)),0);
+}
 
 // mdsupport - Add 'App' functionality for user interfaces without standard menu and frames
 // If this script is called with app parameter, validate it without showing other apps.
