@@ -620,6 +620,8 @@ INNER JOIN esign_signatures as esign ON forms.id = esign.tid) WHERE cda.pid = ?"
     return $status;
 }
 
+
+
 function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
 {
     global $attendant_type, $pid;

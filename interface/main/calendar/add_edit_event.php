@@ -1967,69 +1967,16 @@ $(function (){
     // add wanted classes to api generated elements.
     $("#form_apptstatus").addClass('input-sm');
     $("#form_room").addClass('input-sm');
-
-    /*$('#form_category').on('load', function(){
-        console.log('Form category');
-        var eid = '<?php echo ($eid) ? $eid : ""; ?>';
-        var cattype = <?php echo $cattype; ?>;
-        var default_catid = <?php echo $default_catid; ?>;
-        $.ajax({
-            method: 'POST',
-            url: '/interface/main/calendar/get_categories.php',
-            data: {
-                eid: eid, 
-                type_patient: null, 
-                status: 0,
-                cattype: cattype,
-                default_catid: default_catid
-            },
-            success: function(response){
-                console.log('Success: ');
-                $(this).empty().append(response);
-                console.log(response);
-            },
-            error: function(response){
-                console.log('Error: ');
-                console.log(response);
-            }
-        });
-    });*/
-
-    get_all_categories();
-
-    var status = 0;
     
-    
+    get_patient_categories();
 
-    $('input[type=radio][name=type_patient]').change(function() {
-        var eid = '<?php echo ($eid) ? $eid : ""; ?>';
-        var type_patient = $(this).val();
-        var default_catid = <?php echo $default_catid; ?>;
-        var cattype = <?php echo $cattype; ?>;    
-        var pc_catid = '<?php echo ($row['pc_catid']) ? $row['pc_catid'] : "";   ?>';    
-        var status = get_patient_status();
+    $('input[type=radio][name=type_patient]').click(function() {
+        get_patient_categories();
+        
+    });
 
-        $.ajax({
-            method: 'POST',
-            url: '/interface/main/calendar/get_categories.php',
-            data: {
-                eid: eid, 
-                type_patient: type_patient, 
-                status: status,
-                cattype: cattype,
-                default_catid: default_catid,
-                pc_catid: pc_catid
-            },
-            success: function(response){
-                //console.log('Success: ');
-                $('#form_category').empty().append(response);
-                //console.log(response);
-            },
-            error: function(response){
-                console.log('Error: ');
-                console.log(response);
-            }
-        });
+    $('#new_patient').on('click', function(){
+        get_patient_categories();
     });
 
     
@@ -2045,40 +1992,47 @@ function get_patient_status()
     return status;
 }
 
-function get_all_categories()
+function get_patient_type()
 {
-        var options = '';
-        var eid = '<?php echo ($eid) ? $eid : ""; ?>';
-        var cattype = <?php echo $cattype; ?>;
-        var default_catid = <?php echo $default_catid; ?>;
-        var type_patient = '<?php echo ($row['type_patient']) ? $row['type_patient']: null; ?>';
-        var status = '<?php echo ($row['new_patient']) ? $row['new_patient']: null;   ?>';
-        var pc_catid = '<?php echo ($row['pc_catid']) ? $row['pc_catid']: null;   ?>';
-        $.ajax({
-            method: 'POST',
-            url: '/interface/main/calendar/get_categories.php',
-            data: {
-                eid: eid, 
-                type_patient: type_patient, 
-                status: status,
-                cattype: cattype,
-                default_catid: default_catid, 
-                pc_catid: pc_catid
-            },
-            success: function(response){
-                //console.log('Success: ');
-                //options = response;
-                $('#form_category').empty().append(response);
-                //console.log(response);
-            },
-            error: function(response){
-                //console.log('Error: ');
-                //console.log(response);
-            }
-        });
-
-
+    var patient_type = $("input[name='type_patient']:checked").val();    
+    return patient_type;
 }
+
+function get_patient_categories()
+{
+    var eid = '<?php echo ($eid) ? $eid : ""; ?>';
+    var type_patient = get_patient_type();
+    var default_catid = <?php echo $default_catid; ?>;
+    var cattype = <?php echo $cattype; ?>;    
+    var pc_catid = '<?php echo ($row['pc_catid']) ? $row['pc_catid'] : "";   ?>';    
+    var status = get_patient_status();
+
+    //console.log('type_patient: '+ type_patient + ' | status: '  + status);
+
+    $.ajax({
+        method: 'POST',
+        url: '/interface/main/calendar/get_categories.php',
+        data: {
+            eid: eid, 
+            type_patient: type_patient, 
+            status: status,
+            cattype: cattype,
+            default_catid: default_catid,
+            pc_catid: pc_catid
+        },
+        success: function(response){
+            //console.log('Success: ');
+            $('#form_category').empty().append(response);
+            //console.log(response);
+        },
+        error: function(response){
+            console.log('Error: ');
+            console.log(response);
+        }
+    });
+}
+
+
 
 function are_days_checked(){
     var days = document.getElementById("days").getElementsByTagName('input');
