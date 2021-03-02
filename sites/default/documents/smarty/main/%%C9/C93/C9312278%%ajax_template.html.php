@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2021-02-20 08:23:38
+<?php /* Smarty version 2.6.31, created on 2021-03-02 10:52:19
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -351,7 +351,7 @@ if (count($facilities) > 1) {
 // EOS FF
 // ==============================
  echo "</div>";
- echo "   <select multiple size='5' name='pc_username[]' id='pc_username' class='view2'>\n";
+ echo "   <select multiple size='5' name='pc_username[]' id='pc_username' class='view2' style=font-size:14px>\n";
  echo "    <option value='__PC_ALL__'>" . xlt("All Users") . "</option>\n";
  foreach ($provinfo as $doc) {
   $username = $doc['username'];
@@ -371,7 +371,7 @@ if($_SESSION['pc_facility'] == 0){
  <table>
 <?php 
 foreach ($facilities as $f){
-echo "   <tr><td><div class='view1' style=background-color:".$f['color'].";font-weight:bold>" . text($f['name'])."</div></td></tr>";
+echo "   <tr><td><div class='view1' style=background-color:".$f['color'].";font-weight:bold;font-size:14px;padding:5px;>" . text($f['name'])."</div></td></tr>";
 }
  ?>
  </table>
