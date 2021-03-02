@@ -17,6 +17,7 @@ require_once("$srcdir/calendar.inc");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/amc.php");
+require_once("$srcdir/options.inc.php");
 require_once $GLOBALS['srcdir'].'/ESign/Api.php';
 require_once("$srcdir/../controllers/C_Document.class.php");
 
@@ -627,10 +628,16 @@ function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
     global $attendant_type, $pid;
     $isNewPatient = "";
     if(isPatientNew($pid)){
-      $isNewPatient = "id = 36 AND ";
+      $isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
     }
-    $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
-    "unpackaged, date, aco_spec FROM registry WHERE {$isNewPatient}";
+    if(isMedicaidClient($pid)){
+      $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
+    "unpackaged, date, aco_spec FROM registry WHERE directory NOT IN ('private_progress_note', 'private_intake_form') AND {$isNewPatient}";
+    } else {
+      $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
+    "unpackaged, date, aco_spec FROM registry WHERE directory IN ('private_progress_note', 'private_intake_form')  AND ";
+    }
+    
   // select different forms for groups
     if ($attendant_type == 'pid') {
         $sql .= "patient_encounter = 1 AND ";
