@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2021-03-02 12:08:25
+<?php /* Smarty version 2.6.31, created on 2021-03-02 12:14:18
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -737,7 +737,7 @@ foreach ($providers as $provider) {
                 $divTitle .= "\n[".$atitle ."]";
                 //$content .= "<a href='javascript:oldEvt(" . attr_js($eventdate) . "," . attr_js($eventid) . ")' title='" . attr($atitle) . "'>";
                 $content .= text($catname);
-                $content .= "<div>" . text($event['title']) . "</div>";
+                if($catname == 'RESERVED')  $content .= "<div>" . text($event['title']) . "</div>";
                 if ($event['recurrtype'] > 0) $content .= "<img src='{$this->_tpl_vars['TPL_IMAGE_PATH']}/repeating8.png' border='0' style='margin:0px 2px 0px 2px;' title='Repeating event' alt='Repeating event'>";
                 if ($comment) $content .= " " . text($comment);
                 //$content .= "</a>";
