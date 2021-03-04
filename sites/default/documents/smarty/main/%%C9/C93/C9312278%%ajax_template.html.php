@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2021-03-02 12:14:18
+<?php /* Smarty version 2.6.31, created on 2021-03-04 11:11:01
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -766,7 +766,7 @@ foreach ($providers as $provider) {
                                       onmouseout=\"javascript:HideImage();\"
                                       border='0' title='". attr($link_title) . "' alt='View Patient' />";
 
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike><span style='color: gray'>";
                     $content .= text($lname);
                     if ($GLOBALS['calendar_appt_style'] != 1) {
                         $content .= "," . text($fname);
@@ -777,7 +777,7 @@ foreach ($providers as $provider) {
                             $content .= ")";
                         }
                     }
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</span></strike>";
                     $content .= "</a>";                    
                     $content .= '<a class="show-appointment shown"></a>';
                 }

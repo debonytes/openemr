@@ -766,7 +766,7 @@ foreach ($providers as $provider) {
                                       onmouseout=\"javascript:HideImage();\"
                                       border='0' title='". attr($link_title) . "' alt='View Patient' />";
 
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike><span style='color: gray'>";
                     $content .= text($lname);
                     if ($GLOBALS['calendar_appt_style'] != 1) {
                         $content .= "," . text($fname);
@@ -777,7 +777,7 @@ foreach ($providers as $provider) {
                             $content .= ")";
                         }
                     }
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</span></strike>";
                     $content .= "</a>";                    
                     $content .= '<a class="show-appointment shown"></a>';
                 }
