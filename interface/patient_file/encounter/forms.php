@@ -628,7 +628,7 @@ function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
     global $attendant_type, $pid;
     $isNewPatient = "";
     if(isPatientNew($pid)){
-      $isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
+      //$isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
     }
     if(isMedicaidClient($pid)){
       $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
