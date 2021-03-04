@@ -788,7 +788,7 @@ foreach ($providers as $provider) {
                     $link_title .= "(" . xl('Click to view') . ")";
                     $content .= "<a href='javascript:goGid(" . attr_js($groupid) . ")' title='" . attr($link_title) . "'>";
                     $content .= "<img src='{$this->_tpl_vars['TPL_IMAGE_PATH']}/user-blue.gif' border='0' title='" . attr($link_title) . "' alt='View Patient' />";
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike><span style='color: gray'>";
                     $content .= text($groupname);
                     if ($GLOBALS['calendar_appt_style'] != 1) {
                         if ($event['title'] && $GLOBALS['calendar_appt_style'] >= 3) {
@@ -798,7 +798,7 @@ foreach ($providers as $provider) {
                             $content .= ")";
                         }
                     }
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</span></strike>";
                     $content .= "</a>";                    
                     //Add class to wrapping div so EditEvent js function can differentiate between click on group and patient
                     $evtClass .= ' groups ';
@@ -817,9 +817,9 @@ foreach ($providers as $provider) {
 
                 if($patient_age < 18){
                     $patient = getPatientData($patientid);
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike><span style='color: gray'>";
                       $content .= "<div>Guardian: ". $patient['guardiansname'] ."</div>";
-                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</strike>";
+                    if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</span></strike>";
                 }
             }
 
