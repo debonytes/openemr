@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2021-03-04 13:22:08
+<?php /* Smarty version 2.6.31, created on 2021-03-05 11:35:14
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -154,14 +154,14 @@ $chevron_icon_right = $_SESSION['language_direction'] == 'ltr' ? 'fa-chevron-cir
 <form name='theform' id='theform' action='index.php?module=PostCalendar&func=view&tplview=default&pc_category=&pc_topic=' method='post' onsubmit='return top.restoreSession()'>
 <div id="topToolbarRight" class="bgcolor2">  <!-- this wraps some of the top toolbar items -->
 <div id="functions">
-<a id="menu-toggle" class="pull-left btn btn-calendar"></a>
+<a id="menu-toggle" class="pull-left btn btn-calendar" style="font-size: 16px !important"></a>
 <input type="hidden" name="jumpdate" id="jumpdate" value="">
 <input type="hidden" name="viewtype" id="viewtype" value="<?php echo attr($viewtype); ?>">
     <?php 
-    echo "<a href='#' title='" . xla("New Appointment") . "' onclick='newEvt(1, 9, 00, " . attr_js($Date) . ", 0, 0)' class='css_button'>
+    echo "<a href='#' title='" . xla("New Appointment") . "' onclick='newEvt(1, 9, 00, " . attr_js($Date) . ", 0, 0)' class='css_button' style='font-size: 14px;'>
     <i class='fa fa-plus' aria-hidden='true'></i></a>\n";
     echo "<a href='#' title='" . xla("Search Appointment") . "'
-    onclick='top.restoreSession();location=\"index.php?module=PostCalendar&func=search\"' class='css_button'>
+    onclick='top.restoreSession();location=\"index.php?module=PostCalendar&func=search\"' class='css_button' style='font-size: 14px;'>
     <i class='fa fa-search' aria-hidden='true'></i></a>\n";
     if ($Date <> date('Ymd')) {
      ?>
@@ -189,13 +189,13 @@ echo "   <a id='nextweek' href='$NEXT_WEEK_URL' onclick='top.restoreSession()' t
 <div id="viewPicker">
 <?php 
 
-echo "  <a href='#' id='printview' title='" . xla("View Printable Version") . "' class='css_button'>
+echo "  <a href='#' id='printview' title='" . xla("View Printable Version") . "' class='css_button' style='font-size: 14px;'>
             <i class='fa fa-print' aria-hidden='true'></i></a>\n";
-echo "   <a href='#' title='" . xla("Refresh") . "' onclick='javascript:refreshme()' class='css_button'>
+echo "   <a href='#' title='" . xla("Refresh") . "' onclick='javascript:refreshme()' class='css_button' style='font-size: 14px;'>
             <i class='fa fa-refresh' aria-hidden='true'></i></a>\n";
-echo "   <a href='#' type='button' id='dayview' title='" . xla('Day View') . "' class='css_button'/><span>" . xlt('Day') . "</span></a>\n";
-echo "   <a href='#' type='button' id='weekview' title='" . xla('Week View') . "' class='css_button'/><span>" . xlt('Week') . "</span></a>\n";
-echo "   <a href='#' type='button' id='monthview' title='" . xla('Month View') . "' class='css_button'/><span>" . xlt('Month') . "</span></a>\n";
+echo "   <a href='#' type='button' id='dayview' title='" . xla('Day View') . "' class='css_button' style='font-size: 14px;'/><span>" . xlt('Day') . "</span></a>\n";
+echo "   <a href='#' type='button' id='weekview' title='" . xla('Week View') . "' class='css_button' style='font-size: 14px;'/><span>" . xlt('Week') . "</span></a>\n";
+echo "   <a href='#' type='button' id='monthview' title='" . xla('Month View') . "' class='css_button' style='font-size: 14px;'/><span>" . xlt('Month') . "</span></a>\n";
  ?>
 </div>
 </div> <!-- end topToolbarRight -->
@@ -420,7 +420,7 @@ foreach ($providers as $provider) {
 
     echo "<table border='0' cellpadding='1' cellspacing='0' width='100%'>\n";
     echo " <tr>\n";
-    echo "  <td colspan='8' class='providerheader'>";
+    echo "  <td colspan='8' class='providerheader' style='font-size: 14px; padding: 5px;'>";
     echo text($provider['fname']) . " " . text($provider['lname']);
     echo "</td>\n";
     echo " </tr>\n";
@@ -443,8 +443,8 @@ foreach ($providers as $provider) {
         if ($defaultDate == "") $defaultDate = $dateFmt;
         $currclass = "";
         if ($Date == $dateFmt) { $currclass= "week_currday"; }
-        echo "<td align='center' class='week_dateheader " . attr($currclass) . "' style='width:".$colWidth."%;' >";
-        echo "<a href='$gotoURL'>";
+        echo "<td align='center' class='week_dateheader " . attr($currclass) . "' style='width:".$colWidth."%; padding: 5px;' >";
+        echo "<a href='$gotoURL' style='font-size: 14px'>";
         echo xlt(date("D", strtotime($date))) . " " . text(oeFormatShortDate($date, false));
         echo "</a></td>";
     }
