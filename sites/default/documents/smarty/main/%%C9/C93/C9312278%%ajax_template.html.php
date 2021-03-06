@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2021-03-05 11:35:14
+<?php /* Smarty version 2.6.31, created on 2021-03-06 08:52:25
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -780,6 +780,8 @@ foreach ($providers as $provider) {
                     if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</span></strike>";
                     $content .= "</a>";                    
                     $content .= '<a class="show-appointment shown"></a>';
+
+                    
                 }
                 elseif($groupid){
                     $divTitle .= "\n" . getTypeName($grouptype) . "\n";
@@ -821,11 +823,23 @@ foreach ($providers as $provider) {
                       $content .= "<div>Guardian: ". $patient['guardiansname'] ."</div>";
                     if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</span></strike>";
                 }
+
+                if( $event['facility']['id'] == 7 ){
+                          $content .= "<div style='font-size: 16px; color: white; padding-left: 5px'><i class='fa fa-user-md'></i></div>";
+                }
+
+
             }
+
+            
 
             $divTitle .= "\n(" . xl('double click to edit') . ")";
 
-
+            // additional setting if status is cancelled
+            if ($apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%'){
+              $color = "#dddddd";
+              $evtClass = "event_noshow";
+            }
 
             // output the DIV and content
 			if($_SESSION['pc_facility'] == 0){
