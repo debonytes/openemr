@@ -33,12 +33,12 @@ class Form_Signable extends DbRow_Signable implements SignableIF
     protected $_encounterId = null;
     protected $_formId = null;
     protected $_formDir = null;
-    
+        
     public function __construct($formId, $formDir, $encounterId)
     {
         $this->_formId = $formId;
         $this->_formDir = $formDir;
-        $this->_encounterId = $encounterId;
+        $this->_encounterId = $encounterId;        
         parent::__construct($formId, 'forms');
     }
     

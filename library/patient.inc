@@ -1085,12 +1085,18 @@ function newPatientData(
         pricelevel='" . add_escape_custom($pricelevel) . "',
         date=NOW()");
 
-    $id = sqlInsert($query);
+    $id = sqlInsert($query);    
 
     if (!$db_id) {
       // find the last inserted id for new patient case
         $db_id = $id;
     }
+
+     // patient_data_additional table
+    $date = date('Y-m-d');
+    $patient_code = md5(time() .'_additional_' .$pid);
+    $new_addl_query = "INSERT INTO patient_data_additional (pc_eid, patient_code, date) VALUES (?,?,?)";    
+    $new_addl = sqlInsert($new_addl_query, array($pid, $patient_code, $date));
 
     $foo = sqlQuery("select pid from patient_data where id=? order by date limit 0,1", array($id));
 

@@ -43,7 +43,7 @@
         <div class="esign-signature-form-element">
               <textarea name='amendment' id='amendment' placeholder='<?php echo xlt("Enter an amendment..."); ?>'></textarea> 
         </div>
-        
+                
         <div class="esign-signature-form-element">
               <input type='submit' value='<?php echo xla('Back'); ?>' id='esign-back-button' /> 
               <input type='button' value='<?php echo xla('Sign'); ?>' id='esign-sign-button-form' />

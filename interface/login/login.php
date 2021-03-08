@@ -73,6 +73,24 @@ if(empty($eventTblResult)) {
     $eventTblResult = array_column(mysqli_fetch_all($dbLink->query($eventTblSql)),0);
 }
 
+// Additional column for patient data
+$addlPatientTable = 'patient_data_additional';
+$patientTblSql = "SHOW TABLES LIKE '".$addlPatientTable."'";
+$patientTblResult = array_column(mysqli_fetch_all($dbLink->query($patientTblSql)),0);
+if(empty($patientTblResult)) { 
+    $sqlPatientStr = "CREATE TABLE IF NOT EXISTS `$addlPatientTable` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `pc_eid` bigint(20) DEFAULT NULL,
+      `patient_code` varchar(100) DEFAULT NULL,
+      `date` date DEFAULT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB";
+    
+    sqlStatement(rtrim("$sqlPatientStr"));
+    $patientTblSql = "SHOW TABLES LIKE '".$addlPatientTable."'";
+    $patientTblResult = array_column(mysqli_fetch_all($dbLink->query($patientTblSql)),0);
+}
+
 // mdsupport - Add 'App' functionality for user interfaces without standard menu and frames
 // If this script is called with app parameter, validate it without showing other apps.
 //

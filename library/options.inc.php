@@ -4174,5 +4174,28 @@ function isMedicaidClient($pid){
   return (!empty($res['Medicaid_Client'])) ? true : false;
 }
 
+function patient_data_extra($pid)
+{
+     // patient_data_additional table
+    $date = date('Y-m-d');
+    $patient_code = md5(time() .'_additional_' .$pid);
+    $new_addl_query = "INSERT INTO patient_data_additional (pc_eid, patient_code, date) VALUES (?,?,?)";    
+    $new_addl = sqlInsert($new_addl_query, array($pid, $patient_code, $date));
+
+}
+
+function withExtraField($pid){
+  $status = false;
+  $sql = "SELECT patient_code FROM patient_data_additional WHERE pc_eid = ?";
+  $res = sqlQuery($sql, array($pid));
+  return (!empty($res['patient_code'])) ? true : false;
+}
+
+function update_patient_data_extra($pid)
+{
+    $sql = "UPDATE patient_data_additional SET patient_code = null WHERE pc_eid = ?";
+    $res = sqlStatement($sql, array($pid));
+}
+
 
 ?>

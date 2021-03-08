@@ -223,6 +223,8 @@ jQuery(document).ready( function($) {
                     $(".encounter-form-category-li").remove();
                 }
 
+
+
                 var logId = "esign-signature-log-encounter-"+response.encounterId;
                 $.post( encounterConfig.logViewAction, response, function( html ) {
                     $("#"+logId).replaceWith( html );
@@ -607,6 +609,8 @@ function findPosX(id)
 <?php //DYNAMIC FORM RETREIVAL
 include_once("$srcdir/registry.inc");
 
+
+
 function isPatientNew($pid)
 {
     $status = true;
@@ -627,8 +631,9 @@ function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
 {
     global $attendant_type, $pid;
     $isNewPatient = "";
-    if(isPatientNew($pid)){
-      //$isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
+    if(isPatientNew($pid) && withExtraField($pid)){
+    //if(isPatientNew($pid)){
+      $isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
     }
     if(isMedicaidClient($pid)){
       $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
@@ -1150,6 +1155,9 @@ if ($pass_sens_squad &&
         // If the form is locked, it is no longer editable
         if ($esign->isLocked()) {
                   //$formID_Session = 'formID_' . attr($iter['form_id']);
+                  if(withExtraField($pid)){
+                    update_patient_data_extra($pid);
+                  }                 
                   
                   $_SESSION[$formID_Session] = true;
                   $_SESSION['formID'] = true;

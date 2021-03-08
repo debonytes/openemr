@@ -24,25 +24,33 @@ namespace ESign;
  * @link    http://www.open-emr.org
  **/
 
+require_once("../../interface/globals.php");
 require_once $GLOBALS['srcdir'].'/ESign/Abstract/Controller.php';
 require_once $GLOBALS['srcdir'].'/ESign/Form/Configuration.php';
 require_once $GLOBALS['srcdir'].'/ESign/Form/Factory.php';
 require_once $GLOBALS['srcdir'].'/ESign/Form/Log.php';
 require_once $GLOBALS['srcdir'].'/authentication/login_operations.php';
+require_once $GLOBALS['srcdir'].'/options.inc.php';
 
 class Form_Controller extends Abstract_Controller
 {
+    protected $pid;
+
     /**
      *
      */
     public function esign_form_view()
     {
+        global $pid;
+        $this->pid =& $pid;
+
         $form = new \stdClass();
         $form->table = 'forms';
         $form->formDir = $this->getRequest()->getParam('formdir', '');
         $form->formId = $this->getRequest()->getParam('formid', 0);
         $form->encounterId = $this->getRequest()->getParam('encounterid', 0);
         $form->userId = $GLOBALS['authUserID'];
+        $form->pid = $this->pid; //$this->getRequest()->getParam('pid', 0);
         $form->action = '#';
         $signable = new Form_Signable($form->formId, $form->formDir, $form->encounterId);
         $form->showLock = false;
@@ -62,6 +70,7 @@ class Form_Controller extends Abstract_Controller
         $formId = $this->getRequest()->getParam('formId', '');
         $formDir = $this->getRequest()->getParam('formDir', '');
         $encounterId = $this->getRequest()->getParam('encounterId', '');
+        $pid = $this->getRequest()->getParam('pid', '');
         $factory = new Form_Factory($formId, $formDir, $encounterId);
         $signable = $factory->createSignable(); // Contains features that make object signable
         $log = $factory->createLog(); // Make the log behavior
@@ -82,6 +91,7 @@ class Form_Controller extends Abstract_Controller
         $formId = $this->getRequest()->getParam('formId', '');
         $formDir = $this->getRequest()->getParam('formDir', '');
         $encounterId = $this->getRequest()->getParam('encounterId', '');
+        $pid = $this->getRequest()->getParam('pid', '');
         // Always lock, unless esign_lock_toggle option is enable in globals
         $lock = true;
         if ($GLOBALS['esign_lock_toggle']) {
@@ -116,6 +126,7 @@ class Form_Controller extends Abstract_Controller
         $response->locked = $lock;
         $response->editButtonHtml = "";
         if ($lock) {
+
             // If we're locking the form, replace the edit button with a "disabled" lock button
             $response->editButtonHtml = "<a href=# class='css_button_small form-edit-button-locked' id='form-edit-button-'".attr($formDir)."-".attr($formId)."><span>".xlt('Locked')."</span></a>";
         }

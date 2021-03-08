@@ -194,6 +194,8 @@ newInsuranceData(
     $i3date,
     filter_input(INPUT_POST, 'i3accept_assignment')
 );
+
+patient_data_extra($newpid);
 ?>
 <html>
 <body>

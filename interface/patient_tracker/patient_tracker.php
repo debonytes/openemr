@@ -546,6 +546,9 @@ if (!$_REQUEST['flb_table']) {
                         <td class="dehead hidden-xs text-center" name="kiosk_hide">
                             <?php echo xlt('Visit Type'); ?>
                         </td>
+                        <td class="dehead hidden-xs text-center">
+                            <?php echo xlt('Telehealth'); ?>
+                        </td>
                         <?php if (count($chk_prov) > 1) { ?>
                             <td class="dehead text-center hidden-xs">
                                 <?php echo xlt('Provider'); ?>
@@ -586,6 +589,7 @@ if (!$_REQUEST['flb_table']) {
                     foreach ($appointments as $appointment) {
                         // Collect appt date and set up squashed date for use below
                         $date_appt = $appointment['pc_eventDate'];
+                        $telehealth = ($appointment['pc_facility'] == 7) ? "Yes" : "No";
                         $date_squash = str_replace("-", "", $date_appt);
                         if (empty($appointment['room']) && ($logged_in) && ($setting_bootstrap_submenu != 'hide')) {
                             //Patient has not arrived yet, display MedEx Reminder info
@@ -848,6 +852,9 @@ if (!$_REQUEST['flb_table']) {
                         ?>
                         <td class="detail hidden-xs text-center" name="kiosk_hide">
                             <?php echo xlt($appointment['pc_title']); ?>
+                        </td>
+                        <td class="detail hidden-xs text-center">
+                            <?php echo xlt($telehealth); ?>
                         </td>
                         <?php
                         if (count($chk_prov) > 1) { ?>
