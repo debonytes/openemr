@@ -9,5 +9,11 @@
  * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
 
-
-require("new.php");
+$folderName = 'youth_support_progress_note';
+$formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
+$table_id = $_SESSION['formID_' . $folderName .'_'. $formid];
+if(!empty($table_id)){
+    require("readonly.php");
+} else {    
+    require("new.php");
+}
