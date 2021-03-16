@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.31, created on 2021-03-06 08:52:25
+<?php /* Smarty version 2.6.31, created on 2021-03-16 09:08:29
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
@@ -586,6 +586,8 @@ foreach ($providers as $provider) {
             // determine the class for the event DIV based on the event category
             $evtClass = "event_appointment";
 
+
+
             //fix bug 456 and 455
             //check to see if the event is in the clinic hours range, if not it will not be displayed
             if  ( (int)$starth < (int)$openhour || (int)$starth > (int)$closehour ) { continue; }
@@ -683,6 +685,7 @@ foreach ($providers as $provider) {
                 $divLeft = "left: ".$eventPositions[$event['eid']]->leftpos."%";
             }
 
+
             $eventid = $event['eid'];
 	        $eventtype = sqlQuery("SELECT pc_cattype FROM openemr_postcalendar_categories as oc LEFT OUTER JOIN openemr_postcalendar_events as oe ON oe.pc_catid=oc.pc_catid WHERE oe.pc_eid='".$eventid."'");
 	        $pccattype = '';
@@ -698,6 +701,8 @@ foreach ($providers as $provider) {
             $comment = $event['hometext'];
             $catname = $event['catname'];
             $title = "Age $patient_age ($patient_dob)";
+            $patient = getPatientData($patientid);
+            $phone_number = $patient['phone_cell'];
 
             //Variables for therapy groups
             $groupid = $event['gid'];
@@ -759,6 +764,7 @@ foreach ($providers as $provider) {
                     // include patient name and link to their details
                     $link_title = $fname . " " . $lname . " \n";
                     $link_title .= xl('Age') . ": " . $patient_age . "\n" . xl('DOB') . ": " . $patient_dob . $comment . "\n";
+                    $link_title .= xl('Phone') . ": " . $phone_number . "\n";
                     $link_title .= "(" . xl('Click to view') . ")";
                     $content .= "<a href='javascript:goPid(" . attr_js($patientid) . ")' title='" . attr($link_title) . "'>";
                     $content .= "<img src='{$this->_tpl_vars['TPL_IMAGE_PATH']}/user-green.gif'
@@ -817,15 +823,14 @@ foreach ($providers as $provider) {
                 }
                 $content .= "</span>";
 
-                if($patient_age < 18){
-                    $patient = getPatientData($patientid);
+                if($patient_age < 18){                    
                     if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "<strike><span style='color: gray'>";
                       $content .= "<div>Guardian: ". $patient['guardiansname'] ."</div>";
                     if ($catid == 1 || $apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%') $content .= "</span></strike>";
                 }
 
                 if( $event['facility']['id'] == 7 ){
-                          $content .= "<div style='font-size: 16px; color: white; padding-left: 5px'><i class='fa fa-user-md'></i></div>";
+                          $content .= "<div style='font-size: 16px; color: black; padding-left: 5px'><i class='fa fa-phone'></i></div>";
                 }
 
 
@@ -836,8 +841,13 @@ foreach ($providers as $provider) {
             $divTitle .= "\n(" . xl('double click to edit') . ")";
 
             // additional setting if status is cancelled
-            if ($apptstatus == 'x' || $apptstatus == '?' || $apptstatus == '%'){
+            if ($apptstatus == 'x' || $apptstatus == '%'){
               $color = "#dddddd";
+              $evtClass = "event_noshow";
+            }
+
+            if ($apptstatus == '?'){
+              $color = "#e584ee";
               $evtClass = "event_noshow";
             }
 

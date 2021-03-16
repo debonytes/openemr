@@ -254,7 +254,7 @@ body {
 <div class="container-fluid">
     <aside class="col-lg-2 col-sm-2 col-xs-2 container-fluid" id="sidebar-pills">
         <ul class="nav nav-pills  nav-stacked" id="sidebar">
-            <li data-toggle="pill" class="bg-info"><a id="signTemplate" href="#openSignModal"
+            <li data-toggle="pill" class="bg-info"><a id="signTemplate" href="#"
                 data-toggle="modal" data-backdrop="true" data-target="#openSignModal" data-type="patient-signature"><span><?php echo xlt('Signature');?></span></a></li>
             <li data-toggle="pill" class="bg-info"><a id="saveTemplate" href="#"><span"><?php echo xlt('Save');?></span></a></li>
             <li data-toggle="pill" class="bg-info"><a id="printTemplate" href="javascript:;" onclick="printaDoc('templatecontent');"><span"><?php echo xlt('Print');?></span></a></li>

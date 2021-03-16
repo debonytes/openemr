@@ -4197,5 +4197,12 @@ function update_patient_data_extra($pid)
     $res = sqlStatement($sql, array($pid));
 }
 
-
+function get_patient_info($pid, $column)
+{
+    $info = '';
+    $sql = "SELECT {$column} FROM patient_data WHERE pid = ?";
+    $res = sqlQuery($sql, array($pid));
+    $info = (!empty($res[$column])) ? $res[$column] : '';
+    return $info;
+}
 ?>

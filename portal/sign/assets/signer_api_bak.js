@@ -104,7 +104,7 @@ if (typeof ptName === 'undefined') {
     var ptName = '';
 }
 if (typeof webRoot === 'undefined' && typeof top.webroot_url !== 'undefined') {
-    var webRoot = top.webroot_url;
+    var webRoot = document.location.origin; //top.webroot_url;
 }
 if (typeof isModule === 'undefined') {
     var isModule = false;
@@ -665,7 +665,10 @@ function initSignerApi() {
             }
         });
 
-        saveSignature.addEventListener("click", function (event) {
+        saveSignature.addEventListener("click", function (e) {
+            e.stopPropagation();e.preventDefault();
+            //console.log('clicked');
+            var web_url = document.location.origin;
             if (signaturePad.isEmpty()) {
                 signerAlertMsg(msgNeedSign, 3000);
             } else {
@@ -676,23 +679,32 @@ function initSignerApi() {
                 } else {
                     type = "patient-signature";
                 }
-                let url = webRoot + "/portal/sign/lib/show-signature.php";
-                var result =  fetch(url, {
-                    credentials: 'include',
-                    method: 'POST',
-                    //mode: 'cors',
-                    body: JSON.stringify({
+                //var url_top = url;
+                //let url = webRoot + "/portal/sign/lib/show-signature.php";
+                let url = web_url + "/portal/sign/lib/show-signature.php";
+                //console.log('Saving signature...' + url);
+
+                var data = {
                         pid: cpid,
                         user: cuser,
                         type: type,
                         is_portal: isPortal,
                         mode: 'fetch_info'
-                    }),
+                    };
+                //console.log(data);
+                var result = fetch(url, {
+                    credentials: 'include',
+                    method: 'POST',
+                    //mode: 'same-origin',                   
                     headers: {
-                        'Accept': 'application/json, text/plain, */*',
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => response.json()).then(function (response) {
+                        'Content-Type': 'application/json',
+                        //'Accept': 'application/json'
+                        'Accept': 'application/json, text/plain, */*',                    
+                    },
+                     body: JSON.stringify(data)
+                }).then(response => response.json()).then( function(response)  {
+                //}).then(function (response) {
+                    console.log('Fetch result: ' + response);
                     signerName = ptName = response.ptName;
                     if (isAdmin) {
                         signerName = adminName = response.userName;
@@ -706,9 +718,10 @@ function initSignerApi() {
                         signer: signerName
                     };
                     archiveSignature(encodeURIComponent(dataURL), e);
-                });/*.catch(function(error){
+                }).catch(function(error){
                     console.log(error);
-                });*/
+                });
+                //console.log(result);
             }
         });
 
