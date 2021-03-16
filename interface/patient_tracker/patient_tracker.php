@@ -958,7 +958,7 @@ if (!$_REQUEST['flb_table']) { ?>
                                     <th class="text-center"><?php  echo text('Form ID'); ?></th>
                                     <th class="text-center"><?php  echo text('Encounter'); ?></th>
                                     <th class="text-center"><?php  echo text('Form Directory'); ?></th>
-                                    <th class="text-center"><?php  echo text('Date Created'); ?></th>
+                                    <th class="text-center"><?php  echo text('Date Appointment'); ?></th>
                                     <th class="text-center"><?php  echo text('Created By'); ?></th>
                                 </tr>
                             </thead>
@@ -1019,7 +1019,7 @@ if (!$_REQUEST['flb_table']) { ?>
                                     <td class="formid"><?php echo attr($form['form_id']); ?></td>
                                     <td class="encounter"><?php echo attr($form['encounter']); ?></td>
                                     <td class="formdir"><?php echo attr($form['formdir']); ?></td>
-                                    <td class="text-center"><?php echo attr($form['date']); ?></td>
+                                    <td class="text-center"><?php echo ($form['date']) ? attr(date('Y-m-d', strtotime($form['date']))) : ''; ?></td>
                                     <td class="text-center"><?php echo attr($form['user']); ?></td>
                                 </tr>
                                 <?php endforeach; ?>

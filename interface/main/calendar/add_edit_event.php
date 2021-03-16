@@ -443,6 +443,15 @@ if ($_POST['form_action'] == "duplicate") {
 // If we are saving, then save and close the window.
 //
 if ($_POST['form_action'] == "save") {
+    
+    $tmph = $_POST['form_hour'] + 0;
+    $tmpm = $_POST['form_minute'] + 0;
+    if ($_POST['form_ampm'] == '2' && $tmph < 12) {
+        $tmph += 12;
+    }
+
+    $fullappt_date = $_POST['form_date'] . " $tmph:$tmpm:00";
+
     /* =======================================================
      *                    UPDATE EVENTS
      * =====================================================*/
@@ -497,7 +506,7 @@ if ($_POST['form_action'] == "save") {
                     // specify some special variables needed for the INSERT
                     $args['new_multiple_value'] = $new_multiple_value;
                     $args['form_provider'] = $provider;
-                    $args['event_date'] = $event_date;
+                    $args['event_date'] = $fullappt_date;
                     $args['duration'] = $duration * 60;
                     // this event is forced to NOT REPEAT
                     $args['form_repeat'] = "0";
@@ -538,7 +547,7 @@ if ($_POST['form_action'] == "save") {
                     // specify some special variables needed for the INSERT
                     $args['new_multiple_value'] = $new_multiple_value;
                     $args['form_provider'] = $provider;
-                    $args['event_date'] = $event_date;
+                    $args['event_date'] = $fullappt_date;
                     $args['duration'] = $duration * 60;
                     $args['recurrspec'] = $recurrspec;
                     $args['starttime'] = $starttime;
@@ -583,7 +592,7 @@ if ($_POST['form_action'] == "save") {
                         // specify some special variables needed for the INSERT
                         $args['new_multiple_value'] = $row['pc_multiple'];
                         $args['form_provider'] = $to_be_inserted;
-                        $args['event_date'] = $event_date;
+                        $args['event_date'] = $fullappt_date;
                         $args['duration'] = $duration * 60;
                         $args['recurrspec'] = $recurrspec;
                         $args['starttime'] = $starttime;
@@ -676,7 +685,7 @@ if ($_POST['form_action'] == "save") {
                 // insert a new event starting on this date with POST form data
                 $args = $_POST;
                 // specify some special variables needed for the INSERT
-                $args['event_date'] = $event_date;
+                $args['event_date'] = $fullappt_date;
                 $args['duration'] = $duration * 60;
                 $args['recurrspec'] = $recurrspec;
                 $args['starttime'] = $starttime;
@@ -737,7 +746,7 @@ if ($_POST['form_action'] == "save") {
                 $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
 
                 if(empty($query)){
-                    $args['event_date'] = $args['form_date'];
+                    $args['event_date'] = $fullappt_date;
                     InsertFormCategory($args, $eid);
                 }            
             }

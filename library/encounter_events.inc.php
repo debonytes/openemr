@@ -432,7 +432,7 @@ function InsertFormCategory($args, $pc_eid)
 
             // creating form encounter
             // date, reason, facility, facility_id, pid, encounter, onset_date, provider_id, billing_facility
-            $date               = date('Y-m-d');
+            $date               = $args['event_date'];
             $reason             = $args['form_comments'];
             $facility           = get_facility_by_id($args['facility']);
             $facility_id        = $args['facility'];
@@ -477,8 +477,11 @@ function InsertFormCategory($args, $pc_eid)
                         array_push($oldData, 'NULL');
                         $oldSet .= '?';
                     } elseif($field === 'date'){
-                        array_push($oldData, date('Y-m-d H:i:s'));
+                        array_push($oldData, $onset_date);
                         $oldSet .= ',?';
+                    } elseif($field === 'dateofservice'){
+                        array_push($oldData, $onset_date);
+                        $oldSet .= ',?';    
                     } elseif($field === 'encounter'){
                         array_push($oldData, $encounter);
                         $oldSet .= ',?';
