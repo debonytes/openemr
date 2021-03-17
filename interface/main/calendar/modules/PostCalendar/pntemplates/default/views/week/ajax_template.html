@@ -703,6 +703,8 @@ foreach ($providers as $provider) {
             $title = "Age $patient_age ($patient_dob)";
             $patient = getPatientData($patientid);
             $phone_number = $patient['phone_cell'];
+            $home_phone = $patient['phone_home'];
+            $work_phone = $patient['phone_biz'];
 
             //Variables for therapy groups
             $groupid = $event['gid'];
@@ -728,13 +730,14 @@ foreach ($providers as $provider) {
 	    $color=$event["catcolor"];
 	    if($GLOBALS['event_color']==2)
 	    $color=$row['color'];
+      $cat_arr = [2,3,4,8,11,16,17,18,19,20];
 	      $divTitle .= "\n" . $row['name'];
-            if ($catid == 2 || $catid == 3 || $catid == 4 || $catid == 8 || $catid == 11) {
+            if (in_array($catid, $cat_arr)) {
                 if      ($catid ==  2) $catname = xl("IN");
                 else if ($catid ==  3) $catname = xl("OUT");
                 else if ($catid ==  4) $catname = xl("VACATION");
                 else if ($catid ==  8) $catname = xl("LUNCH");
-                else if ($catid == 11) $catname = xl("RESERVED");
+                else if ($catid == 11 || $catid == 16 || $catid == 17 || $catid == 18 || $catid == 19 || $catid == 20) $catname = xl("RESERVED");
 
                 $atitle = $catname;
                 if ($comment) $atitle .= " $comment";
@@ -742,7 +745,10 @@ foreach ($providers as $provider) {
                 $divTitle .= "\n[".$atitle ."]";
                 //$content .= "<a href='javascript:oldEvt(" . attr_js($eventdate) . "," . attr_js($eventid) . ")' title='" . attr($atitle) . "'>";
                 $content .= text($catname);
-                if($catname == 'RESERVED')  $content .= "<div>" . text($event['title']) . "</div>";
+                if($catname == 'RESERVED'){
+                  $content .= "<div>" . text($event['title']) . "</div>";
+                  //$content .= "<div>" . text(print_r($event)) . "</div>";
+                }  
                 if ($event['recurrtype'] > 0) $content .= "<img src='{$this->_tpl_vars['TPL_IMAGE_PATH']}/repeating8.png' border='0' style='margin:0px 2px 0px 2px;' title='Repeating event' alt='Repeating event'>";
                 if ($comment) $content .= " " . text($comment);
                 //$content .= "</a>";
@@ -765,6 +771,8 @@ foreach ($providers as $provider) {
                     $link_title = $fname . " " . $lname . " \n";
                     $link_title .= xl('Age') . ": " . $patient_age . "\n" . xl('DOB') . ": " . $patient_dob . $comment . "\n";
                     $link_title .= xl('Phone') . ": " . $phone_number . "\n";
+                    $link_title .= xl('Home') . ": " . $home_phone . "\n";
+                    $link_title .= xl('Work') . ": " . $work_phone . "\n";
                     $link_title .= "(" . xl('Click to view') . ")";
                     $content .= "<a href='javascript:goPid(" . attr_js($patientid) . ")' title='" . attr($link_title) . "'>";
                     $content .= "<img src='{$this->_tpl_vars['TPL_IMAGE_PATH']}/user-green.gif'
