@@ -991,6 +991,8 @@ include_once("$srcdir/validation/validation_script.js.php");?>
     $("select").change(function() {
         checkSkipConditions();
     });
+
+    $('#form_cb_9').trigger('click');
 </script>
 
 </html>
