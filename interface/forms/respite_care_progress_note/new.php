@@ -521,7 +521,7 @@ if ($postCalendarCategoryACO) {
         });
 
         $('.timepicker').timepicker({
-          defaultTime: null
+          defaultTime: '12:00 PM',
         });
 
         var today = new Date();

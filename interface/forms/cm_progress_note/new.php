@@ -553,7 +553,7 @@ if ($postCalendarCategoryACO) {
             $(document).ready(function(){
 
                 $('.timepicker').timepicker({
-                  defaultTime: null
+                  defaultTime: '12:00 PM',
                 });
 
 

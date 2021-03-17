@@ -757,7 +757,9 @@ if ($postCalendarCategoryACO) {
             $(document).ready(function(){
 
                 $('.timepicker').timepicker({
-                  defaultTime: null
+                    timeFormat: 'h:mm p',
+                    defaultTime: '12:00 PM',
+                    //startTime: new Date(0,0,0,12,0,0) // 3:00:00 PM - noon
                 });
 
 

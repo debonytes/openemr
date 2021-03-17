@@ -791,7 +791,7 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
             $(document).ready(function(){
 
                 $('.timepicker').timepicker({
-                  defaultTime: null
+                  defaultTime: '12:00 PM',
                 });
 
 
