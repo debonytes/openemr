@@ -45,6 +45,8 @@ if ($is_group && !acl_check("groups", "glog", false, array('view','write'))) {
 }
 
 
+
+
 global $dbLink;
 $dbLink = $GLOBALS['dbh'];
 
@@ -129,7 +131,13 @@ function slugify($string){
   return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $string), '-'));
 }
 
+if(withExtraFieldsCompleted($pid)){
+  update_patient_data_extra($pid);
+}
+
 $reorderdFormCats = getAllFormCategories();
+
+
 
 ?>
 <html>
@@ -625,19 +633,46 @@ INNER JOIN esign_signatures as esign ON forms.id = esign.tid) WHERE cda.pid = ?"
     return $status;
 }
 
+function isPatientMinor($pid)
+{
+  $age = get_patient_age($pid);
+  return ($age < 18) ? true : false;
+}
 
+function checkDocumentEsigned($pid, $formdir, $form_id)
+{
+  $sql = "SELECT `{$formdir}` FROM patient_data_additional WHERE pc_eid = ? AND patient_code IS NOT NULL";
+  $res = sqlQuery($sql, array($pid));
+  return empty($res[$formdir]) ? true : false;
+}
+
+function documentEsigned($pid, $formdir, $form_id)
+{
+  $sql = "UPDATE patient_data_additional  SET {$formdir} = ? WHERE pc_eid = ? AND patient_code IS NOT NULL";
+  $res = sqlStatement($sql, array(strval($form_id), $pid));
+}
 
 function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
 {
     global $attendant_type, $pid;
     $isNewPatient = "";
-    if(isPatientNew($pid) && withExtraField($pid)){
+    $isMinor = "";
+    if(!withExtraFieldsCompleted($pid)){
     //if(isPatientNew($pid)){
-      $isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
+      if( isPatientMinor($pid) ) {
+        $isMinor = " directory = 'icans_note' AND ";
+        $isNewPatient = "directory = 'counselor_treatment_plan' OR directory = 'counselor_comprehensive_assessment' OR ";
+      } else {
+        $isNewPatient = "directory = 'counselor_treatment_plan' OR directory = 'counselor_comprehensive_assessment' AND ";
+      }
+      //$isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
     }
+    
+    //if( isPatientMinor($pid) )  $isMinor = " directory = 'icans_note' AND ";
+
     if(isMedicaidClient($pid)){
       $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
-    "unpackaged, date, aco_spec FROM registry WHERE directory NOT IN ('private_progress_note', 'private_intake_form') AND {$isNewPatient}";
+    "unpackaged, date, aco_spec FROM registry WHERE directory NOT IN ('private_progress_note', 'private_intake_form') AND {$isNewPatient} {$isMinor}";
     } else {
       $sql = "SELECT category, nickname, name, state, directory, id, sql_run, " .
     "unpackaged, date, aco_spec FROM registry WHERE directory IN ('private_progress_note', 'private_intake_form')  AND ";
@@ -821,7 +856,7 @@ if ($StringEcho) {
 <!-- Form menu stop -->
 <!-- *************** -->
 
-<div id="encounter_forms"> 
+<div id="encounter_forms">  
 
 <?php
 $dateres = getEncounterDateByEncounter($encounter);
@@ -1155,13 +1190,18 @@ if ($pass_sens_squad &&
         // If the form is locked, it is no longer editable
         if ($esign->isLocked()) {
                   //$formID_Session = 'formID_' . attr($iter['form_id']);
-                  if(withExtraField($pid)){
-                    update_patient_data_extra($pid);
-                  }                 
+
+                  if(checkDocumentEsigned($pid, $formdir, $iter['id'])){
+                    documentEsigned($pid, $formdir, $iter['id']);
+                    //echo "<span>Not esigned<span>";
+                  }
+                                  
                   
                   $_SESSION[$formID_Session] = true;
                   $_SESSION['formID'] = true;
-                  $_SESSION['formID_' . $formdir.'_' . $iter['form_id']]  = true;    
+                  $_SESSION['formID_' . $formdir. '_' . $iter['form_id']]  = true;    
+
+                  //echo "<span>Form ID: " . $iter['id'] . " | Form DIR: {$formdir}</span>";
                            
                  echo "<a class='css_button_small form-edit-button' " .
                     "id='form-edit-button-" . attr($formdir) . "-" . attr($iter['id']) . "' " .
@@ -1216,6 +1256,10 @@ if ($pass_sens_squad &&
             } else {
                 // do not show delete button for main encounter here since it is displayed at top
             }
+        }
+
+        if ($esign->isLocked()) {
+          //echo '<a href="#" class="css_button_small send_email">Send Email</a>';
         }
         echo "</div>\n"; // Added as bug fix.
 
@@ -1277,7 +1321,22 @@ jQuery(document).ready(function($){
     }
   }
 
+  $('.send_email').on('click', function(){
+    $.ajax({
+      url: 'sendemail.php',
+      type: 'GET',
+      success: function(response){
+          console.log(response);
+      },
+      error: function(response){
+          console.log(response);
+      }
+    });
+  });
+
 });
+
+
 </script>
 </body>
 </html>

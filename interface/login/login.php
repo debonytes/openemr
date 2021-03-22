@@ -83,6 +83,9 @@ if(empty($patientTblResult)) {
       `pc_eid` bigint(20) DEFAULT NULL,
       `patient_code` varchar(100) DEFAULT NULL,
       `date` date DEFAULT NULL,
+      `counselor_comprehensive_assessment` varchar(20) DEFAULT NULL,
+      `counselor_treatment_plan` varchar(20) DEFAULT NULL,
+      `icans_note` varchar(20) DEFAULT NULL,
       PRIMARY KEY (id)
     ) ENGINE=InnoDB";
     
@@ -90,6 +93,8 @@ if(empty($patientTblResult)) {
     $patientTblSql = "SHOW TABLES LIKE '".$addlPatientTable."'";
     $patientTblResult = array_column(mysqli_fetch_all($dbLink->query($patientTblSql)),0);
 }
+
+
 
 // mdsupport - Add 'App' functionality for user interfaces without standard menu and frames
 // If this script is called with app parameter, validate it without showing other apps.

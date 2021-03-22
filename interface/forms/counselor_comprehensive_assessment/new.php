@@ -37,6 +37,9 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
+$formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
+$form = sqlQuery($formStmt, array($formid, $folderName));
+
 $esignApi = new Api();
 // Create the ESign instance for this form
 $esign = $esignApi->createFormESign($form['id'], $folderName, $encounter);

@@ -4184,12 +4184,31 @@ function patient_data_extra($pid)
 
 }
 
-function withExtraField($pid){
-  $status = false;
-  $sql = "SELECT patient_code FROM patient_data_additional WHERE pc_eid = ?";
-  $res = sqlQuery($sql, array($pid));
-  return (!empty($res['patient_code'])) ? true : false;
+function patient_extra_fields($pid)
+{
+    $sql = "SELECT patient_code FROM patient_data_additional WHERE pc_eid = ?";
+    $res = sqlQuery($sql, array($pid));
+    return $res;
 }
+
+function withExtraField($pid){  
+  $res = patient_extra_fields($pid);
+  $value = (!empty($res['patient_code'])) ? true : false;
+  return $value;
+}
+
+function withExtraFieldsCompleted($pid){  
+    $cda = 'counselor_comprehensive_assessment';
+    $treatment = 'counselor_treatment_plan';
+    $icans = 'icans_note';
+  $sql = "SELECT * FROM patient_data_additional WHERE pc_eid = ? AND $cda IS NOT NULL ";    
+  $sql .= " AND $treatment IS NOT NULL AND $icans IS NOT NULL";
+  $res = sqlQuery($sql, array($pid));
+  $value = (!empty($res)) ? true : false;
+  return $value;
+}
+
+
 
 function update_patient_data_extra($pid)
 {
@@ -4204,5 +4223,14 @@ function get_patient_info($pid, $column)
     $res = sqlQuery($sql, array($pid));
     $info = (!empty($res[$column])) ? $res[$column] : '';
     return $info;
+}
+
+
+function get_patient_age($pid)
+{
+    $dob = get_patient_info($pid, 'DOB');
+    $now = date('Y-m-d');
+
+    return dateDifference($now, $dob, '%y');
 }
 ?>
