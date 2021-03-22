@@ -104,7 +104,7 @@ if (typeof ptName === 'undefined') {
     var ptName = '';
 }
 if (typeof webRoot === 'undefined' && typeof top.webroot_url !== 'undefined') {
-    var webRoot = document.location.origin; //top.webroot_url;
+    var webRoot = top.webroot_url;
 }
 if (typeof isModule === 'undefined') {
     var isModule = false;
@@ -487,7 +487,7 @@ function initSignerApi() {
             }
             $lastEl.attr('src', signhere);
 
-            fetch(url, {
+            await fetch(url, {
                 credentials: 'include',
                 method: 'POST',
                 body: JSON.stringify({
@@ -665,10 +665,7 @@ function initSignerApi() {
             }
         });
 
-        saveSignature.addEventListener("click", function (e) {
-            e.stopPropagation();e.preventDefault();
-            //console.log('clicked');
-            var web_url = document.location.origin;
+        saveSignature.addEventListener("click", function (event) {
             if (signaturePad.isEmpty()) {
                 signerAlertMsg(msgNeedSign, 3000);
             } else {
@@ -679,32 +676,23 @@ function initSignerApi() {
                 } else {
                     type = "patient-signature";
                 }
-                //var url_top = url;
-                //let url = webRoot + "/portal/sign/lib/show-signature.php";
-                let url = web_url + "/portal/sign/lib/show-signature.php";
-                //console.log('Saving signature...' + url);
-
-                var data = {
+                let url = webRoot + "/portal/sign/lib/show-signature.php";
+                var result =  fetch(url, {
+                    credentials: 'include',
+                    method: 'POST',
+                    //mode: 'cors',
+                    body: JSON.stringify({
                         pid: cpid,
                         user: cuser,
                         type: type,
                         is_portal: isPortal,
                         mode: 'fetch_info'
-                    };
-                //console.log(data);
-                var result = fetch(url, {
-                    credentials: 'include',
-                    method: 'POST',
-                    //mode: 'same-origin',                   
+                    }),
                     headers: {
-                        'Content-Type': 'application/json',
-                        //'Accept': 'application/json'
-                        'Accept': 'application/json, text/plain, */*',                    
-                    },
-                     body: JSON.stringify(data)
-                }).then(response => response.json()).then( function(response)  {
-                //}).then(function (response) {
-                    console.log('Fetch result: ' + response);
+                        'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => response.json()).then(function (response) {
                     signerName = ptName = response.ptName;
                     if (isAdmin) {
                         signerName = adminName = response.userName;
@@ -718,10 +706,9 @@ function initSignerApi() {
                         signer: signerName
                     };
                     archiveSignature(encodeURIComponent(dataURL), e);
-                }).catch(function(error){
+                });/*.catch(function(error){
                     console.log(error);
-                });
-                //console.log(result);
+                });*/
             }
         });
 
