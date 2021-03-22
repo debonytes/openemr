@@ -1259,7 +1259,7 @@ if ($pass_sens_squad &&
         }
 
         if ($esign->isLocked()) {
-          //echo '<a href="#" class="css_button_small send_email">Send Email</a>';
+          echo '<a href="#" class="css_button_small send_email" data-formid="'. attr_url($iter['id']) .'" data-formdir="'. attr_url($formdir) .'">Send Email</a>';
         }
         echo "</div>\n"; // Added as bug fix.
 
@@ -1324,7 +1324,13 @@ jQuery(document).ready(function($){
   $('.send_email').on('click', function(){
     $.ajax({
       url: 'sendemail.php',
-      type: 'GET',
+      type: 'POST',
+      data: {
+        send_email: true,
+        pid: <?php echo $pid; ?>,
+        formdir: $(this).data('formdir'),
+        formid: $(this).data('formid'),
+      },
       success: function(response){
           console.log(response);
       },
