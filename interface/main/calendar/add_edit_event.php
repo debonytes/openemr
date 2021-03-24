@@ -1988,7 +1988,7 @@ $(function (){
         get_patient_categories();
     });
 
-    
+    $('#type_patient_medicaid').trigger('click');
     
 });
 
