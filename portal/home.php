@@ -341,6 +341,7 @@ function changeCredentials(e) {
             </div>
             <?php } ?>
             <div class="row">
+                <?php //print_r($_SESSION); ?>
                 <div class="col-sm-12">
                     <div class="panel panel-primary collapse" id="profilepanel">
                         <header class="panel-heading"><?php echo xlt('Profile'); ?></header>

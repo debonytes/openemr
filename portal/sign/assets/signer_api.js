@@ -566,6 +566,7 @@ function initSignerApi() {
         var clearButton = wrapper.querySelector("[data-action=clear]");
         var canvas = wrapper.querySelector("canvas");
         let signaturePad;
+        var cuser = $('#openSignModal #user').val();
 
         // this offsets signature image to center on element somewhat
         // on any form (css) box height:70px length:auto center at 20px.
@@ -683,10 +684,11 @@ function initSignerApi() {
                 //let url = webRoot + "/portal/sign/lib/show-signature.php";
                 let url = web_url + "/portal/sign/lib/show-signature.php";
                 //console.log('Saving signature...' + url);
+                //var cuser = 1;
 
                 var data = {
-                        pid: cpid,
-                        user: cuser,
+                        pid: parseInt(cpid),
+                        user: parseInt(cuser),
                         type: type,
                         is_portal: isPortal,
                         mode: 'fetch_info'
@@ -703,7 +705,7 @@ function initSignerApi() {
                      body: JSON.stringify(data)
                 }).then(response => response.json()).then( function(response)  {
                 //}).then(function (response) {
-                    console.log('Fetch result: ' + response);
+                    //console.log(response);
                     signerName = ptName = response.ptName;
                     if (isAdmin) {
                         signerName = adminName = response.userName;
