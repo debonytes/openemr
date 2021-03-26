@@ -20,7 +20,7 @@ if (!$is_portal) {
     require_once dirname(__FILE__) . "/../../verify_session.php";
 }
 
-$cuser = attr(isset($_SESSION['pid']) ? $_SESSION['pid'] : "-patient-");
+$cuser = attr(isset($_SESSION['providerId']) ? $_SESSION['providerId'] : 1);
 $cpid = attr(isset($_SESSION['pid']) ? $_SESSION['pid'] : "0");
 $api_id = isset($_SESSION['api_csrf_token']) ? $_SESSION['api_csrf_token'] : ''; // portal doesn't do remote
 
