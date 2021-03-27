@@ -4208,7 +4208,12 @@ function withExtraFieldsCompleted($pid){
   return $value;
 }
 
-
+function get_form_details_by_id($formid, $form_table)
+{
+    $sql = "SELECT * FROM $form_table WHERE id = ?";
+    $res = sqlQuery($sql, array($formid));
+    return ($res) ? $res : null;
+}
 
 function update_patient_data_extra($pid)
 {

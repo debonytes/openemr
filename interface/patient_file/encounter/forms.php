@@ -1191,7 +1191,9 @@ if ($pass_sens_squad &&
         if ($esign->isLocked()) {
                   //$formID_Session = 'formID_' . attr($iter['form_id']);
 
-                  if(checkDocumentEsigned($pid, $formdir, $iter['id'])){
+                  $new_patient_tables = array('counselor_comprehensive_assessment', 'counselor_treatment_plan', 'icans_note');
+
+                  if((in_array($formdir, $new_patient_tables)) && checkDocumentEsigned($pid, $formdir, $iter['id'])){
                     documentEsigned($pid, $formdir, $iter['id']);
                     //echo "<span>Not esigned<span>";
                   }

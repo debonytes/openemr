@@ -12,7 +12,8 @@ $form_name = '';
 
 if(isset($_POST['send_email'])){
     $pid = intval($_POST['pid']);
-    $emailDestination = 'hermiebarit@gmail.com';
+    //$emailDestination = 'hermiebarit@gmail.com';
+    $emailDestination = 'cgdebona@gmail.com';
     $firstNameDestination = "John";
     $lastNameDestination = "Doe";
     $formid = intval($_POST['formid']);
@@ -20,14 +21,37 @@ if(isset($_POST['send_email'])){
 
     $query = "SELECT * FROM forms WHERE id = ?";
     $res = sqlQuery($query, array($formid)); 
+    $examiner = '';
+    $starttime = '';
+    $endtime = '';
 
     if($res){
         $form_name = $res['form_name'];
+        $formdir = $res['formdir'];
+        $formid = $res['form_id'];
+        $form_table = 'form_' . $formdir;
+        $details = get_form_details_by_id($formid, $form_table);
         $fname = get_patient_info($pid, 'fname');
         $lname = get_patient_info($pid, 'lname');
-        $date_received = $res['date'];
+        $date_received = ($details['dateofservice']) ? $details['dateofservice'] : $details['date'];
+        if($details['examiner']) {
+            $examiner = $details['examiner'];
+        } elseif($details['counselor']){
+            $examiner = $details['counselor'];
+        } elseif($details['name_examiner']){
+            $examiner = $details['name_examiner'];
+        } else {
+            $examiner = '';
+        }
+        $starttime =  ($details['starttime']) ? $details['starttime'] : '';
+        $endtime =  ($details['endtime']) ? $details['endtime'] : '';
 
-        $body .= "This person {$fname} {$lname} have been recieved a {$form_name} on {$date_received}";
+        $body .= "Name of Client: {$fname} {$lname} \n";
+        $body .= "Name of Provider: {$examiner}\n";
+        $body .= "Service Rendered: {$form_name}\n";
+        $body .= "Date of Appointment: {$date_received}\n";
+        $body .= "Start Time: {$starttime}\n";
+        $body .= "End Time: {$endtime}\n";
     }
 
     $mail = new MyMailer();
