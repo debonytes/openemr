@@ -657,7 +657,7 @@ function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
     global $attendant_type, $pid;
     $isNewPatient = "";
     $isMinor = "";
-    if(!withExtraFieldsCompleted($pid)){
+    if(!withExtraFieldsCompleted($pid) && is_patient_new($pid)){
     //if(isPatientNew($pid)){
       if( isPatientMinor($pid) ) {
         $isMinor = " directory = 'icans_note' AND ";

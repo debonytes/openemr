@@ -4184,11 +4184,25 @@ function patient_data_extra($pid)
 
 }
 
+function is_patient_new($pid)
+{
+    $sql = "SELECT * FROM patient_data_additional WHERE pc_eid = ?";
+    $res = sqlQuery($sql, array($pid));
+    return !empty($res) ? true : false;
+}
+
 function patient_extra_fields($pid)
 {
     $sql = "SELECT patient_code FROM patient_data_additional WHERE pc_eid = ?";
     $res = sqlQuery($sql, array($pid));
     return $res;
+}
+
+function withoutExtraField($pid)
+{
+    $sql = "SELECT patient_code FROM patient_data_additional WHERE pc_eid = ?";
+    $res = sqlQuery($sql, array($pid));
+    return empty($res) ? true : false;
 }
 
 function withExtraField($pid){  
