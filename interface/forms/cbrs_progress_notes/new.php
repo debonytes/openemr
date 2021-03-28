@@ -1,7 +1,7 @@
 <?php
 //session_start();
 /**
- * Clinical instructions form.
+ * CBRS form.
  *
  * @package   OpenEMR
  * @link      http://www.open-emr.org
@@ -46,6 +46,7 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+//print_r($check_res);
 
 /* checking the last record */
 if( empty($check_res) ){
@@ -61,9 +62,9 @@ $two_seventy_disabled = '';
 $three_sixty_disabled = '';
 
 if($pid){
-    $patien_query = "SELECT CDA FROM patient_data WHERE id = ?";
+    $patien_query = "SELECT CDA,date FROM patient_data WHERE id = ?";
     $patient_data = sqlQuery($patien_query, array($pid));
-    $cda_date = trim($patient_data['CDA']);
+    $cda_date = ($patient_data['CDA']) ? trim($patient_data['CDA']) : date('Y-m-d', strtotime($patient_data['date']));
     $today = date('Y-m-d');
     $ninety_days = date('Y-m-d', strtotime($cda_date . '+ 90 days'));
     $one_eighty = date('Y-m-d', strtotime($cda_date . '+ 180 days'));
@@ -430,7 +431,6 @@ if ($postCalendarCategoryACO) {
                                     <label for="auth_end_date" class="col-md-5 "><?php echo xlt('Authorization End Date'); ?></label>
                                     <div class="col-md-6">
                                         <input type="text" name="auth_end_date" id="auth_end_date"  class="form-control" value="<?php echo ($check_res['auth_end_date']) ? text($check_res['auth_end_date']) : ''; ?>" >
-                                        
                                     </div>                                    
                                 </div>
                                 <div class="clearfix"></div>

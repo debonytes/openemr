@@ -1292,7 +1292,7 @@ function myLocalJS()
                 //$.get("patient_info.php", { set_encounter: encounter, pid: pid });
                 $.ajax({
                     method: 'GET',
-                    url: 'patient_info.php',
+                    url: 'patient_info.php?id=' + formid,
                     data: {
                         set_encounter: encounter,
                         set_pid: pid,
@@ -1300,6 +1300,7 @@ function myLocalJS()
                     },
                     success: function(response){
                         console.log('Success:');
+                        openEncounterForm(formdir, formname, formid);
                         //console.log(response);
                     }, 
                     error: function(response){
@@ -1307,7 +1308,7 @@ function myLocalJS()
                         //console.log(response);
                     }
                   });
-                openEncounterForm(formdir, formname, formid);
+                //openEncounterForm(formdir, formname, formid);
             } );
 
             var dash_sess = '<?php echo isset($_SESSION['dashboard_datatables']) ?  $_SESSION['dashboard_datatables'] : ''; ?>';
