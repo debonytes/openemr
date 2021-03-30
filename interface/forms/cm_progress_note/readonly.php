@@ -444,7 +444,7 @@ if($pid){
                                 <div class="form-group">
                                     <label for="billable_units" class="col-md-5 "><?php echo xlt('Billable Units'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" id="billable_units" class="form-control" name="billable_units" value="<?php echo ($check_res['billable_units']) ? text($check_res['billable_units']) : text($last_record['billable_units']); ?>">
+                                        <input type="text" id="billable_units" class="form-control" name="billable_units" value="<?php echo ($check_res['billable_units']) ? text($check_res['billable_units']) : ''; ?>" disabled>
                                         <small class="text-danger duration_error"></small>
                                     </div>                                    
                                 </div>

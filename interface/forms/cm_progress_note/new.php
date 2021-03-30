@@ -423,7 +423,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="" class="col-md-5"><?php echo xlt('Date of Service'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control datepicker" value="<?php echo ($check_res['dateofservice']) ? text(date('m/d/Y', strtotime($check_res['dateofservice']))) : ($last_record['dateofservice']) ? text($last_record['dateofservice']) : text(date('m/d/Y')); ?>" autocomplete="off">
+                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control datepicker" value="<?php echo ($check_res['dateofservice']) ? text(date('m/d/Y', strtotime($check_res['dateofservice']))) :  text(date('m/d/Y')); ?>" autocomplete="off">
                                         <small class="text-danger date_error"></small>
                                     </div>                     
                                 </div>
