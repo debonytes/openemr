@@ -12,8 +12,8 @@ $form_name = '';
 
 if(isset($_POST['send_email'])){
     $pid = intval($_POST['pid']);
-    //$emailDestination = 'hermiebarit@gmail.com';
-    $emailDestination = 'cgdebona@gmail.com';
+    $emailDestination = 'hermiebarit@gmail.com';
+    //$emailDestination = 'cgdebona@gmail.com';
     $firstNameDestination = "John";
     $lastNameDestination = "Doe";
     $formid = intval($_POST['formid']);

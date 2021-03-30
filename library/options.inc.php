@@ -4215,11 +4215,14 @@ function withExtraFieldsCompleted($pid){
     $cda = 'counselor_comprehensive_assessment';
     $treatment = 'counselor_treatment_plan';
     $icans = 'icans_note';
-  $sql = "SELECT * FROM patient_data_additional WHERE pc_eid = ? AND $cda IS NOT NULL ";    
-  $sql .= " AND $treatment IS NOT NULL AND $icans IS NOT NULL";
-  $res = sqlQuery($sql, array($pid));
-  $value = (!empty($res)) ? true : false;
-  return $value;
+    $sql = "SELECT * FROM patient_data_additional WHERE pc_eid = ? AND $cda IS NOT NULL ";    
+    $sql .= " AND $treatment IS NOT NULL ";
+    if(get_patient_age($pid) < 18){
+        $sql .= "  AND $icans IS NOT NULL";
+    }
+    $res = sqlQuery($sql, array($pid));
+    $value = (!empty($res)) ? true : false;
+    return $value;
 }
 
 function get_form_details_by_id($formid, $form_table)

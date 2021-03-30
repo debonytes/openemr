@@ -666,7 +666,7 @@ function myGetRegistered($state = "1", $limit = "unlimited", $offset = "0")
         $isNewPatient = "directory = 'counselor_treatment_plan' OR directory = 'counselor_comprehensive_assessment' AND ";
       }
       //$isNewPatient = "directory = 'counselor_comprehensive_assessment' AND ";
-    }
+    } 
     
     //if( isPatientMinor($pid) )  $isMinor = " directory = 'icans_note' AND ";
 
