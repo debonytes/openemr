@@ -1261,7 +1261,7 @@ if ($pass_sens_squad &&
         }
 
         if ($esign->isLocked()) {
-          echo '<a href="#" class="css_button_small send_email" data-formid="'. attr_url($iter['id']) .'" data-formdir="'. attr_url($formdir) .'">Send Email</a>';
+          echo '<button type="button" class="css_button_small send_email" data-formid="'. attr_url($iter['id']) .'" data-formdir="'. attr_url($formdir) .'">Send Email</button>';
         }
         echo "</div>\n"; // Added as bug fix.
 
@@ -1324,6 +1324,7 @@ jQuery(document).ready(function($){
   }
 
   $('.send_email').on('click', function(){
+    $(this).attr('disabled', true);
     $.ajax({
       url: 'sendemail.php',
       type: 'POST',
@@ -1334,9 +1335,11 @@ jQuery(document).ready(function($){
         formid: $(this).data('formid'),
       },
       success: function(response){
+          $('.send_email').removeAttr('disabled');
           console.log(response);
       },
       error: function(response){
+        $('.send_email').removeAttr('disabled');
           console.log(response);
       }
     });
