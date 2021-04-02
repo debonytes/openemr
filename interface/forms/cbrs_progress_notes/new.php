@@ -62,7 +62,7 @@ $two_seventy_disabled = '';
 $three_sixty_disabled = '';
 
 if($pid){
-    $patien_query = "SELECT CDA,date FROM patient_data WHERE id = ?";
+    $patien_query = "SELECT CDA,date FROM patient_data WHERE pid = ?";
     $patient_data = sqlQuery($patien_query, array($pid));
     $cda_date = ($patient_data['CDA']) ? trim($patient_data['CDA']) : date('Y-m-d', strtotime($patient_data['date']));
     $today = date('Y-m-d');
@@ -364,7 +364,12 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="cbrs" class="col-md-5 "><?php echo xlt('CBRS'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="cbrs" id="cbrs" class="form-control" value="<?php echo ($check_res['cbrs']) ? text($check_res['cbrs']) : text($last_record['cbrs']); ?>">
+                                        <?php
+                                            $examiner = ($check_res['cbrs']) ? $check_res['cbrs'] : $last_record['cbrs'];
+                                        ?>
+                                        <select name="cbrs" id="cbrs" class="form-control">
+                                                <?php echo get_examiner_name_dregree($examiner); ?>
+                                        </select>                                        
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    
                                 </div>

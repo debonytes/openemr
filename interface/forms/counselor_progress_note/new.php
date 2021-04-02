@@ -279,8 +279,11 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="counselor" class="col-sm-3 "><?php echo xlt('Counselor'); ?></label>
                                     <div class="col-sm-9">
+                                        <?php
+                                            $examiner = ($check_res['counselor']) ? $check_res['counselor'] : $last_record['counselor'];
+                                        ?>
                                         <select name="counselor" id="counselor" class="form-control">
-                                                <?php echo get_examiner_name_dregree($check_res['counselor']); ?>
+                                                <?php echo get_examiner_name_dregree($examiner); ?>
                                         </select>                                        
                                         <small class="text-danger counselor_error"></small>
                                     </div>                                    

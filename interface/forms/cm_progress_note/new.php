@@ -349,7 +349,12 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="examiner" class="col-md-5 "><?php echo xlt('Case Manager'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="examiner" id="examiner" class="form-control" value="<?php echo ($check_res['examiner']) ? text($check_res['examiner']) : text($last_record['examiner']); ?>">
+                                        <?php
+                                            $examiner = ($check_res['examiner']) ? $check_res['examiner'] : $last_record['examiner'];
+                                        ?>
+                                        <select name="examiner" id="examiner" class="form-control">
+                                                <?php echo get_examiner_name_dregree($examiner); ?>
+                                        </select> 
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                                                        
                                 </div>
