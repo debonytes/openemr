@@ -1,6 +1,6 @@
 <?php
 /**
- * Clinical instructions form.
+ * Youth Support Progress Note form.
  *
  * @package   OpenEMR
  * @link      http://www.open-emr.org
@@ -18,7 +18,6 @@ require_once("$srcdir/group.inc");
 require_once("$srcdir/api.inc");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/patient.inc");
-//require_once("date_qualifier_options.php");
 require_once("$srcdir/options.inc.php");
 require_once $GLOBALS['srcdir'].'/ESign/Api.php';
 
@@ -39,6 +38,10 @@ $color_360 = $green;
 
 $returnurl = 'encounter_top.php';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
+$formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
+$form = sqlQuery($formStmt, array($formid, $folderName));
+
+$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
@@ -71,6 +74,8 @@ if($pid){
     $two_seventy_disabled = (strtotime($two_seventy) < strtotime($today)) ? ' disabled' : '';
     $three_sixty_disabled = (strtotime($three_sixty) < strtotime($today)) ? ' disabled' : '';
 }
+
+
 
 ?>
 <!DOCTYPE html>
@@ -307,29 +312,22 @@ if($pid){
 
                     <fieldset class="form_content">
                         <legend class=""><?php echo xlt('Youth Support Progress Note'); ?></legend>
-                            <!--
-                            <div class="form-group">
-                                <div class="col-sm-10 col-sm-offset-1">
-                                    <textarea name="services_place" id ="services_place"  class="form-control" cols="80" rows="5" ><?php //echo text($check_res['services_place']); ?></textarea>
-                                </div>
-                            </div>
-                            -->
                            
-                            
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="col-md-5 "><?php echo xlt('Client Name'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" disabled>
+                                        <input type="text"  id="name" class="form-control" value="<?php echo text($patient_full_name); ?>" readonly disabled>
                                         <input type="hidden" name="name" value="<?php echo text($patient_full_name); ?>" >
                                     </div>                                    
                                 </div>
                                 <div class="clearfix"></div>
                                 <div class="form-group">
-                                    <label for="cbrs" class="col-md-5 "><?php echo xlt('CPSS'); ?></label>
-                                    <div class="col-md-6">
-                                        <input type="text" name="cpss" id="cpss" class="form-control" value="<?php echo text($check_res['cpss']); ?>" disabled>
+                                    <label for="cpss" class="col-md-5 "><?php echo xlt('CPSS'); ?></label>
+                                    <div class="col-md-6">                                        
+                                        <input type="text" class="form-control" value="<?php echo text($check_res['cpss']); ?>" disabled>
+                                                                             
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    
                                 </div>
@@ -341,12 +339,59 @@ if($pid){
                                         <input type="hidden" name="billing_code" value="H0038 - Youth Support Units">
                                     </div>                                    
                                 </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="units_remaining" class="col-md-5 "><?php echo xlt('Units Remaining'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="units_remaining" id="units_remaining"  class="form-control" value="<?php echo ($check_res['units_remaining']) ? text($check_res['units_remaining']) : ''; ?>" readonly disabled>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="days_remaining" class="col-md-5 "><?php echo xlt('Days Remaining'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="days_remaining" id="days_remaining"  class="form-control" value="<?php echo ($check_res['days_remaining']) ? text($check_res['days_remaining']) : ''; ?>" readonly disabled>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="treatment_plan_end_date" class="col-md-5 "><?php echo xlt('Treatment Plan End Date'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="treatment_plan_end_date" id="treatment_plan_end_date"  class="form-control" value="<?php echo text(date('m/d/Y', strtotime($three_sixty))); ?>" readonly disabled>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="cda_expires" class="col-md-5 "><?php echo xlt('CDA Expires'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="cda_expires" id="cda_expires"  class="form-control cda_date" value="<?php echo text(date('m/d/Y', strtotime($after_one_year))); ?>" readonly disabled>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="cafas_expires" class="col-md-5 "><?php echo xlt('CAFAS/PECFAS Expires'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="cafas_expires" id="cafas_expires"  class="form-control" value="<?php echo ($check_res['cafas_expires']) ? text($check_res['cafas_expires']) : ''; ?>" readonly disabled>
+                                        
+                                    </div>                                    
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="" class="col-md-5 "><?php echo xlt('Date of Service'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control" value="<?php echo text($check_res['dateofservice']); ?>" autocomplete="off" disabled>
+                                        <?php
+                                            if($check_res['dateofservice']){
+                                                $dateofservice = text(date('m/d/Y', strtotime($check_res['dateofservice']) ));                                          
+                                            } else {
+                                                $dateofservice = text(date('m/d/Y'));
+                                            }
+                                        ?>
+                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control " value="<?php echo $dateofservice; ?>" autocomplete="off" disabled>
                                         <small class="text-danger date_error"></small>
                                     </div>                                    
                                 </div>
@@ -354,7 +399,7 @@ if($pid){
                                 <div class="form-group">
                                     <label for="starttime" class="col-md-5 "><?php echo xlt('Start Time'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="starttime" id="starttime" class="form-control" value="<?php echo text($check_res['starttime']); ?>" autocomplete="off" disabled>
+                                        <input type="text" name="starttime" id="starttime" class="form-control " value="<?php echo text($check_res['starttime']); ?>" autocomplete="off" disabled>
                                         <small class="text-danger starttime_error"></small>
                                     </div>                                    
                                 </div>
@@ -362,7 +407,7 @@ if($pid){
                                 <div class="form-group">
                                     <label for="endtime" class="col-md-5 "><?php echo xlt('End Time'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="endtime" id="endtime" class="form-control" value="<?php echo text($check_res['endtime']); ?>" autocomplete="off" disabled>
+                                        <input type="text" name="endtime" id="endtime" class="form-control " value="<?php echo text($check_res['endtime']); ?>" autocomplete="off" disabled>
                                         <small class="text-danger endtime_error"></small>
                                     </div>                                    
                                 </div>
@@ -371,6 +416,30 @@ if($pid){
                                     <label for="duration" class="col-md-5 "><?php echo xlt('Duration'); ?></label>
                                     <div class="col-md-6">
                                         <input type="text" id="duration" class="form-control" name="duration" value="<?php echo text($check_res['duration']); ?>" disabled>
+                                        <small class="text-danger duration_error"></small>
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="billable_hours" class="col-md-5 "><?php echo xlt('Billable Hours'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="billable_hours" class="form-control" name="billable_hours" value="<?php echo text($check_res['billable_hours']) ; ?>" disabled>
+                                        <small class="text-danger duration_error"></small>
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="billable_units" class="col-md-5 "><?php echo xlt('Billable Units'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="billable_units" class="form-control" name="billable_units" value="<?php echo ($check_res['billable_units']) ? text($check_res['billable_units']) : ''; ?>" disabled>
+                                        <small class="text-danger duration_error"></small>
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="avg_unit_week" class="col-md-5 "><?php echo xlt('Avg Unit / Week'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="avg_unit_week" class="form-control" name="avg_unit_week" value="<?php echo ($check_res['avg_unit_week']) ? text($check_res['avg_unit_week']) : ''; ?>" disabled>
                                         <small class="text-danger duration_error"></small>
                                     </div>                                    
                                 </div>
@@ -385,10 +454,10 @@ if($pid){
                                     </label>
                                     <div class="col-sm-8">
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="services_place" id="services_place1" value="home" <?php echo ($check_res['services_place'] == 'home') ? "checked": "";  ?> disabled> <?php echo xlt('Home'); ?>
+                                          <input type="radio" name="services_place" id="services_place1" value="home" <?php echo ($check_res['services_place'] == 'home') ? " checked ": "";  ?> disabled> <?php echo xlt('Home'); ?>
                                         </label>
                                         <label class="radio-inline">
-                                          <input type="radio" name="services_place" id="services_place2" value="community"  <?php echo ($check_res['services_place'] == 'community') ? "checked": "";  ?> disabled> <?php echo xlt('Community'); ?>
+                                          <input type="radio" name="services_place" id="services_place2" value="community"  <?php echo ($check_res['services_place'] == 'community') ? " checked ": "";  ?> disabled> <?php echo xlt('Community'); ?>
                                         </label>
                                         <small class="text-danger services_place_error clearfix"></small>
                                     </div>
@@ -400,7 +469,7 @@ if($pid){
                                     </label>
                                     <div class="col-sm-8">
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="services_with" id="services_with1" value="client"  <?php echo ($check_res['services_with'] == 'client') ? "checked": "";  ?> disabled> <?php echo xlt('Client'); ?>
+                                          <input type="radio" name="services_with" id="services_with1" value="client"  <?php echo ($check_res['services_with'] == 'client') ? " checked ": "";  ?> disabled> <?php echo xlt('Client'); ?>
                                         </label>
                                         <label class="radio-inline">
                                           <input type="radio" name="services_with" id="services_with2" value="family" <?php echo ($check_res['services_with'] == 'family') ? "checked": "";  ?> disabled> <?php echo xlt('Family'); ?>
@@ -420,7 +489,14 @@ if($pid){
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 1.1 (H0038):'); ?></strong></label>
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_1']); ?>" disabled>
+                                        <?php  
+                                            if($check_res['goals_object_1']){
+                                                $goals_1 = text($check_res['goals_object_1']);
+                                            } else {
+                                                $goals_1 = '';
+                                            }
+                                        ?>
+                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo $goals_1; ?>" disabled>
                                         <small class="text-danger goals_object_1_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
                                 </div>
@@ -453,7 +529,14 @@ if($pid){
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 2.1 (H0038):'); ?></strong></label>
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control" name="goals_object_2" id="goals_object_2" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_2']); ?>" disabled>
+                                        <?php  
+                                            if($check_res['goals_object_2']){
+                                                $goals_2 = text($check_res['goals_object_2']);
+                                            } else {
+                                                $goals_2 = '';
+                                            }
+                                        ?>
+                                        <input type="text" class="form-control" name="goals_object_2" id="goals_object_2" style="width: 250px; float: left; margin-right: 20px" value="<?php echo $goals_2; ?>" disabled>
                                         <small class="text-danger goals_object_2_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
                                 </div>
@@ -463,19 +546,19 @@ if($pid){
                                 <div class="col-sm-10 col-sm-offset-2" >
                                     <div class="form-group padding-left-18">
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2a" value="completed" <?php echo ($check_res['goals_object_2_status'] == 'completed') ? "checked": "";  ?> disabled> <?php echo xlt('Completed/Maintenance'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2a" value="completed" <?php echo ($check_res['goals_object_2_status'] == 'completed') ? "checked": '';  ?> disabled> <?php echo xlt('Completed/Maintenance'); ?>
                                         </label>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2b" value="substantial" <?php echo ($check_res['goals_object_2_status'] == 'substantial') ? "checked": "";  ?> disabled> <?php echo xlt('Substantial'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2b" value="substantial" <?php echo ($check_res['goals_object_2_status'] == 'substantial') ? "checked": '';  ?> disabled> <?php echo xlt('Substantial'); ?>
                                         </label>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2c" value="moderate" <?php echo ($check_res['goals_object_2_status'] == 'moderate') ? "checked": "";  ?> disabled> <?php echo xlt('Moderate'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2c" value="moderate" <?php echo ($check_res['goals_object_2_status'] == 'moderate') ? "checked": '';  ?> disabled> <?php echo xlt('Moderate'); ?>
                                         </label>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2d" value="minimal" <?php echo ($check_res['goals_object_2_status'] == 'minimal') ? "checked": "";  ?> disabled> <?php echo xlt('Minimal'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2d" value="minimal" <?php echo ($check_res['goals_object_2_status'] == 'minimal') ? "checked": '';  ?> disabled> <?php echo xlt('Minimal'); ?>
                                         </label>
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_2_status" id="goals_object_2e" value="regression" <?php echo ($check_res['goals_object_2_status'] == 'regression') ? "checked": "";  ?> disabled> <?php echo xlt('Regression'); ?>
+                                          <input type="radio" name="goals_object_2_status" id="goals_object_2e" value="regression" <?php echo ($check_res['goals_object_2_status'] == 'regression') ? "checked": '';  ?> disabled> <?php echo xlt('Regression'); ?>
                                         </label>
                                         <small class="text-danger clearfix goals_object_2_status_error"></small>
                                     </div>  
@@ -486,7 +569,14 @@ if($pid){
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 3.1 (H0038):'); ?></strong></label>
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control" name="goals_object_3" id="goals_object_3" style="width: 250px; float: left; margin-right: 20px" value="<?php echo text($check_res['goals_object_3']); ?>" disabled>
+                                        <?php  
+                                            if($check_res['goals_object_3']){
+                                                $goals_3 = text($check_res['goals_object_3']);
+                                            } else {
+                                                $goals_3 = '';
+                                            }
+                                        ?>
+                                        <input type="text" class="form-control" name="goals_object_3" id="goals_object_3" style="width: 250px; float: left; margin-right: 20px" value="<?php echo $goals_3; ?>" disabled>
                                         <small class="text-danger goals_object_3_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
                                 </div>
@@ -496,7 +586,7 @@ if($pid){
                                 <div class="col-sm-10 col-sm-offset-2" >
                                     <div class="form-group padding-left-18">
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_3_status" id="goals_object_3a" value="completed" <?php echo ($check_res['goals_object_3_status'] == 'completed') ? "checked": "";  ?>  disabled> <?php echo xlt('Completed/Maintenance'); ?>
+                                          <input type="radio" name="goals_object_3_status" id="goals_object_3a" value="completed" <?php echo ($check_res['goals_object_3_status'] == 'completed') ? "checked": "";  ?> disabled > <?php echo xlt('Completed/Maintenance'); ?>
                                         </label>
                                         <label class="radio-inline margin-right-40">
                                           <input type="radio" name="goals_object_3_status" id="goals_object_3b" value="substantial" <?php echo ($check_res['goals_object_3_status'] == 'substantial') ? "checked": "";  ?> disabled> <?php echo xlt('Substantial'); ?>
@@ -517,10 +607,69 @@ if($pid){
                             </div>
 
                             <div class="clearfix"></div>
+                            <div class="col-md-12 margin-top-40">
+                                <h4><?php echo xlt('Tx Plan Review:'); ?></h4>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_90" class="col-sm-3 control-label"><?php echo xlt('90 Day:'); ?> </label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_90 pull-left" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>" <?php echo $ninety_days_disabled; ?> style="width:150px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx90" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx90'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx90'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_180" class="col-sm-3 control-label"><?php echo xlt('180 Day: '); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_180 pull-left" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>"  <?php echo $one_eighty_disabled; ?> style="width:150px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx180" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx180'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx180'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_270" class="col-sm-3 control-label"><?php echo xlt('270 Day:'); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_270 pull-left" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>"  <?php echo $two_seventy_disabled; ?> style="width:150px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx270" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx270'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx270'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_360" class="col-sm-3 control-label"><?php echo xlt('360 Day:'); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_360 pull-left" name="plan_review_360" id="plan_review_360" value="<?php echo ($three_sixty) ? date('m/d/Y', strtotime($three_sixty)) : ''; ?>"  <?php echo $three_sixty_disabled; ?> style="width:150px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx360" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx360'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx360'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
 
                             <div class="col-md-12 margin-top-30">
+                                <?php 
+                                    if($check_res['narrative_services']){
+                                        $narrative = text($check_res['narrative_services']); 
+                                    } else {
+                                        $narrative = '';
+                                    }
+                                ?>
                                 <label for="narrative_services"><?php echo xlt('Narrative of Service:'); ?></label>
-                                <textarea name="narrative_services" id="narrative_services" rows="4" class="form-control" disabled><?php echo text($check_res['narrative_services']); ?></textarea>
+                                <textarea name="narrative_services" id="narrative_services" rows="4" class="form-control" disabled><?php echo $narrative; ?></textarea>
                                 <small class="text-danger narrative_services_error"></small>
                             </div>
 
@@ -532,7 +681,14 @@ if($pid){
                                     <div class="col-sm-3 pull-left date-time-align">
                                         <span class="col-sm-3"><?php echo xlt('Date:'); ?> </span>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" name="meet_again_date" id="meet_again_date" value="<?php echo text($check_res['meet_again_date']); ?>" autocomplete="off" disabled>
+                                            <?php
+                                                if($check_res['meet_again_date']){
+                                                    $meet_again = text($check_res['meet_again_date']);
+                                                } else {
+                                                    $meet_again = '';
+                                                }
+                                            ?>
+                                            <input type="text" class="form-control " name="meet_again_date" id="meet_again_date" value="<?php echo $meet_again; ?>" autocomplete="off" disabled>
                                             <small class="text-danger meet_again_date_error"></small>
                                         </div>                                        
                                     </div>
@@ -540,7 +696,7 @@ if($pid){
                                     <div class="col-sm-3 date-time-align">
                                         <span class="col-sm-3"><?php echo xlt('Time:'); ?> </span>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" name="meet_again_time" id="meet_again_time" value="<?php echo text($check_res['meet_again_time']); ?>" autocomplete="off" disabled>
+                                            <input type="text" class="form-control " name="meet_again_time" id="meet_again_time" value="<?php echo ($check_res['meet_again_time']) ? text($check_res['meet_again_time']) : ''; ?>" autocomplete="off" disabled>
                                             <small class="text-danger meet_again_time_error"></small>
                                         </div>
                                     </div>                                     
@@ -566,7 +722,7 @@ if($pid){
                     <div class="form-group clearfix">
                         <div class="col-sm-12 col-sm-offset-1 position-override">
                             <div class="btn-group oe-opt-btn-group-pinch" role="group">
-                               
+                                
                                 <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
                                 <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
@@ -582,7 +738,7 @@ if($pid){
             $(document).ready(function(){
 
                 $('.timepicker').timepicker({
-                  defaultTime: null
+                  defaultTime: '12:00 PM',
                 });
 
 

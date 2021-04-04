@@ -427,7 +427,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="" class="col-md-5 "><?php echo xlt('Date of Service'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control datepicker" value="<?php echo ($check_res['dateofservice']) ? text(date('m/d/Y', strtotime($check_res['dateofservice']) )) : date('m/d/Y', strtotime($last_record['dateofservice'])); ?>" autocomplete="off">
+                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control datepicker" value="<?php echo ($check_res['dateofservice']) ? text(date('m/d/Y', strtotime($check_res['dateofservice']) )) : ($last_record['dateofservice']) ? date('m/d/Y', strtotime($last_record['dateofservice'])) : text(date('m/d/Y')); ?>" autocomplete="off">
                                         <small class="text-danger date_error"></small>
                                     </div>                                    
                                 </div>
@@ -532,7 +532,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 1.1 (H2017):'); ?></strong></label>
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo ($check_res['goals_object_1']) ? text($check_res['goals_object_1']) : text($last_record['goals_object_1']); ?>">
+                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo ($check_res['goals_object_1']) ? text($check_res['goals_object_1']) : ($last_record['goals_object_1']) ? text($last_record['goals_object_1']) : ''; ?>">
                                         <small class="text-danger goals_object_1_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
                                 </div>
