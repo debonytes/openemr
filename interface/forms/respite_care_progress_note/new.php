@@ -41,6 +41,15 @@ if (!$encounter) { // comes from globals.php
     die(xlt("Internal error: we do not seem to be in an encounter!"));
 }
 
+
+
+$green = '#2ecc71';
+$gray = '#555555';
+$color_90 = $green;
+$color_180 = $green;
+$color_270 = $green;
+$color_360 = $green;
+
 /* User Logged-in Info */
 $user_id = ( isset($_SESSION['authUserID']) && $_SESSION['authUserID'] ) ? $_SESSION['authUserID'] : '';
 $userData = ($user_id) ? getUserIDInfo($user_id) : '';
@@ -74,6 +83,33 @@ if( isset($obj['user']) && $obj['user'] ) {
   }
 }
 
+$ninety_days_disabled = '';
+$one_eighty_disabled = '';
+$two_seventy_disabled = '';
+$three_sixty_disabled = '';
+
+if($pid){
+    $patien_query = "SELECT CDA,date FROM patient_data WHERE pid = ?";
+    $patient_data = sqlQuery($patien_query, array($pid));
+    $cda_date = ($patient_data['CDA']) ? trim($patient_data['CDA']) : date('Y-m-d', strtotime($patient_data['date']));
+    $today = date('Y-m-d');
+    $ninety_days = date('Y-m-d', strtotime($cda_date . '+ 90 days'));
+    $one_eighty = date('Y-m-d', strtotime($cda_date . '+ 180 days'));
+    $two_seventy = date('Y-m-d', strtotime($cda_date . '+ 270 days'));
+    $three_sixty = date('Y-m-d', strtotime($cda_date . '+ 360 days'));
+    $after_one_year = date('Y-m-d', strtotime($cda_date . '+ 1 year'));
+
+    $color_90 =  (strtotime($ninety_days) > strtotime($today) ) ? getDateColor($today, $ninety_days) : $gray;
+    $color_180 = (strtotime($one_eighty) > strtotime($today) ) ? getDateColor($today, $one_eighty) : $gray;
+    $color_270 = (strtotime($two_seventy) > strtotime($today) ) ? getDateColor($today, $two_seventy) : $gray;
+    $color_360 = (strtotime($three_sixty) > strtotime($today) ) ? getDateColor($today, $three_sixty) : $gray;
+    $color_cda = (strtotime($after_one_year) > strtotime($today) ) ? getCDADateColor($today, $after_one_year) : $gray;
+    
+    $ninety_days_disabled = (strtotime($ninety_days) < strtotime($today)) ? ' disabled ' : '';
+    $one_eighty_disabled = (strtotime($one_eighty) < strtotime($today)) ? ' disabled' : '';
+    $two_seventy_disabled = (strtotime($two_seventy) < strtotime($today)) ? ' disabled' : '';
+    $three_sixty_disabled = (strtotime($three_sixty) < strtotime($today)) ? ' disabled' : '';
+}
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
@@ -111,6 +147,9 @@ if ($postCalendarCategoryACO) {
                 width: 100%;
                 text-align: left !Important;
             }
+        }
+
+
     </style>
     <?php
     $arrOeUiSettings = array(
@@ -129,11 +168,14 @@ if ($postCalendarCategoryACO) {
   <link rel="stylesheet" href="<?php echo $web_root; ?>/library/css/bootstrap-timepicker.min.css">
   <link rel="stylesheet" href="../../../style_custom.css">
   <style>
-            .margin-left-40{
+        .margin-left-40{
                 margin-left: 300px;
             }
             .margin-right-40{
                 margin-right: 40px;
+            }
+            .margin-top-20{
+                margin-top: 20px;
             }
             @media print{
                 .margin-left-40{
@@ -235,12 +277,17 @@ if ($postCalendarCategoryACO) {
                     margin: 0;
                 }
 
-                .margin-top-30{
-                  margin-top: 30px;
+                .line-block{
+                    display: block;
+                    width: 100%;
+                }
+                .date-time-align{
+                    display: inline-block;
+                    margin-right: 10px;
                 }
 
-                .margin-right-20{
-                  margin-right: 20px;
+                .work-on{
+                    margin-top: 100px;
                 }
 
             }
@@ -248,7 +295,43 @@ if ($postCalendarCategoryACO) {
               margin: 2cm;
             }
 
-           
+            .plan_review_90, .plan_review_90[disabled]{
+                color: white;
+                background-color: <?php echo $color_90; ?> !important;
+            }
+
+            .plan_review_180, .plan_review_180[disabled]{
+                color: white;
+                background-color: <?php echo $color_180; ?> !important;
+            }
+            .plan_review_270, .plan_review_270[disabled]{
+                color: white;
+                background-color: <?php echo $color_270; ?> !important;
+            }
+
+            .plan_review_360, .plan_review_360[disabled]{
+                color: white;
+                background-color: <?php echo $color_360; ?> !important;
+            }
+
+            .cda_date, .cda_date[disabled]{
+                color: white;
+                background-color: <?php echo $color_cda; ?> !important;
+            }
+
+            .margin-top-30 {
+                margin-top: 30px;
+            }
+
+            .margin-top-40 {
+                margin-top: 40px;
+            }
+
+            .date_completed{
+                display: inline-block;
+                float: left;
+                padding-left: 10px;
+            }
         </style>
 </head>
 <body class="body_top">
@@ -312,66 +395,148 @@ if ($postCalendarCategoryACO) {
 
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label>Member Name:</label>
-                        <input type="text" readonly disabled class="form-control" value="<?php echo $patient_full_name; ?>">
-                        <input type="hidden" name="member_name" value="<?php echo $patient_full_name; ?>" >
+                        <label for="name" class="col-md-5 "><?php echo xlt('Member Name:'); ?></label>
+                        <div class="col-md-6">
+                          <input type="text" readonly disabled class="form-control" value="<?php echo $patient_full_name; ?>">
+                          <input type="hidden" name="name" value="<?php echo $patient_full_name; ?>" >
+                        </div>                        
                       </div>
+                      <div class="clearfix"></div>
                       <div class="form-group">
                         <?php $provider_id =  ( isset($obj['provider_id']) && $obj['provider_id'] ) ? $obj['provider_id'] : '' ; ?>
-                        <label>Respite Provider:</label>
-                        <div class="select-field">
+                        <label for="provider_id" class="col-md-5 "><?php echo xlt('Respite Provider:'); ?></label>
+                        <div class="col-md-6">
                           <input type="text" readonly disabled class="form-control" value="<?php echo $user_fullname; ?>">
                           <input type="hidden" id="provider_id" name="provider_id" value="<?php echo $user_id; ?>">
                         </div>
                       </div>
+                      <div class="clearfix"></div>
                       <div class="form-group">
                         <?php $billing_code =  ( $check_res['billing_code'] ) ? $check_res['billing_code'] : 'Respite S5150' ; ?>
-                        <label>Billing Code:</label>
-                        <input type="text" readonly disabled class="form-control" value="<?php echo text($billing_code); ?>">
-                        <input type="hidden" id="billing_code" class="form-control" name="billing_code" value="<?php echo text($billing_code); ?>">
+                        <label for="billing_code" class="col-md-5 "><?php echo xlt('Billing Code:'); ?></label>
+                        <div class="col-md-6">
+                          <input type="text" readonly disabled class="form-control" value="<?php echo text($billing_code); ?>">
+                          <input type="hidden" id="billing_code" class="form-control" name="billing_code" value="<?php echo text($billing_code); ?>">
+                        </div>                        
                       </div>
+                      <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="units_remaining" class="col-md-5 "><?php echo xlt('Units Remaining'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="units_remaining" id="units_remaining"  class="form-control" value="<?php echo ($check_res['units_remaining']) ? text($check_res['units_remaining']) : ''; ?>" readonly>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="days_remaining" class="col-md-5 "><?php echo xlt('Days Remaining'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="days_remaining" id="days_remaining"  class="form-control" value="<?php echo ($check_res['days_remaining']) ? text($check_res['days_remaining']) : ''; ?>" readonly>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="treatment_plan_end_date" class="col-md-5 "><?php echo xlt('Treatment Plan End Date'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="treatment_plan_end_date" id="treatment_plan_end_date"  class="form-control" value="<?php echo text(date('m/d/Y', strtotime($three_sixty))); ?>" readonly>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="cda_expires" class="col-md-5 "><?php echo xlt('CDA Expires'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="cda_expires" id="cda_expires"  class="form-control cda_date" value="<?php echo text(date('m/d/Y', strtotime($after_one_year))); ?>" readonly>
+                                        
+                                    </div>                                    
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="form-group">
+                                    <label for="cafas_expires" class="col-md-5 "><?php echo xlt('CAFAS/PECFAS Expires'); ?></label>
+                                    <div class="col-md-6">
+                                        <input type="text" name="cafas_expires" id="cafas_expires"  class="form-control" value="<?php echo ($check_res['cafas_expires']) ? text($check_res['cafas_expires']) : ''; ?>" readonly>
+                                        
+                                    </div>                                    
+                                </div>
                     </div>
 
                     <div class="col-md-6">
                       <div class="form-group">
+                       
                         <?php 
-                        $dateofservice =  ( $check_res['dateofservice'] ) ? $check_res['dateofservice'] : $last_record['dateofservice'] ; 
-                        //$date_service_format = ($dateofservice) ? date('d/m/Y',strtotime($dateofservice)) : '';
+                        if($check_res['dateofservice']) {
+                          $dateofservice = text(date('m/d/Y', strtotime($check_res['dateofservice']) ));
+                        } elseif($last_record['dateofservice']){
+                          $dateofservice = text(date('m/d/Y', strtotime($last_record['dateofservice']) ));
+                        } else {
+                          $dateofservice = text(date('m/d/Y'));
+                        }
+                       
                         ?>
-                        <label>Date of Service:</label>
-                        <input type="text" id="dateofservice" class="form-control datepicker" name="dateofservice" value="<?php echo text($dateofservice); ?>" autocomplete="off">
+                        <label for="dateofservice" class="col-md-5 "><?php echo xlt('Date of Service:'); ?></label>
+                        <div class="col-md-6">
+                          <input type="text" id="dateofservice" class="form-control datepicker" name="dateofservice" value="<?php echo text($dateofservice); ?>" autocomplete="off">
+                        </div>                        
                       </div>
 
-                      <div class="row">
+                      <div class="clearfix"></div>
+                      <div class="form-group">
+                        <?php 
+                          $starttime =  ( $check_res['starttime'] ) ? text($check_res['starttime']) : text($last_record['starttime']) ; 
+                          
+                        ?>
+                        <label for="starttime" class="col-md-5 "><?php echo xlt('Start Time:'); ?></label>
                         <div class="col-md-6">
-                          <div class="form-group">
-                            <?php 
-                              $starttime =  ( $check_res['starttime'] ) ? text($check_res['starttime']) : text($last_record['starttime']) ; 
-                              //$start_time_format = ($starttime) ? date('h:i A',strtotime($starttime)) : '';
-                            ?>
-                            <label>Start Time:</label>
-                            <input type="text" id="starttime" class="form-control timepicker" name="starttime" value="<?php echo $starttime; ?>" autocomplete="off">
-                          </div>
-                        </div>
-
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <?php 
-                              $endtime =  ( $check_res['endtime'] ) ? text($check_res['endtime']) : text($last_record['endtime']) ; 
-                              //$end_time_format = ($endtime) ? date('h:i A',strtotime($endtime)) : '';
-                            ?>
-                            <label>End Time:</label>
-                            <input type="text" id="endtime" class="form-control timepicker" name="endtime" value="<?php echo $endtime; ?>" autocomplete="off">
-                          </div>
-                        </div>
+                          <input type="text" id="starttime" class="form-control timepicker" name="starttime" value="<?php echo $starttime; ?>" autocomplete="off">
+                        </div>                        
                       </div>
-
+                        
+                      <div class="clearfix"></div>                        
+                      <div class="form-group">
+                        <?php 
+                          $endtime =  ( $check_res['endtime'] ) ? text($check_res['endtime']) : text($last_record['endtime']) ;                           
+                        ?>
+                        <label for="endtime" class="col-md-5 "><?php echo xlt('End Time:'); ?></label>
+                        <div class="col-md-6">
+                          <input type="text" id="endtime" class="form-control timepicker" name="endtime" value="<?php echo $endtime; ?>" autocomplete="off">
+                        </div>                        
+                      </div>
+                        
+                      <div class="clearfix"></div>
                       <div class="form-group">
                         <?php 
                           $duration =  ( $check_res['duration'] ) ? text($check_res['duration']) : text($last_record['duration']) ; 
                         ?>
-                        <label>Duration:</label>
-                        <input type="text" id="duration" class="form-control" name="duration" value="<?php echo $duration; ?>" autocomplete="off">
+                        <label for="endtime" class="col-md-5 "><?php echo xlt('Duration:'); ?></label>
+                        <div class="col-md-6">
+                          <input type="text" id="duration" class="form-control" name="duration" value="<?php echo $duration; ?>" autocomplete="off">
+                        </div>                        
+                      </div>
+
+                      <div class="clearfix"></div>
+                      <div class="form-group">
+                          <label for="billable_hours" class="col-md-5 "><?php echo xlt('Billable Hours'); ?></label>
+                          <div class="col-md-6">
+                              <input type="text" id="billable_hours" class="form-control" name="billable_hours" value="<?php echo ($check_res['billable_hours']) ? text($check_res['billable_hours']) : text($last_record['billable_hours']); ?>">
+                              <small class="text-danger duration_error"></small>
+                          </div>                                    
+                      </div>
+                      <div class="clearfix"></div>
+                      <div class="form-group">
+                          <label for="billable_units" class="col-md-5 "><?php echo xlt('Billable Units'); ?></label>
+                          <div class="col-md-6">
+                              <input type="text" id="billable_units" class="form-control" name="billable_units" value="<?php echo ($check_res['billable_units']) ? text($check_res['billable_units']) : text($last_record['billable_units']); ?>">
+                              <small class="text-danger duration_error"></small>
+                          </div>                                    
+                      </div>
+                      <div class="clearfix"></div>
+                      <div class="form-group">
+                          <label for="avg_unit_week" class="col-md-5 "><?php echo xlt('Avg Unit / Week'); ?></label>
+                          <div class="col-md-6">
+                              <input type="text" id="avg_unit_week" class="form-control" name="avg_unit_week" value="<?php echo ($check_res['avg_unit_week']) ? text($check_res['avg_unit_week']) : text($last_record['avg_unit_week']); ?>">
+                              <small class="text-danger duration_error"></small>
+                          </div>                                    
                       </div>
 
                     </div>
@@ -407,6 +572,58 @@ if ($postCalendarCategoryACO) {
                       </div>
 
                       <div class="clearfix"></div>
+                      <div class="col-md-12 margin-top-40">
+                                <h4><?php echo xlt('Tx Plan Review:'); ?></h4>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_90" class="col-sm-3 control-label"><?php echo xlt('90 Day:'); ?> </label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_90 pull-left" name="plan_review_90" id="plan_review_90" value="<?php echo ($ninety_days) ? date('m/d/Y', strtotime($ninety_days)) : ''; ?>" <?php echo $ninety_days_disabled; ?> style="width:120px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx90" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx90'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx90'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_180" class="col-sm-3 control-label"><?php echo xlt('180 Day: '); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_180 pull-left" name="plan_review_180" id="plan_review_180" value="<?php echo ($one_eighty) ? date('m/d/Y', strtotime($one_eighty)) : ''; ?>"  <?php echo $one_eighty_disabled; ?> style="width:120px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx180" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx180'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx180'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_270" class="col-sm-3 control-label"><?php echo xlt('270 Day:'); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_270 pull-left" name="plan_review_270" id="plan_review_270" value="<?php echo ($two_seventy) ? date('m/d/Y', strtotime($two_seventy)) : ''; ?>"  <?php echo $two_seventy_disabled; ?> style="width:120px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx270" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx270'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx270'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                            <label for="plan_review_360" class="col-sm-3 control-label"><?php echo xlt('360 Day:'); ?></label>
+                                            <div class="col-sm-9">
+                                              <input type="text" class="form-control plan_review_360 pull-left" name="plan_review_360" id="plan_review_360" value="<?php echo ($three_sixty) ? date('m/d/Y', strtotime($three_sixty)) : ''; ?>"  <?php echo $three_sixty_disabled; ?> style="width:120px; margin-right: 10px" readonly>
+                                              <div class="date_completed">
+                                                  <span class="pull-left" style="margin-right: 10px">Completed:</span>
+                                                  <input type="text" name="completed_date_tx360" class="form-control datepicker" value="<?php echo ( $check_res['completed_date_tx360'] ) ? date('m/d/Y', strtotime($check_res['completed_date_tx360'])): '' ; ?>" style="width: 124px;" autocomplete="off">
+                                              </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
 
                       <div class="form-group" style="margin-top: 20px">
                         <p>

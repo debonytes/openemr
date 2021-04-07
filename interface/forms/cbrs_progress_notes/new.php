@@ -282,13 +282,7 @@ if ($postCalendarCategoryACO) {
                 <div class="page-header">
                     <h2><?php echo xlt('CBRS Progress Notes'); ?></h2>
                 </div>
-            </div>
-
-            <?php
-                /*echo "<pre>";
-                print_r($_SESSION);
-                echo '</pre>';*/
-            ?>
+            </div>           
             <?php
             $current_date = date('Y-m-d');
 
