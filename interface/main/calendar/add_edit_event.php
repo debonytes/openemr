@@ -188,6 +188,7 @@ function InsertEventFull()
         $args['starttime'] = $starttime;
         $args['endtime'] = $endtime;
         $args['locationspec'] = $locationspec;
+        $args['form_apptstatus'] = $args['form_apptstatus'];
         $pc_eid = InsertEvent($args);
         return $pc_eid;
     }
@@ -516,6 +517,7 @@ if ($_POST['form_action'] == "save") {
                     $args['starttime'] = $starttime;
                     $args['endtime'] = $endtime;
                     $args['locationspec'] = $locationspec;
+                    $args['form_apptstatus'] = $args['form_apptstatus'];
                     InsertEvent($args);
                 }
             } else if ($_POST['recurr_affect'] == 'future') { // ===== Future Recurring events of a repeating series =====
@@ -553,6 +555,7 @@ if ($_POST['form_action'] == "save") {
                     $args['starttime'] = $starttime;
                     $args['endtime'] = $endtime;
                     $args['locationspec'] = $locationspec;
+                    $args['form_apptstatus'] = $args['form_apptstatus'];
                     InsertEvent($args);
                 }
             } else {
@@ -598,6 +601,7 @@ if ($_POST['form_action'] == "save") {
                         $args['starttime'] = $starttime;
                         $args['endtime'] = $endtime;
                         $args['locationspec'] = $locationspec;
+                        $args['form_apptstatus'] = $args['form_apptstatus'];
                         $new_eid = InsertEvent($args);
                     }
                 }
@@ -674,6 +678,7 @@ if ($_POST['form_action'] == "save") {
                 $args['starttime'] = $starttime;
                 $args['endtime'] = $endtime;
                 $args['locationspec'] = $locationspec;
+                $args['form_apptstatus'] = $args['form_apptstatus'];
                 InsertEvent($args);
             } else if ($_POST['recurr_affect'] == 'future') {
                 // mod original event to stop recurring on this date-1
@@ -691,6 +696,7 @@ if ($_POST['form_action'] == "save") {
                 $args['starttime'] = $starttime;
                 $args['endtime'] = $endtime;
                 $args['locationspec'] = $locationspec;
+                $args['form_apptstatus'] = $args['form_apptstatus'];
                 InsertEvent($args);
             } else {
         // perform a check to see if user changed event date

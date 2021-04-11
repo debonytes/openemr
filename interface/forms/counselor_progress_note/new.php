@@ -40,11 +40,12 @@ $formid = (isset($_GET['id']) ? $_GET['id'] : 0);
 $formStmt = "SELECT id FROM forms WHERE form_id=? AND formdir=?";
 $form = sqlQuery($formStmt, array($formid, $folderName));
 
-//$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
+$GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
-//dd(print_r($check_res));
+//dd($check_res); 
+//print_r($check_res);
 
 /* checking the last record */
 if( empty($check_res) ){
@@ -99,6 +100,10 @@ if ($postCalendarCategoryACO) {
     $authPostCalendarCategoryWrite = true;
 }
 
+function get_row_values($tableName, $id, $pid, $cols = "*", $activity = "1")
+{
+    return sqlQuery("select * from `" . escape_table_name($tableName) . "` where id=? and pid = ? and activity like ? order by date DESC LIMIT 0,1", array($id, $pid,$activity)) ;
+}
 
 ?>
 <!DOCTYPE html>
@@ -309,7 +314,7 @@ if ($postCalendarCategoryACO) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 "><?php echo xlt('Date'); ?></label>
-                                    <div class="col-sm-9">
+                                    <div class="col-sm-9">                                        
                                         <input type="text" name="date" id="date" class="form-control newDatePicker" value="<?php echo ( $check_res['date'] ) ? date('m/d/Y', strtotime($check_res['date'])): date('m/d/Y') ; ?>" autocomplete="off">
                                         <small class="text-danger date_error"></small>
                                     </div>                                    

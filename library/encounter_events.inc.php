@@ -471,6 +471,7 @@ function InsertFormCategory($args, $pc_eid)
                 $lastRecord = sqlQuery("SELECT * FROM {$table} WHERE pid = ? ORDER BY id DESC LIMIT 1", array($form_pid));
                 $oldData = array();
                 $oldSet = '';
+                $onset_date = date('Y-m-d H:i:s', strtotime($onset_date));
 
                 foreach($table_fields as $field){
                     if($field === 'id'){
@@ -488,7 +489,13 @@ function InsertFormCategory($args, $pc_eid)
                     } elseif($field === 'status'){
                         array_push($oldData, 'ongoing');
                         $oldSet .= ',?';                    
-                    }else {
+                    } elseif($field === 'pid'){
+                        array_push($oldData, $pid);
+                        $oldSet .= ',?';                    
+                    } elseif($field === 'activity'){
+                        array_push($oldData, 1);
+                        $oldSet .= ',?';                    
+                    } else {
                         array_push($oldData, $lastRecord[$field]);
                         $oldSet .= ',?';
                     }
@@ -752,6 +759,30 @@ function InsertEvent($args, $from = 'general')
             (int)$args['billing_facility'])
         );
     }
+
+
+    // =======================================
+    // Insert if change of status
+    // =======================================
+    
+    //$args = $_POST;
+    /*
+    $status_sym = array('@', '~', '>');
+    $status = $args['form_apptstatus'];
+
+    if(!empty($status) || in_array($status, $status_sym) ){
+        $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
+
+        if(empty($query)){
+            $args['event_date'] = $fullappt_date;
+            InsertFormCategory($args, $eid);
+        }            
+    }
+    */
+
+    // =======================================
+    // Insert if change of status
+    // =======================================
 }
 //================================================================================================================
 /**
