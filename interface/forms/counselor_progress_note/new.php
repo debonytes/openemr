@@ -241,7 +241,7 @@ function get_row_values($tableName, $id, $pid, $cols = "*", $activity = "1")
                 $patient_id = ( $_SESSION['alert_notify_pid'] ) ? $_SESSION['alert_notify_pid'] : '';
                 $pid = ( $_SESSION['pid'] ) ? $_SESSION['pid'] : 0;
                 if($pid) {
-                  $patient = getPatientData($patient_id);
+                  $patient = getPatientData($pid);
                   //print_r($pid);
                   $patient_fname = ( $patient['fname'] ) ? $patient['fname'] : '';
                   $patient_mname = ( $patient['mname'] ) ? $patient['mname'] : '';
