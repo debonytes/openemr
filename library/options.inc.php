@@ -4169,7 +4169,7 @@ function getCDADateColor($today, $nth_days)
 
 
 function isMedicaidClient($pid){
-  $sql = "SELECT Medicaid_Client FROM patient_data WHERE id = ?";
+  $sql = "SELECT Medicaid_Client FROM patient_data WHERE pid = ?";
   $res = sqlQuery($sql, array($pid));
   return (!empty($res['Medicaid_Client'])) ? true : false;
 }
@@ -4255,4 +4255,6 @@ function get_patient_age($pid)
 
     return dateDifference($now, $dob, '%y');
 }
+
+
 ?>

@@ -495,6 +495,9 @@ function InsertFormCategory($args, $pc_eid)
                     } elseif($field === 'activity'){
                         array_push($oldData, 1);
                         $oldSet .= ',?';                    
+                    } elseif($field === 'location'){
+                        array_push($oldData, $facility_id);
+                        $oldSet .= ',?';                    
                     } else {
                         array_push($oldData, $lastRecord[$field]);
                         $oldSet .= ',?';

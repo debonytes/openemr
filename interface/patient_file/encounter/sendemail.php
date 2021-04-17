@@ -52,20 +52,24 @@ if(isset($_POST['send_email'])){
         $body .= "Date of Appointment: {$date_received}\n";
         $body .= "Start Time: {$starttime}\n";
         $body .= "End Time: {$endtime}\n";
+
+        $mail = new MyMailer();
+        $mail->From = 'notifications@kunaempower.com';
+        $mail->FromName = $fname . '' . $lname;
+        $mail->Body = $body;
+        $mail->Subject = $form_name . ' Received';
+        $mail->AddAddress($emailDestination, $firstNameDestination.", ".$lastNameDestination);
+        if(!$mail->Send()) {
+          echo ("There has been a mail error sending to " . $firstNameDestination .
+           " " . $mail->ErrorInfo);
+          }
+        else
+          {
+          echo "Email successfully sent to $emailDestination...";
+        }
+    } else {
+        echo "No email was sent.";
     }
 
-    $mail = new MyMailer();
-    $mail->From = 'notifications@kunaempower.com';
-    $mail->FromName = $fname . '' . $lname;
-    $mail->Body = $body;
-    $mail->Subject = $form_name . ' Received';
-    $mail->AddAddress($emailDestination, $firstNameDestination.", ".$lastNameDestination);
-    if(!$mail->Send()) {
-      echo ("There has been a mail error sending to " . $firstNameDestination .
-       " " . $mail->ErrorInfo);
-      }
-    else
-      {
-      echo "Email successfully sent to $emailDestination...";
-    }
+    
 }

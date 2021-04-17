@@ -44,7 +44,7 @@ $one_eighty_disabled = '';
 $two_seventy_disabled = '';
 
 if($pid){
-    $patien_query = "SELECT CDA FROM patient_data WHERE id = ?";
+    $patien_query = "SELECT CDA FROM patient_data WHERE pid = ?";
     $patient_data = sqlQuery($patien_query, array($pid));
     $cda_date = trim($patient_data['CDA']);
     $today = date('Y-m-d');
@@ -241,7 +241,7 @@ if($pid){
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 "><?php echo xlt('Location'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="location" id="location" class="form-control" value="<?php echo text($check_res['location']); ?>" disabled>
+                                        <input type="text" name="location" id="location" class="form-control" value="<?php echo text(get_facility_by_id($check_res['location'])); ?>" disabled>
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>

@@ -53,6 +53,7 @@ if( empty($check_res) ){
     $last_record = sqlQuery($last_record_query, array($pid));
 } 
 
+//dd($last_record);
 
 $is_group = ($attendant_type == 'gid') ? true : false;
 
@@ -60,9 +61,14 @@ $ninety_days_disabled = '';
 $one_eighty_disabled = '';
 $two_seventy_disabled = '';
 
+
+
 if($pid){
-    $patien_query = "SELECT CDA FROM patient_data WHERE id = ?";
+    $patien_query = "SELECT * FROM patient_data WHERE pid = ?";
     $patient_data = sqlQuery($patien_query, array($pid));
+
+    //dd($patient_data); 
+
     $cda_date = trim($patient_data['CDA']);
     $today = date('Y-m-d');
     $ninety_days = date('Y-m-d', strtotime($cda_date . '+ 90 days'));
@@ -296,7 +302,17 @@ function get_row_values($tableName, $id, $pid, $cols = "*", $activity = "1")
                                 <div class="form-group">
                                     <label for="" class="col-sm-3 "><?php echo xlt('Location'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="location" id="location" class="form-control" value="<?php echo ($check_res['location']) ? text($check_res['location']) : text($last_record['location']); ?>">
+                                        <?php
+                                            if($check_res['location']){
+                                                $location = get_facility_by_id($check_res['location']);
+                                            } elseif( !empty($last_record['location']) ){
+                                                $location = get_facility_by_id($last_record['location']);
+                                            } else {
+                                                $location = '';
+                                            }
+                                        ?>
+                                        <input type="text" id="location" class="form-control" value="<?php echo text($location); ?>" readonly>
+                                        <input type="hidden" name="location" value="<?php echo $check_res['location']; ?>">
                                         <small class="text-danger location_error"></small>
                                     </div>                                    
                                 </div>
