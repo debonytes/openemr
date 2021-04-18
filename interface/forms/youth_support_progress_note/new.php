@@ -59,7 +59,7 @@ $two_seventy_disabled = '';
 $three_sixty_disabled = '';
 
 if($pid){
-    $patien_query = "SELECT CDA FROM patient_data WHERE id = ?";
+    $patien_query = "SELECT CDA FROM patient_data WHERE pid = ?";
     $patient_data = sqlQuery($patien_query, array($pid));
     $cda_date = trim($patient_data['CDA']);
     $today = date('Y-m-d');

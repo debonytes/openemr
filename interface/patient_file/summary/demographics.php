@@ -705,7 +705,7 @@ if (!empty($grparr['']['grp_size'])) {
 <?php } ?>
 
 </style>
-<title><?php echo xlt("Dashboard{{patient file}}"); ?></title>
+<title><?php echo xlt("Patient Dashboard"); ?></title>
 
 <?php
 $arrOeUiSettings = array(
