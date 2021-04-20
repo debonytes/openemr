@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.31, created on 2021-03-17 08:54:54
+<?php /* Smarty version 2.6.31, created on 2021-04-20 14:44:20
          compiled from default/views/week/ajax_template.html */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 382, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 383, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'config_load', 'default/views/week/ajax_template.html', 11, false),array('function', 'xla', 'default/views/week/ajax_template.html', 170, false),array('function', 'xlt', 'default/views/week/ajax_template.html', 170, false),array('modifier', 'date_format', 'default/views/week/ajax_template.html', 383, false),array('modifier', 'string_format', 'default/views/week/ajax_template.html', 384, false),)), $this); ?>
 <?php echo smarty_function_config_load(array('file' => "default.conf"), $this);?>
 
 <?php echo smarty_function_config_load(array('file' => "lang.".($this->_tpl_vars['USER_LANG'])), $this);?>
@@ -209,6 +209,7 @@ $cYear = date("Y", $caldate);
 $cDay = date("d", $caldate);
 
     include_once($GLOBALS['fileroot'].'/interface/main/calendar/modules/PostCalendar/pntemplates/default/views/monthSelector.php');
+    include_once($GLOBALS['fileroot'].'/interface/main/calendar/modules/PostCalendar/plugins/function.misc.php');
  ?>
 
 <table border="0" cellpadding="0" cellspacing="0">
@@ -730,6 +731,7 @@ foreach ($providers as $provider) {
 	    $color=$event["catcolor"];
 	    if($GLOBALS['event_color']==2)
 	    $color=$row['color'];
+      $bg_color = get_bg_color($eventid);
       $cat_arr = [2,3,4,8,11,16,17,18,19,20];
 	      $divTitle .= "\n" . $row['name'];
             if (in_array($catid, $cat_arr)) {
@@ -859,15 +861,19 @@ foreach ($providers as $provider) {
               $evtClass = "event_noshow";
             }
 
+            $color = ($bg_color) ? $bg_color : $color;
+
             // output the DIV and content
-			if($_SESSION['pc_facility'] == 0){
+			     if($_SESSION['pc_facility'] == 0){
+
                 //This is to differentiate between the events of holiday(6) or vacation(4) in order to disable
                 //the ability to double click and edit this events
-                if ($event['catid']!="6" && $event['catid']!="4" )
+
+                if ( ($event['catid'] != "6") && ($event['catid'] != "4") )
                 {
                 // output the DIV
                 echo "<div class='" . attr($evtClass) . " event' style='top:".$evtTop."; height:".$evtHeight.
-						"; background-color:".$color.
+						"; background-color:". $color .
 						"; $divWidth".
 						"; $divLeft".
 						"' title='" . attr($divTitle) . "'".

@@ -1352,6 +1352,8 @@ function find_available(extra) {
         '', 725, 200, '', title);
 }
 </script>
+
+
 <style>
     .navbar {
         margin: 0px;
@@ -1706,9 +1708,15 @@ if ($_GET['group'] === true && $have_group_global_enabled) { ?>
             echo "</option>\n";
         }
         echo "</select>";
+
+        if($_GET['prov']){
+            echo '<input type="color" id="html5colorpicker" name="provbgcolor" onchange="clickColor(0, -1, -1, 5)" value="#ff0000" style="width:30px; padding:0 -3px; margin-top: 5px; margin-left: 10px;">';
+        }
     }
     ?>
      </div>
+
+     
  </div> <!-- Done with providers now scheduling -->
 <?php
     //Check if repeat is using the new 'days every week' mechanism.
@@ -1919,6 +1927,8 @@ if ($_GET['prov'] != true) { ?>
 </div> <!-- top container wrapper -->
 
 <!-- form support functions-->
+
+
 <script>
 /* Form init functions */
 <?php if ($eid) { ?>
@@ -1995,6 +2005,8 @@ $(function (){
     });
 
     $('#type_patient_medicaid').trigger('click');
+
+    
     
 });
 
@@ -2005,6 +2017,20 @@ function get_patient_status()
         status = 1;
     } 
     return status;
+}
+
+function clickColor(hex, seltop, selleft, html5) {
+    var c, cObj, colormap, areas, i, areacolor, cc;
+    if (html5 && html5 == 5)  {
+        c = document.getElementById("html5colorpicker").value;
+    } else {
+        if (hex == 0)  {
+            c = document.getElementById("entercolor").value;
+        } else {
+            c = hex;
+        }
+    }
+    //console.log(c);    
 }
 
 function get_patient_type()
@@ -2211,5 +2237,6 @@ function SubmitForm() {
     return true;
 }
 </script>
+
 </body>
 </html>
