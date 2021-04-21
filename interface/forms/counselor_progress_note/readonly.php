@@ -234,7 +234,8 @@ if($pid){
                                 <div class="form-group">
                                     <label for="counselor" class="col-sm-3 "><?php echo xlt('Counselor'); ?></label>
                                     <div class="col-sm-9">
-                                        <input type="text" name="counselor" id="counselor" class="form-control" value="<?php echo text($check_res['counselor']) ; ?>" disabled>
+                                        <?php $counselor = get_provider_details($check_res['counselor']); ?>
+                                        <input type="text" name="counselor" id="counselor" class="form-control" value="<?php echo text($counselor['lname']) . ', ' . text($counselor['fname']) ; ?>" disabled>
                                         <small class="text-danger counselor_error"></small>
                                     </div>                                    
                                 </div>

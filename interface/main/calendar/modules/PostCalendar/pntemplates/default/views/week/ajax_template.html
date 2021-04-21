@@ -747,7 +747,7 @@ foreach ($providers as $provider) {
                 $divTitle .= "\n[".$atitle ."]";
                 //$content .= "<a href='javascript:oldEvt(" . attr_js($eventdate) . "," . attr_js($eventid) . ")' title='" . attr($atitle) . "'>";
                 $content .= text($catname);
-                if($catname == 'RESERVED'){
+                if($catname == 'RESERVED' || $catname == 'OUT'){
                   $content .= "<div>" . text($event['title']) . "</div>";
                   //$content .= "<div>" . text(print_r($event)) . "</div>";
                 }  
@@ -824,7 +824,7 @@ foreach ($providers as $provider) {
                 }
                 else {
                       //Category Clinic closaed or holiday take the event title
-                    if ( $catid == 6 || $catid == 7){
+                    if ( $catid == 6 || $catid == 7 || $catid == 8){
                          $content .= xlt($event['title']);
                     }else{
                         // no patient id, just output the category name
@@ -861,7 +861,7 @@ foreach ($providers as $provider) {
               $evtClass = "event_noshow";
             }
 
-            $color = ($bg_color) ? $bg_color : $color;
+            $color = ($bg_color) ? $bg_color : $color ;
 
             // output the DIV and content
 			     if($_SESSION['pc_facility'] == 0){

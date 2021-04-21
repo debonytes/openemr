@@ -35,20 +35,46 @@ if(isset($_POST['send_email'])){
         $lname = get_patient_info($pid, 'lname');
         $date_received = ($details['dateofservice']) ? $details['dateofservice'] : $details['date'];
         if($details['examiner']) {
-            $examiner = $details['examiner'];
+            $row = get_provider_details($details['examiner']);
+            $examiner = text($row['lname']) . ', ' . text($row['fname']) ;
         } elseif($details['counselor']){
-            $examiner = $details['counselor'];
+            $row = get_provider_details($details['counselor']);
+            $examiner = $examiner = text($row['lname']) . ', ' . text($row['fname']) ;
         } elseif($details['name_examiner']){
-            $examiner = $details['name_examiner'];
+            $row = get_provider_details($details['name_examiner']);
+            $examiner = $examiner = text($row['lname']) . ', ' . text($row['fname']) ;
         } else {
             $examiner = '';
         }
         $starttime =  ($details['starttime']) ? $details['starttime'] : '';
         $endtime =  ($details['endtime']) ? $details['endtime'] : '';
+        //$billing_code = $details['billing_code'];
+        if($details['billing_code']){
+            $billing_code = $details['billing_code'];
+        } elseif($details['icd_code']){
+            $billing_code = $details['icd_code'];
+        } elseif($details['diagnosis_code']){
+            $billing_code = $details['diagnosis_code'];
+        } else {
+            $billing_code = '';
+        }
+
+        if($details['diagnosis']){
+            $diagnosis = $details['diagnosis'];
+        } else {
+            $diagnosis = '';
+        }
 
         $body .= "Name of Client: {$fname} {$lname} \n";
         $body .= "Name of Provider: {$examiner}\n";
         $body .= "Service Rendered: {$form_name}\n";
+        
+        if($billing_code)
+        $body .= "Billing Code: {$billing_code}\n";
+
+        if($diagnosis)
+            $body .= "Diagnosis: {$diagnosis}\n";
+
         $body .= "Date of Appointment: {$date_received}\n";
         $body .= "Start Time: {$starttime}\n";
         $body .= "End Time: {$endtime}\n";

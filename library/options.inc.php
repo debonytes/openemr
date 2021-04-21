@@ -4257,4 +4257,25 @@ function get_patient_age($pid)
 }
 
 
+function get_providers_list()
+{
+    
+    $ures = sqlStatement("SELECT id, username, fname, lname FROM users WHERE " .
+    "authorized != 0 AND active = 1 ORDER BY lname, fname");
+
+    //$urow = sqlFetchArray($ures);
+
+    return $ures;    
+}
+
+function get_provider_details($id)
+{
+    $urow = sqlQuery("SELECT username, fname, lname FROM users WHERE " .
+    "authorized != 0 AND active = 1 AND id = ?", array($id));
+
+    //$urow = sqlFetchArray($ures);
+
+    return $urow;
+}
+
 ?>

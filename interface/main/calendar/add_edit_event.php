@@ -1567,18 +1567,7 @@ if ($_GET['prov'] != true && $_GET['group'] != true) { ?>
                     <?php echo $patient_phone['phone_label'] ?> : <strong><?php echo $patient_phone['phone_number'] ?></strong>
                 </span>
             <?php endif; ?>
-            <span class="infobox text-success">
-            <?php
-            /*foreach ($patienttitle as $value) {
-                if ($value != "") {
-                    echo text(trim($value));
-                }
-                if (count($patienttitle) > 1) {
-                    echo "<br />";
-                }
-            }*/
-            ?>
-            </span>
+            
         </div>
     </div>
     <?php
@@ -1652,7 +1641,10 @@ if ($_GET['group'] === true && $have_group_global_enabled) { ?>
         }
         // build the selection tool
         echo "<select class='form-control' name='form_provider[]' multiple='multiple' size='5' >";
-        while ($urow = sqlFetchArray($ures)) {
+
+        //$urows = get_providers_list();
+        //foreach($urows as $urow){    
+        while($urow = sqlFetchArray($ures)){    
             echo "    <option value='" . attr($urow['id']) . "'";
             if ($userid) {
                 if (in_array($urow['id'], $providers_array) || ($urow['id'] == $userid)) {

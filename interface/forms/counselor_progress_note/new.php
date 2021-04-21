@@ -44,6 +44,8 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+$userid = $_SESSION['authUserID'];
+
 //dd($check_res); 
 //print_r($check_res);
 
@@ -238,6 +240,7 @@ function get_row_values($tableName, $id, $pid, $cols = "*", $activity = "1")
 
            
            <?php
+           
             $current_date = date('Y-m-d');
 
             if( $_SESSION['from_dashboard'] ){
@@ -292,9 +295,26 @@ function get_row_values($tableName, $id, $pid, $cols = "*", $activity = "1")
                                     <div class="col-sm-9">
                                         <?php
                                             $examiner = ($check_res['counselor']) ? $check_res['counselor'] : $last_record['counselor'];
+                                            $urows = get_providers_list();                                            
                                         ?>
                                         <select name="counselor" id="counselor" class="form-control">
-                                                <?php echo get_examiner_name_dregree($examiner); ?>
+
+                                                <?php                                                  
+                                                    
+                                                    while($urow = sqlFetchArray($urows)){        
+                                                        echo "    <option value='" . attr($urow['id']) . "'";
+                                                        if ($userid) {
+                                                            if (($urow['id'] == $userid) || ($examiner == $urow['id'])) {
+                                                                echo " selected";
+                                                            }
+                                                        }
+                                                        echo ">" . text($urow['lname']);
+                                                        if ($urow['fname']) {
+                                                            echo ", " . text($urow['fname']);
+                                                        }
+                                                        echo "</option>\n";
+                                                    } 
+                                                 ?>
                                         </select>                                        
                                         <small class="text-danger counselor_error"></small>
                                     </div>                                    
