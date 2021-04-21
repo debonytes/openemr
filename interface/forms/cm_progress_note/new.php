@@ -33,6 +33,7 @@ $returnurl = 'encounter_top.php';
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+$userid = $_SESSION['authUserID'];
 
 /* checking the last record */
 if( empty($check_res) ){
@@ -351,9 +352,24 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-md-6">
                                         <?php
                                             $examiner = ($check_res['examiner']) ? $check_res['examiner'] : $last_record['examiner'];
+                                            $urows = get_providers_list();  
                                         ?>
                                         <select name="examiner" id="examiner" class="form-control">
-                                                <?php echo get_examiner_name_dregree($examiner); ?>
+                                                <?php  
+                                                    while($urow = sqlFetchArray($urows)){        
+                                                        echo "    <option value='" . attr($urow['id']) . "'";
+                                                        if ($userid) {
+                                                            if (($urow['id'] == $userid) || ($examiner == $urow['id'])) {
+                                                                echo " selected";
+                                                            }
+                                                        }
+                                                        echo ">" . text($urow['lname']);
+                                                        if ($urow['fname']) {
+                                                            echo ", " . text($urow['fname']);
+                                                        }
+                                                        echo "</option>\n";
+                                                    } 
+                                                 ?>
                                         </select> 
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                                                        

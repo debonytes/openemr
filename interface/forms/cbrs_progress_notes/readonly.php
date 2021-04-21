@@ -340,7 +340,8 @@ if($pid){
                                 <div class="form-group">
                                     <label for="cbrs" class="col-md-5 "><?php echo xlt('CBRS'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="cbrs" id="cbrs" class="form-control" disabled value="<?php echo ($check_res['cbrs']); ?>">
+                                        <?php $counselor = get_provider_details($check_res['cbrs']); ?>
+                                        <input type="text" name="cbrs" id="cbrs" class="form-control" disabled value="<?php echo text($counselor['lname']) . ', ' . text($counselor['fname']) ; ?>">
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    
                                 </div>

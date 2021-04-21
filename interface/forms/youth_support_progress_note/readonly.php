@@ -325,8 +325,9 @@ if($pid){
                                 <div class="clearfix"></div>
                                 <div class="form-group">
                                     <label for="cpss" class="col-md-5 "><?php echo xlt('CPSS'); ?></label>
-                                    <div class="col-md-6">                                        
-                                        <input type="text" class="form-control" value="<?php echo text($check_res['cpss']); ?>" disabled>
+                                    <div class="col-md-6"> 
+                                        <?php $counselor = get_provider_details($check_res['cpss']); ?>                                       
+                                        <input type="text" class="form-control" value="<?php echo text($counselor['lname']) . ', ' . text($counselor['fname']) ; ?>" disabled>
                                                                              
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    

@@ -46,7 +46,9 @@ $GLOBALS['pid'] = empty($GLOBALS['pid']) ? $form['pid'] : $GLOBALS['pid'];
 
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
-//print_r($check_res);
+$userid = $_SESSION['authUserID'];
+
+//print_r($formid);
 
 /* checking the last record */
 if( empty($check_res) ){
@@ -360,9 +362,24 @@ if ($postCalendarCategoryACO) {
                                     <div class="col-md-6">
                                         <?php
                                             $examiner = ($check_res['cbrs']) ? $check_res['cbrs'] : $last_record['cbrs'];
+                                            $urows = get_providers_list();  
                                         ?>
                                         <select name="cbrs" id="cbrs" class="form-control">
-                                                <?php echo get_examiner_name_dregree($examiner); ?>
+                                                <?php  
+                                                    while($urow = sqlFetchArray($urows)){        
+                                                        echo "    <option value='" . attr($urow['id']) . "'";
+                                                        if ($userid) {
+                                                            if (($urow['id'] == $userid) || ($examiner == $urow['id'])) {
+                                                                echo " selected";
+                                                            }
+                                                        }
+                                                        echo ">" . text($urow['lname']);
+                                                        if ($urow['fname']) {
+                                                            echo ", " . text($urow['fname']);
+                                                        }
+                                                        echo "</option>\n";
+                                                    } 
+                                                 ?>
                                         </select>                                        
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                    
@@ -535,7 +552,16 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group margin-top-20">
                                     <label for="" class="col-sm-2 control-label"><strong><?php echo xlt('Objective 1.1 (H2017):'); ?></strong></label>
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo ($check_res['goals_object_1']) ? text($check_res['goals_object_1']) : ($last_record['goals_object_1']) ? text($last_record['goals_object_1']) : ''; ?>">
+                                        <?php                                       
+                                            if($check_res['goals_object_1']){
+                                                $goals_object_1 = text($check_res['goals_object_1']);
+                                            } elseif($last_record['goals_object_1']){
+                                                $goals_object_1 = text($last_record['goals_object_1']);
+                                            } else {
+                                                $goals_object_1 = '';
+                                            }
+                                        ?>
+                                        <input type="text" class="form-control " name="goals_object_1" id="goals_object_1" style="width: 250px; float: left; margin-right: 20px" value="<?php echo $goals_object_1; ?>">
                                         <small class="text-danger goals_object_1_error" style="height: 24px; line-height: 24px;"></small>
                                     </div>
                                 </div>
@@ -545,7 +571,16 @@ if ($postCalendarCategoryACO) {
                                 <div class="col-sm-10 col-sm-offset-2" >
                                     <div class="form-group padding-left-18">
                                         <label class="radio-inline margin-right-40">
-                                          <input type="radio" name="goals_object_1_status" id="goals_object_1a" value="completed" <?php echo ($check_res['goals_object_1_status'] == 'completed') ? "checked": ($last_record['goals_object_1_status'] == 'completed') ? " checked " : "";  ?> > <?php echo xlt('Completed/Maintenance'); ?>
+                                            <?php
+                                                if($check_res['goals_object_1_status'] == 'completed'){
+                                                    $goals_object_1_status = " checked ";
+                                                } elseif($last_record['goals_object_1_status'] == 'completed'){
+                                                    $goals_object_1_status = " checked ";
+                                                } else {
+                                                    $goals_object_1_status = "";
+                                                }
+                                            ?>
+                                          <input type="radio" name="goals_object_1_status" id="goals_object_1a" value="completed" <?php echo $goals_object_1_status;  ?> > <?php echo xlt('Completed/Maintenance'); ?>
                                         </label>
                                         <label class="radio-inline margin-right-40">
                                           <input type="radio" name="goals_object_1_status" id="goals_object_1b" value="substantial" <?php echo ($check_res['goals_object_1_status'] == 'substantial') ? "checked": ($last_record['goals_object_1_status'] == 'substantial') ? " checked " : "";  ?> > <?php echo xlt('Substantial'); ?>

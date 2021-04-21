@@ -64,6 +64,8 @@ if($userArrs && array_filter($userArrs)) {
 $formid = 0 + (isset($_GET['id']) ? $_GET['id'] : 0);
 $check_res = $formid ? formFetch($tableName, $formid) : array();
 
+$userid = $_SESSION['authUserID'];
+
 /* checking the last record */
 if( empty($check_res) ){
     $last_record_query = "SELECT * FROM {$tableName} WHERE pid=? ORDER BY date DESC LIMIT 1";
@@ -403,11 +405,30 @@ if ($postCalendarCategoryACO) {
                       </div>
                       <div class="clearfix"></div>
                       <div class="form-group">
-                        <?php $provider_id =  ( isset($obj['provider_id']) && $obj['provider_id'] ) ? $obj['provider_id'] : '' ; ?>
+                       
                         <label for="provider_id" class="col-md-5 "><?php echo xlt('Respite Provider:'); ?></label>
                         <div class="col-md-6">
-                          <input type="text" readonly disabled class="form-control" value="<?php echo $user_fullname; ?>">
-                          <input type="hidden" id="provider_id" name="provider_id" value="<?php echo $user_id; ?>">
+                            <?php 
+                                $examiner = ($check_res['provider_id']) ? $check_res['provider_id'] : $last_record['provider_id'];
+                                $urows = get_providers_list(); 
+                             ?>
+                            <select name="provider_id" id="provider_id" class="form-control">
+                                <?php  
+                                    while($urow = sqlFetchArray($urows)){        
+                                        echo "    <option value='" . attr($urow['id']) . "'";
+                                        if ($userid) {
+                                            if (($urow['id'] == $userid) || ($examiner == $urow['id'])) {
+                                                echo " selected";
+                                            }
+                                        }
+                                        echo ">" . text($urow['lname']);
+                                        if ($urow['fname']) {
+                                            echo ", " . text($urow['fname']);
+                                        }
+                                        echo "</option>\n";
+                                    } 
+                                 ?>
+                            </select> 
                         </div>
                       </div>
                       <div class="clearfix"></div>

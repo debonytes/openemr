@@ -377,12 +377,11 @@ if($pid){
                         </div>                        
                       </div>
                       <div class="clearfix"></div>
-                      <div class="form-group">
-                        <?php $provider_id =  ( isset($obj['provider_id']) && $obj['provider_id'] ) ? $obj['provider_id'] : '' ; ?>
+                      <div class="form-group">                        
                         <label for="provider_id" class="col-md-5 "><?php echo xlt('Respite Provider:'); ?></label>
                         <div class="col-md-6">
-                          <input type="text" readonly disabled class="form-control" value="<?php echo $user_fullname; ?>">
-                          <input type="hidden" id="provider_id" name="provider_id" value="<?php echo $user_id; ?>">
+                            <?php $counselor = get_provider_details($check_res['provider_id']); ?>
+                            <input type="text" name="provider_id" id="provider_id" class="form-control" disabled value="<?php echo text($counselor['lname']) . ', ' . text($counselor['fname']) ; ?>">                          
                         </div>
                       </div>
                       <div class="clearfix"></div>

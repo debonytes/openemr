@@ -299,8 +299,7 @@ function get_row_values($tableName, $id, $pid, $cols = "*", $activity = "1")
                                         ?>
                                         <select name="counselor" id="counselor" class="form-control">
 
-                                                <?php                                                  
-                                                    
+                                                <?php  
                                                     while($urow = sqlFetchArray($urows)){        
                                                         echo "    <option value='" . attr($urow['id']) . "'";
                                                         if ($userid) {

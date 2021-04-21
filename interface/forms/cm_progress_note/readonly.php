@@ -323,7 +323,8 @@ if($pid){
                                 <div class="form-group">
                                     <label for="examiner" class="col-md-5 "><?php echo xlt('Case Manager'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="examiner" id="examiner" class="form-control" value="<?php echo ($check_res['examiner']) ? text($check_res['examiner']) : ''; ?>" disabled>
+                                        <?php $counselor = get_provider_details($check_res['examiner']); ?>
+                                        <input type="text" name="examiner" id="examiner" class="form-control" value="<?php echo text($counselor['lname']) . ', ' . text($counselor['fname']) ; ?>" disabled>
                                         <small class="text-danger cbrs_error"></small>
                                     </div>                                                                        
                                 </div>
