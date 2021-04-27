@@ -4171,7 +4171,7 @@ function getCDADateColor($today, $nth_days)
 function isMedicaidClient($pid){
   $sql = "SELECT Medicaid_Client FROM patient_data WHERE pid = ?";
   $res = sqlQuery($sql, array($pid));
-  return (!empty($res['Medicaid_Client'])) ? true : false;
+  return (!empty($res['Medicaid_Client']) && ( $res['Medicaid_Client'] == 'Yes')) ? true : false;
 }
 
 function patient_data_extra($pid)

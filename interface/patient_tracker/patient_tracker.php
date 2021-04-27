@@ -1277,7 +1277,9 @@ function myLocalJS()
             $("[name='kiosk_hide']").show();
             $("[name='kiosk_show']").hide();
 
-            var table = $('#table_esign').DataTable();
+            var table = $('#table_esign').DataTable({
+                          "pageLength": 50
+                        });
 
            $('#table_esign tbody').on( 'click', 'tr', function () {
                 <?php $_SESSION['from_dashboard_referer'] = $_SERVER['HTTP_REFERER']; ?>
