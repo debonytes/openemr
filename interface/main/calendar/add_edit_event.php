@@ -1522,7 +1522,7 @@ $classpati='';
 <div class="row">
     <div class="form-group">
         <label><?php echo xlt('Category'); ?>:</label>
-        <select class='form-control' name='form_category' id='form_category' onchange='set_category()' <?php echo ($eid) ? " readonly ": "" ?>>
+        <select class='form-control' name='form_category' id='form_category' onchange='set_category()' <?php echo ($eid) ? " disabled ": "" ?>>
             <option value="">Select</option>
         </select>
     </div>
@@ -1708,7 +1708,12 @@ if ($_GET['group'] === true && $have_group_global_enabled) { ?>
         echo "</select>";
 
         if($_GET['prov']){
-            echo '<input type="color" id="html5colorpicker" name="provbgcolor" onchange="clickColor(0, -1, -1, 5)" value="#ff0000" style="width:30px; padding:0 -3px; margin-top: 5px; margin-left: 10px;">';
+            $bg_color = "#ff0000";
+            if($eid){
+                $query = sqlQuery("SELECT bg_color FROM openemr_postcalendar_events_additional WHERE pc_eid = ?", array($eid));
+                $bg_color = (!empty($query['bg_color'])) ? $query['bg_color'] : '#ff0000';
+            }
+            echo '<input type="color" id="html5colorpicker" name="provbgcolor" onchange="clickColor(0, -1, -1, 5)" value="'. text($bg_color) .'" style="width:30px; padding:0 -3px; margin-top: 5px; margin-left: 10px;">';
         }
     }
     ?>
@@ -1757,23 +1762,44 @@ function isRegularRepeat($repeat)
                     title='<?php echo xla('event date or starting date'); ?>'
                     onchange='dateChanged()' />
             </div>
-            <span>
-            <label for="rballday2" class="" id='tdallday2'><?php echo xlt('Time'); ?></label>
-            <input type='radio' name='form_allday' onclick='set_allday()' value='0' id='rballday2'<?php echo ($thisduration != 1440) ? " checked " : ""; ?>/>
-        </span>
-            <span id="tdallday3">
-                <input class='form-control' type='text' size='2' name='form_hour' value='<?php echo attr($starttimeh) ?>'
-                    title='<?php echo xla('Event start time'); ?>' />
-                <input class='form-control' type='text' size='2' name='form_minute' value='<?php echo attr($starttimem) ?>'
-                    title='<?php echo xla('Event start time'); ?>' />
-                <select class='form-control' name='form_ampm' title='<?php echo xla("Note: 12:00 noon is PM, not AM"); ?>'>
-                    <option value='1'><?php echo xlt('AM'); ?></option>
-                    <option value='2'<?php echo ($startampm == '2') ? " selected" : ""; ?>><?php echo xlt('PM'); ?></option>
-                </select>
-        <label id='tdallday4'><?php echo xlt('duration'); ?></label>
-        <input class="form-control" id='tdallday5' type='text' size='4' name='form_duration' value='<?php echo attr($thisduration) ?>'
-            title='<?php echo xla('Event duration in minutes'); ?>' /><?php echo xlt('minutes'); ?>
-            </span>
+            <div class="time_duration">
+                <span>
+                    <label for="rballday2" class="" id='tdallday2'><?php echo ($_GET['prov']) ? xlt('Start Time') : xlt('Time'); ?></label>
+                    <input type='radio' name='form_allday' onclick='set_allday()' value='0' id='rballday2'<?php echo ($thisduration != 1440) ? " checked " : ""; ?>/>
+                </span>
+                <span id="tdallday3">
+                    <input class='form-control' type='text' size='2' name='form_hour' value='<?php echo attr($starttimeh) ?>'
+                        title='<?php echo xla('Event start time'); ?>' />
+                    <input class='form-control' type='text' size='2' name='form_minute' value='<?php echo attr($starttimem) ?>'
+                        title='<?php echo xla('Event start time'); ?>' />
+                    <select class='form-control' name='form_ampm' title='<?php echo xla("Note: 12:00 noon is PM, not AM"); ?>'>
+                        <option value='1'><?php echo xlt('AM'); ?></option>
+                        <option value='2'<?php echo ($startampm == '2') ? " selected" : ""; ?>><?php echo xlt('PM'); ?></option>
+                    </select>
+                    <label id='tdallday4'><?php echo xlt('duration'); ?></label>
+                    <input class="form-control" id='tdallday5' type='text' size='4' name='form_duration' value='<?php echo attr($thisduration) ?>'
+                title='<?php echo xla('Event duration in minutes'); ?>' /><?php echo xlt('minutes'); ?>
+                </span>
+                <?php /*if($_GET['prov']): ?>
+                    <div>
+                        <span>
+                            <label for="endtime" class="" id='endtime'><?php echo xlt('End Time'); ?></label>
+                        </span>
+                        <span>
+                            <input class='form-control' type='text' size='2' name='form_hour_end' value='<?php echo attr($starttimeh) ?>'
+                            title='<?php echo xla('Event end time'); ?>' />
+                            <input class='form-control' type='text' size='2' name='form_minute_end' value='<?php echo attr($starttimem) ?>'
+                            title='<?php echo xla('Event end time'); ?>' />
+                            <select class='form-control' name='form_ampm_end' title='<?php echo xla("Note: 12:00 noon is PM, not AM"); ?>'>
+                                <option value='1'><?php echo xlt('AM'); ?></option>
+                                <option value='2'<?php echo ($startampm == '2') ? " selected" : ""; ?>><?php echo xlt('PM'); ?></option>
+                            </select>
+                        </span>
+                    </div>
+                <?php endif;*/ ?>
+            </div>
+            
+            
         </div>
     </div>
     <div class="form-group ">
