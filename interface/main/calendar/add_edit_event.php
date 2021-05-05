@@ -770,6 +770,12 @@ if ($_POST['form_action'] == "save") {
 
         // EVENTS TO FACILITIES
         $e2f = (int)$eid;
+
+        if(isset($_POST['provbgcolor'])){
+            $bgcolor = add_escape_custom($_POST['provbgcolor']);   
+            sqlStatement("UPDATE openemr_postcalendar_events_additional SET bg_color = ?  WHERE pc_eid = ?", array($bgcolor, $eid));
+        }
+        
     } else {
         /* =======================================================
      *                    INSERT NEW EVENT(S)
