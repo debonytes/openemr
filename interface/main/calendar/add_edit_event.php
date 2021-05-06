@@ -1522,7 +1522,7 @@ $classpati='';
 <div class="row">
     <div class="form-group">
         <label><?php echo xlt('Category'); ?>:</label>
-        <select class='form-control' name='form_category' id='form_category' onchange='set_category()' <?php echo ($eid) ? " disabled ": "" ?>>
+        <select class='form-control' name='form_category' id='form_category' onchange='set_category()' <?php echo ($eid) ? " readonly ": "" ?>>
             <option value="">Select</option>
         </select>
     </div>
@@ -1708,11 +1708,8 @@ if ($_GET['group'] === true && $have_group_global_enabled) { ?>
         echo "</select>";
 
         if($_GET['prov']){
-            $bg_color = "#ff0000";
-            if($eid){
-                $query = sqlQuery("SELECT bg_color FROM openemr_postcalendar_events_additional WHERE pc_eid = ?", array($eid));
-                $bg_color = (!empty($query['bg_color'])) ? $query['bg_color'] : '#ff0000';
-            }
+            $bg_color = get_bg_color_event($eid);
+            
             echo '<input type="color" id="html5colorpicker" name="provbgcolor" onchange="clickColor(0, -1, -1, 5)" value="'. text($bg_color) .'" style="width:30px; padding:0 -3px; margin-top: 5px; margin-left: 10px;">';
         }
     }

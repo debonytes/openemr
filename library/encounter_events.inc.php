@@ -904,4 +904,16 @@ function getEarliestDate($date_arr)
 
     return $earliest;
 }
+
+
+function get_bg_color_event($eid)
+{
+    $bg_color = '#ff0000';
+    if($eid){
+        $query = sqlQuery("SELECT bg_color FROM openemr_postcalendar_events_additional WHERE pc_eid = ?", array($eid));
+        $bg_color = (!empty($query['bg_color'])) ? $query['bg_color'] : '#ff0000';
+    }
+
+    return $bg_color;
+}
 //================================================================================================================
