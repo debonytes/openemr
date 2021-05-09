@@ -96,6 +96,7 @@ if (isset($_GET['starttimeh'])) {
 }
 /* some defaults to start */
 $startampm = '';
+$endampm = '';
 $info_msg = "";
 $g_edit = acl_check("groups", "gcalendar", false, 'write');
 $g_view = acl_check("groups", "gcalendar", false, 'view');
@@ -1030,8 +1031,10 @@ if ($groupid) {
 
  // Fix up the time format for AM/PM.
     $startampm = '1';
+    $endampm = '1';
     if ($starttimeh >= 12) { // p.m. starts at noon and not 12:01
         $startampm = '2';
+        $endampm = '2';
         if ($starttimeh > 12) {
             $starttimeh -= 12;
         }
@@ -1151,6 +1154,15 @@ function set_display() {
             f.form_prefcat.style.display = 'none';
             f.form_apptstatus.style.display = '';
         }
+
+        // value of stop time
+        <?php if($_GET['prov']): ?>
+            var hour = f.form_hour.value;
+            var minute = f.form_minute.value;
+            var ampm = f.form_ampm.value;
+            var duration = f.form_duration.value;
+            set_stop_time(hour, minute, ampm, duration);
+        <?php endif ?>
     }
 }
 
@@ -1161,10 +1173,51 @@ function set_category() {
     var s = f.form_category;
     if (s.selectedIndex >= 0) {
         var catid = s.options[s.selectedIndex].value;
+        var duration = durations[catid];
+        var hour = f.form_hour.value;
+        var minute = f.form_minute.value;
+        var ampm = f.form_ampm.value;
+        var form_date = f.form_date.value;
+        if(typeof duration === "undefined"){ 
+            duration = 0;
+        }
         f.form_title.value = s.options[s.selectedIndex].text;
-        f.form_duration.value = durations[catid];
+        f.form_duration.value = duration;
+        <?php if($_GET['prov']): ?>
+        set_stop_time(hour, minute, ampm, duration);
+        <?php endif; ?>
         set_display();
     }
+}
+
+// breaking date into array
+
+function parse_date_into_array(date)
+{
+    var newDate = date.split('/');
+    return newDate;
+}
+
+// set stop time in form
+function set_stop_time(hour, minute, ampm, duration){
+    if(typeof duration !== "undefined"){ 
+        var h = hour;
+        var f = document.forms[0];       
+        
+        var newDateFormat = parse_date_into_array(f.form_date.value);
+        var d = new Date(newDateFormat[2], newDateFormat[0] - 1, newDateFormat[1]);
+        var origDateObj = new Date(d.getTime() + (h*60*60*1000)); 
+        var origDateObj = new Date(origDateObj.getTime() + minute*60000);    
+        var newDateObj = new Date(origDateObj.getTime() + duration*60000);   
+
+        var newHour =  newDateObj.getHours();        
+        var newMinutes = newDateObj.getMinutes();
+
+        f.form_ampm_end.selectedIndex = ( (newHour >= 12) || (ampm == 2) ) ? 1 : 0;
+        f.form_hour_end.value =  (newHour > 12) ? newHour - 12 : newHour;
+        f.form_minute_end.value = (newMinutes == 0) ? '00' : newMinutes;
+    }
+    
 }
 
 // Modify some visual attributes when the all-day or timed-event
@@ -1329,6 +1382,28 @@ function setappt(year,mon,mday,hours,minutes) {
     f.form_ampm.selectedIndex = (hours >= 12) ? 1 : 0;
     f.form_hour.value = (hours > 12) ? hours - 12 : hours;
     f.form_minute.value = ('' + (minutes + 100)).substring(1);
+}
+
+function setapptend(year,mon,mday,hours,minutes) {
+    var f = document.forms[0];
+    <?php
+    $currentDateFormat = $GLOBALS['date_display_format'];
+    if ($currentDateFormat == 0) { ?>
+    f.form_date.value =  '' + year + '-' +
+        ('' + (mon  + 100)).substring(1) + '-' +
+        ('' + (mday + 100)).substring(1);
+    <?php } elseif ($currentDateFormat == 1) { ?>
+    f.form_date.value = ('' + (mon  + 100)).substring(1) + '/' +
+        ('' + (mday + 100)).substring(1) + '/' +
+        '' + year;
+    <?php } elseif ($currentDateFormat == 2) { ?>
+    f.form_date.value = ('' + (mday + 100)).substring(1) + '/' +
+        ('' + (mon  + 100)).substring(1) + '/' +
+        '' + year;
+    <?php } ?>
+    f.form_ampm_end.selectedIndex = (hours >= 12) ? 1 : 0;
+    f.form_hour_end.value = (hours > 12) ? hours - 12 : hours;
+    f.form_minute_end.value = ('' + (minutes + 100)).substring(1);
 }
 
 // Invoke the find-available popup.
@@ -1777,23 +1852,23 @@ function isRegularRepeat($repeat)
                     <input class="form-control" id='tdallday5' type='text' size='4' name='form_duration' value='<?php echo attr($thisduration) ?>'
                 title='<?php echo xla('Event duration in minutes'); ?>' /><?php echo xlt('minutes'); ?>
                 </span>
-                <?php /*if($_GET['prov']): ?>
+                <?php if($_GET['prov'] == true): ?>
                     <div>
                         <span>
                             <label for="endtime" class="" id='endtime'><?php echo xlt('End Time'); ?></label>
                         </span>
                         <span>
-                            <input class='form-control' type='text' size='2' name='form_hour_end' value='<?php echo attr($starttimeh) ?>'
+                            <input class='form-control' type='text' size='2' name='form_hour_end' id="form_hour_end" value='<?php echo attr($starttimeh) ?>'
                             title='<?php echo xla('Event end time'); ?>' />
-                            <input class='form-control' type='text' size='2' name='form_minute_end' value='<?php echo attr($starttimem) ?>'
+                            <input class='form-control' type='text' size='2' name='form_minute_end' id="form_minute_end" value='<?php echo attr($starttimem) ?>'
                             title='<?php echo xla('Event end time'); ?>' />
-                            <select class='form-control' name='form_ampm_end' title='<?php echo xla("Note: 12:00 noon is PM, not AM"); ?>'>
+                            <select class='form-control' name='form_ampm_end' id="form_ampm_end" title='<?php echo xla("Note: 12:00 noon is PM, not AM"); ?>'>
                                 <option value='1'><?php echo xlt('AM'); ?></option>
                                 <option value='2'<?php echo ($startampm == '2') ? " selected" : ""; ?>><?php echo xlt('PM'); ?></option>
                             </select>
                         </span>
                     </div>
-                <?php endif;*/ ?>
+                <?php endif; ?>
             </div>
             
             
