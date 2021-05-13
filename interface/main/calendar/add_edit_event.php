@@ -146,6 +146,21 @@ if ($group_disabled) {
 function InsertEventFull()
 {
     global $new_multiple_value,$provider,$event_date,$duration,$recurrspec,$starttime,$endtime,$locationspec;
+
+    if($_POST['provider_tab']){
+        $form_date          = $_POST['form_date'];
+        $tmph               = $_POST['form_hour'];
+        $tmpm               = $_POST['form_minute'];
+        $form_ampm          = $_POST['form_ampm'];
+        $form_hour_end      = $_POST['form_hour_end'];
+        $form_minute_end    = $_POST['form_minute_end'];
+        $form_ampm_end      = $_POST['form_ampm_end'];
+        $duration       = get_provider_duration($form_date, $tmph, $tmpm, $form_ampm, $form_hour_end, $form_minute_end, $form_ampm_end);
+    } else {
+        $duration = $duration;
+    }   
+    
+    
     // =======================================
     // multi providers case
     // =======================================
@@ -330,11 +345,22 @@ if ($_POST['form_action'] == "duplicate" || $_POST['form_action'] == "save") {
     } else {
         $tmph = $_POST['form_hour'] + 0;
         $tmpm = $_POST['form_minute'] + 0;
-        if ($_POST['form_ampm'] == '2' && $tmph < 12) {
+        $form_ampm = $_POST['form_ampm'];
+        if ($form_ampm == '2' && $tmph < 12) {
             $tmph += 12;
         }
 
-        $duration = abs($_POST['form_duration']); // fixes #395
+        $form_date = $_POST['form_date'];
+
+        if($_POST['provider_tab']){
+            $form_hour_end = $_POST['form_hour_end'];
+            $form_minute_end = $_POST['form_minute_end'];
+            $form_ampm_end = $_POST['form_ampm_end'];
+            $duration = get_provider_duration($form_date, $tmph, $tmpm, $form_ampm, $form_hour_end, $form_minute_end, $form_ampm_end);
+        } else {
+            $duration = abs($_POST['form_duration']); // fixes #395
+        }    
+        
     }
 
         $starttime = "$tmph:$tmpm:00";
@@ -345,7 +371,7 @@ if ($_POST['form_action'] == "duplicate" || $_POST['form_action'] == "save") {
         ++$tmph;
     }
 
-        $endtime = "$tmph:$tmpm:00";
+        $endtime = ($_POST['provider_tab']) ? "$form_hour_end:$form_minute_end:00": "$tmph:$tmpm:00";
 
         // Set up working variables related to repeated events.
         $my_recurrtype = 0;
@@ -442,17 +468,47 @@ if ($_POST['form_action'] == "duplicate") {
     DOBandEncounter($eid);
 }
 
+// getting provider tab duration 
+function get_provider_duration($form_date, $tmph, $tmpm, $form_ampm, $form_hour_end, $form_minute_end, $form_ampm_end){
+    //$date = explode('-', $form_date);
+    $starthour = ($form_ampm == 2 && $tmph < 12) ? $tmph + 12 : $tmph;
+    $startdate = $form_date . ' ' . $starthour . ':' . $tmpm . ':00';
+    $starttime = date('Y-m-d H:i:s', strtotime($startdate));
+
+    $endhour = ($form_ampm_end == 2 && $form_hour_end < 12) ? $form_hour_end + 12 : $form_hour_end;
+    $enddate = $form_date . ' ' . $endhour . ':' . $form_minute_end . ':00';
+    $endtime = date('Y-m-d H:i:s', strtotime($enddate));
+
+    $minutes = (strtotime($enddate) - strtotime($startdate)) / 60;
+
+    //die('Min: ' . ($minutes));
+
+    return abs($minutes);
+}
+
 // If we are saving, then save and close the window.
 //
 if ($_POST['form_action'] == "save") {
     
     $tmph = $_POST['form_hour'] + 0;
     $tmpm = $_POST['form_minute'] + 0;
-    if ($_POST['form_ampm'] == '2' && $tmph < 12) {
+    $form_ampm = $_POST['form_ampm'];
+    if ($form_ampm == '2' && $tmph < 12) {
         $tmph += 12;
     }
 
-    $fullappt_date = $_POST['form_date'] . " $tmph:$tmpm:00";
+    $form_date = $_POST['form_date'];
+
+    $fullappt_date = $form_date . " $tmph:$tmpm:00";
+
+    if($_POST['provider_tab']){
+        $form_hour_end = $_POST['form_hour_end'];
+        $form_minute_end = $_POST['form_minute_end'];
+        $form_ampm_end = $_POST['form_ampm_end'];
+        $duration = get_provider_duration($form_date, $tmph, $tmpm, $form_ampm, $form_hour_end, $form_minute_end, $form_ampm_end);
+    } else {
+        $duration = abs($_POST['form_duration']); // fixes #395
+    }
 
     /* =======================================================
      *                    UPDATE EVENTS
@@ -1161,8 +1217,9 @@ function set_display() {
             var minute = f.form_minute.value;
             var ampm = f.form_ampm.value;
             var duration = f.form_duration.value;
+            //console.log('Dur: ' + duration);
             set_stop_time(hour, minute, ampm, duration);
-        <?php endif ?>
+        <?php endif; ?>
     }
 }
 
@@ -1183,9 +1240,10 @@ function set_category() {
         }
         f.form_title.value = s.options[s.selectedIndex].text;
         f.form_duration.value = duration;
-        <?php if($_GET['prov']): ?>
+        //console.log(duration);
+        <?php /*if($_GET['prov']): ?>
         set_stop_time(hour, minute, ampm, duration);
-        <?php endif; ?>
+        <?php endif; */ ?>
         set_display();
     }
 }
@@ -1203,6 +1261,8 @@ function set_stop_time(hour, minute, ampm, duration){
     if(typeof duration !== "undefined"){ 
         var h = hour;
         var f = document.forms[0];       
+
+        //console.log('duration: ' + duration);
         
         var newDateFormat = parse_date_into_array(f.form_date.value);
         var d = new Date(newDateFormat[2], newDateFormat[0] - 1, newDateFormat[1]);
@@ -1565,6 +1625,9 @@ $classpati='';
 <!-- Following added by epsdky 2016 (details in commit) -->
 <input type="hidden" name="old_repeats" id="old_repeats" value="<?php echo attr($repeats); ?>">
 <input type="hidden" name="rt2_flag2" id="rt2_flag2" value="<?php echo attr(isset($rspecs['rt2_pf_flag']) ? $rspecs['rt2_pf_flag'] : '0'); ?>">
+<?php if($_GET['prov'] == true): ?>
+<input type="hidden" name="provider_tab" value="1">
+<?php endif; ?>
 <!-- End of addition by epsdky -->
 
 <?php if( ($_GET['prov'] == false) && ($_GET['group'] == false) ): ?>
@@ -1848,9 +1911,12 @@ function isRegularRepeat($repeat)
                         <option value='1'><?php echo xlt('AM'); ?></option>
                         <option value='2'<?php echo ($startampm == '2') ? " selected" : ""; ?>><?php echo xlt('PM'); ?></option>
                     </select>
-                    <label id='tdallday4'><?php echo xlt('duration'); ?></label>
-                    <input class="form-control" id='tdallday5' type='text' size='4' name='form_duration' value='<?php echo attr($thisduration) ?>'
+                    <span style="<?php echo ($_GET['prov'] == true) ? 'visibility: hidden;':''; ?>">
+                        <label id='tdallday4'><?php echo xlt('duration'); ?></label>
+                        <input class="form-control" id='tdallday5' type='text' size='4' name='form_duration' value='<?php echo attr($thisduration) ?>'
                 title='<?php echo xla('Event duration in minutes'); ?>' /><?php echo xlt('minutes'); ?>
+                    </span>
+                    
                 </span>
                 <?php if($_GET['prov'] == true): ?>
                     <div>
@@ -1858,6 +1924,7 @@ function isRegularRepeat($repeat)
                             <label for="endtime" class="" id='endtime'><?php echo xlt('End Time'); ?></label>
                         </span>
                         <span>
+                            
                             <input class='form-control' type='text' size='2' name='form_hour_end' id="form_hour_end" value='<?php echo attr($starttimeh) ?>'
                             title='<?php echo xla('Event end time'); ?>' />
                             <input class='form-control' type='text' size='2' name='form_minute_end' id="form_minute_end" value='<?php echo attr($starttimem) ?>'
