@@ -133,6 +133,8 @@ if (isset($_POST['new_login_session_management'])) {
         array($_SESSION['authId'])
     );
 
+    //die(print_r($res1));
+
     $registrationAttempt = false;
     $isU2F = false;
     $isTOTP = false;

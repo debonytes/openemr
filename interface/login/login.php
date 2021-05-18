@@ -122,6 +122,8 @@ if ($GLOBALS['new_tabs_layout']) {
     }
 }
 
+//die(count($emr_app));
+
 $div_app = '';
 if (count($emr_app)) {
     // Standard app must exist

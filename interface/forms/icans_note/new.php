@@ -244,7 +244,28 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="examiner" class="col-md-5 "><?php echo xlt('Examiner'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="examiner" id="examiner" class="form-control" value="<?php echo ($check_res['examiner']) ? text($check_res['examiner']) : ''; ?>">
+                                        <?php
+                                            $examiner = ($check_res['examiner']) ? $check_res['examiner'] : $last_record['examiner'];
+                                            $urows = get_providers_list();  
+                                        ?>
+                                        <select name="examiner" id="examiner" class="form-control">
+                                                <?php  
+                                                    while($urow = sqlFetchArray($urows)){        
+                                                        echo "    <option value='" . attr($urow['id']) . "'";
+                                                        //if ($userid) {
+                                                            if (($examiner == $urow['id'])) {
+                                                                echo " selected";
+                                                            }
+                                                       // }
+                                                        echo ">" . text($urow['lname']);
+                                                        if ($urow['fname']) {
+                                                            echo ", " . text($urow['fname']);
+                                                        }
+                                                        echo "</option>\n";
+                                                    } 
+                                                 ?>
+                                        </select> 
+                                        
                                         <small class="text-danger cbrs_error"></small>
                                     </div>   
                                     <div class="clearfix"></div>                                 
@@ -253,7 +274,7 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="billing_code" class="col-md-5 "><?php echo xlt('Billing Code'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="billing_code" id="billing_code"  class="form-control" value="">
+                                        <input type="text" name="billing_code" id="billing_code"  class="form-control" value="H0031" readonly>
                                     </div>   
                                     <div class="clearfix"></div>                                 
                                 </div>

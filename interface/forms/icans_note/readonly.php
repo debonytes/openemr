@@ -222,7 +222,8 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 <div class="form-group">
                                     <label for="examiner" class="col-md-5 "><?php echo xlt('Examiner'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="examiner" id="examiner" class="form-control" value="<?php echo ($check_res['examiner']) ? text($check_res['examiner']) : ''; ?>" disabled>
+                                        <?php $counselor = get_provider_details($check_res['examiner']); ?>
+                                        <input type="text" name="examiner" id="examiner" class="form-control" value="<?php echo text($counselor['lname']) . ', ' . text($counselor['fname']) ; ?>" disabled>
                                         <small class="text-danger cbrs_error"></small>
                                     </div>   
                                     <div class="clearfix"></div>                                 
@@ -231,7 +232,7 @@ $check_res = $formid ? formFetch($tableName, $formid) : array();
                                 <div class="form-group">
                                     <label for="billing_code" class="col-md-5 "><?php echo xlt('Billing Code'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="billing_code" id="billing_code"  class="form-control" value="<?php echo ($check_res['billing_code']) ? text($check_res['billing_code']) : ''; ?>" disabled>
+                                        <input type="text" name="billing_code" id="billing_code"  class="form-control" value="<?php echo ($check_res['billing_code']) ? text($check_res['billing_code']) : 'H0031'; ?>" disabled>
                                     </div>   
                                     <div class="clearfix"></div>                                 
                                 </div>
