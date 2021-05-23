@@ -259,7 +259,7 @@ if (!$_REQUEST['flb_table']) {
     <div class="row-fluid" id="flb_selectors" style="display:<?php echo attr($setting_selectors); ?>;">
         <div class="col-sm-12">
             <div class="showRFlow" id="show_flows" style="text-align:center;margin:20px auto;" name="kiosk_hide">
-                <!-- <div class="title"><?php echo xlt('Flow Board'); ?></div> -->
+                 
                 <div class="title"><?php echo xlt('Dashboard'); ?></div>
                 <div name="div_response" id="div_response" class="nodisplay"></div>
                 <?php
@@ -271,6 +271,7 @@ if (!$_REQUEST['flb_table']) {
                 }
                 ?>
                 <br/>
+
                 <form name="flb" id="flb" method="post">
                     <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
                     <div class=" text-center row divTable" style="width: 85%;padding: 10px 10px 0;margin: 10px auto;">
@@ -947,7 +948,7 @@ if (!$_REQUEST['flb_table']) { ?>
             <div class="col-md-12">
                 <div class="text-center row divTable" style="width: 85%; padding: 10px; margin: 10px auto">
                     <div>
-                        <h2>Forms need to be e-signed</h2>
+                        <h2><?php  echo text('Forms need to be e-signed'); ?></h2>
                         
                         <table class="table table-hover table-bordered" id="table_esign">
                             <thead>
@@ -982,8 +983,8 @@ if (!$_REQUEST['flb_table']) { ?>
                                 }
                                 $forms = array();
 
-                                $form_query = "SELECT * FROM forms";
-                                $form_stmt = sqlStatement($form_query);
+                                $form_query = "SELECT * FROM forms WHERE user = ?";
+                                $form_stmt = sqlStatement($form_query, array($_SESSION['authUser']));
 
                                 while($form_row = sqlFetchArray($form_stmt)){
                                     $sql_form = "form_" . $form_row['formdir'];
