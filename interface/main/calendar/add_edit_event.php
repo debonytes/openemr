@@ -486,6 +486,21 @@ function get_provider_duration($form_date, $tmph, $tmpm, $form_ampm, $form_hour_
     return abs($minutes);
 }
 
+function convert_time_format($time)
+{
+    $newtime  = '';
+
+    if($time){
+        $time       = explode(':', $time);
+        $hour       = ($time[0] > 12) ? $time[0] - 12 : $time[0];
+        $minutes    = ($time[1] == 0) ? '00' : $time[1];
+        $ampm       = ($time[0] >= 12) ? 'PM' : 'AM';
+        $newtime    = $hour . ':' . $minutes . ' ' . $ampm;
+    }   
+
+    return $newtime;
+}
+
 // If we are saving, then save and close the window.
 //
 if ($_POST['form_action'] == "save") {
@@ -804,6 +819,8 @@ if ($_POST['form_action'] == "save") {
             $args = $_POST;
             $status_sym = array('@', '~', '>');
             $status = $args['form_apptstatus'];
+            $args['starttime'] = convert_time_format($starttime);
+            $args['endtime'] = convert_time_format($endtime);
 
             if(!empty($status) || in_array($status, $status_sym) ){
                 $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));

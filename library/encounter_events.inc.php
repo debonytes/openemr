@@ -442,7 +442,8 @@ function InsertFormCategory($args, $pc_eid)
             $billing_facility   = $args['billing_facility'];
             $pc_catid           = $args['form_category'];
             $name               = $args['form_patient'];
-            //$examiner           = $args['form_provider'];
+            $starttime          = $args['starttime'];
+            $endtime            = $args['endtime'];
 
             $encounter_data = array($date, $reason, $facility, $facility_id, $pid, $encounter, $onset_date, $provider_id, $billing_facility, $pc_catid);
 
@@ -496,6 +497,15 @@ function InsertFormCategory($args, $pc_eid)
                         $oldSet .= ',?';
                     } elseif($field === 'status'){
                         array_push($oldData, 'ongoing');
+                        $oldSet .= ',?';                    
+                    } elseif($field === 'starttime'){
+                        array_push($oldData, $starttime);
+                        $oldSet .= ',?';                    
+                    } elseif($field === 'endtime'){
+                        array_push($oldData, $endtime);
+                        $oldSet .= ',?';                    
+                    } elseif($field === 'duration'){
+                        array_push($oldData, NULL);
                         $oldSet .= ',?';                    
                     } elseif($field === 'pid'){
                         array_push($oldData, $pid);
