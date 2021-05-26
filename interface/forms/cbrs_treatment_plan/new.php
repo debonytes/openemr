@@ -329,7 +329,28 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="examiner" class="col-md-5"><?php echo xlt('Examiner'); ?></label>
                                         <div class="col-md-6">
-                                          <input type="text" class="form-control" id="examiner" name="examiner" value="<?php echo text($check_res['examiner']); ?>">
+                                            <?php
+                                            $examiner = ($check_res['examiner']) ? $check_res['examiner'] : '';
+                                            $urows = get_providers_list();  
+                                        ?>
+                                            <select name="examiner" id="examiner" class="form-control">
+                                                    <?php  
+                                                        while($urow = sqlFetchArray($urows)){        
+                                                            echo "    <option value='" . attr($urow['id']) . "'";
+                                                            if ($userid) {
+                                                                if (($urow['id'] == $userid) || ($examiner == $urow['id'])) {
+                                                                    echo " selected";
+                                                                }
+                                                            }
+                                                            echo ">" . text($urow['lname']);
+                                                            if ($urow['fname']) {
+                                                                echo ", " . text($urow['fname']);
+                                                            }
+                                                            echo "</option>\n";
+                                                        } 
+                                                     ?>
+                                            </select> 
+                                          
                                           <small class="text-danger examiner_error"></small>
                                         </div>
                                     </div>
@@ -348,7 +369,8 @@ if ($postCalendarCategoryACO) {
                                     <div class="form-group">
                                         <label for="date" class="col-md-5"><?php echo xlt('Date'); ?></label>
                                         <div class="col-md-6">
-                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo text(date('m/d/Y', strtotime($check_res['date']))); ?>">
+                                            <?php $date = ($check_res['date']) ? text(date('m/d/Y', strtotime($check_res['date']))) : text(date('m/d/Y')); ?>
+                                          <input type="text" class="form-control datepicker" id="date" name="date" value="<?php echo $date; ?>">
                                           <small class="text-danger date_error"></small>
                                         </div>
                                     </div>

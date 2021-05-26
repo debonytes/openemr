@@ -353,7 +353,28 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="cbrs" class="col-md-5 "><?php echo xlt('Targeted Care Coordinator'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="tcc" id="tcc" class="form-control" value="<?php echo text($check_res['tcc']); ?>">
+                                        <?php
+                                            $examiner = ($check_res['tcc']) ? $check_res['tcc'] : $last_record['tcc'];
+                                            $urows = get_providers_list();  
+                                        ?>
+                                        <select name="tcc" id="tcc" class="form-control">
+                                                <?php  
+                                                    while($urow = sqlFetchArray($urows)){        
+                                                        echo "    <option value='" . attr($urow['id']) . "'";
+                                                        if ($userid) {
+                                                            if (($examiner == $urow['id'])) {
+                                                                echo " selected";
+                                                            }
+                                                        }
+                                                        echo ">" . text($urow['lname']);
+                                                        if ($urow['fname']) {
+                                                            echo ", " . text($urow['fname']);
+                                                        }
+                                                        echo "</option>\n";
+                                                    } 
+                                                 ?>
+                                        </select> 
+                                        
                                         <small class="text-danger error"></small>
                                     </div>                                    
                                 </div>
@@ -370,7 +391,16 @@ if ($postCalendarCategoryACO) {
                                 <div class="form-group">
                                     <label for="" class="col-md-5 "><?php echo xlt('Date of Service'); ?></label>
                                     <div class="col-md-6">
-                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control datepicker" value="<?php echo text($check_res['dateofservice']); ?>" autocomplete="off">
+                                        <?php 
+                                        if($check_res['dateofservice']){
+                                            $dateofservice = text(date('m/d/Y', strtotime($check_res['dateofservice']) ));
+                                        }  elseif($last_record['dateofservice']){
+                                            $dateofservice = text(date('m/d/Y', strtotime($last_record['dateofservice']) ));
+                                        } else {
+                                            $dateofservice = text(date('m/d/Y'));
+                                        }
+                                        ?>
+                                        <input type="text" name="dateofservice" id="dateofservice" class="form-control datepicker" value="<?php echo $dateofservice; ?>" autocomplete="off">
                                         <small class="text-danger date_error"></small>
                                     </div>                                    
                                 </div>
@@ -628,49 +658,7 @@ if ($postCalendarCategoryACO) {
                 var today = new Date();
 
                 $("input#endtime, input#starttime").on("keypress change blur focusout",function(){
-                  var s = $("input#starttime").val();
-                  var e = $("input#endtime").val();
-                  var startTime = s.replace(/\s+/g, '').trim();
-                  var endTime = e.replace(/\s+/g, '').trim();
-                  if(startTime && endTime) {
-                    
-                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate() + 1)).slice(-2);
-                    var date1 = new Date( date_today + " " + s ).getTime();
-                    var date2 = new Date( date_today + " " + e ).getTime();
-                    var msec = date2 - date1;
-                    var total_in_minutes = Math.floor(msec / 60000);
-                    var mins = Math.floor(msec / 60000);
-                    var hrs = Math.floor(mins / 60);
-                    var days = Math.floor(hrs / 24);
-                    var yrs = Math.floor(days / 365);
-                    var hours_text = '';
-                    var hour_and_mins = '';
-
-                    mins = mins % 60;
-                    if(mins>1) {
-                      hour_and_mins = hrs + "." + mins + ' hours';
-                    } else {
-                      if(hrs>1) {
-                        hour_and_mins = hrs + ' hours';
-                      } else {
-                        hour_and_mins = hrs + ' hour';
-                      }
-                    }
-
-                    /* 
-                      1 hour = 4 units 
-                      60 mins = 4 units
-                      4 / 60 = 0.066 unit
-                      1 min = 0.066 unit
-                    */
-
-                    var per_unit = 4/60;
-                    var total_units = total_in_minutes * per_unit;
-                    var unit_text = (total_units>0) ? total_units + ' units': total_units + ' unit';
-                    var duration_text = hour_and_mins + " / " + unit_text;
-                    $("input#duration").val(duration_text);
-                    
-                  }
+                  calculate_duration();
                 });
 
                 // esign API
@@ -748,7 +736,60 @@ if ($postCalendarCategoryACO) {
                     });
                 });
 
+                 calculate_duration();
+
             });
+
+            function calculate_duration()
+            {
+                var today = new Date();
+                var s = $("input#starttime").val();
+                  var e = $("input#endtime").val();
+                  var startTime = s.replace(/\s+/g, '').trim();
+                  var endTime = e.replace(/\s+/g, '').trim();
+                  if(startTime && endTime) {
+                    
+                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate())).slice(-2);
+                    var date1 = new Date( date_today + " " + s ).getTime();
+                    var date2 = new Date( date_today + " " + e ).getTime();
+                    var msec = date2 - date1;
+                    var total_in_minutes = Math.floor(msec / 60000);
+                    var mins = Math.floor(msec / 60000);
+                    var hrs = Math.floor(mins / 60);
+                    var days = Math.floor(hrs / 24);
+                    var yrs = Math.floor(days / 365);
+                    var hours_text = '';
+                    var hour_and_mins = '';
+
+                    mins = mins % 60;
+                    if(mins>1) {
+                      hour_and_mins = hrs + "." + mins + ' hours';
+                    } else {
+                      if(hrs>1) {
+                        hour_and_mins = hrs + ' hours';
+                      } else {
+                        hour_and_mins = hrs + ' hour';
+                      }
+                    }
+
+                    /* 
+                      1 hour = 4 units 
+                      60 mins = 4 units
+                      4 / 60 = 0.066 unit
+                      1 min = 0.066 unit
+                    */
+
+                    var per_unit = 4/60;
+                    var total_units = total_in_minutes * per_unit;
+                    var unit_text = (total_units>0) ? total_units + ' units': total_units + ' unit';
+                    var duration_text = hour_and_mins + " / " + unit_text;
+                    $("input#duration").val(duration_text);
+
+                    $('#billable_hours').val(hour_and_mins);
+                    $('#billable_units').val(unit_text);
+                    
+                  }
+            }
 
             function form_close_tab()
             {

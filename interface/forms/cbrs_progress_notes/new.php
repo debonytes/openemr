@@ -369,7 +369,7 @@ if ($postCalendarCategoryACO) {
                                                     while($urow = sqlFetchArray($urows)){        
                                                         echo "    <option value='" . attr($urow['id']) . "'";
                                                         if ($userid) {
-                                                            if (($urow['id'] == $userid) || ($examiner == $urow['id'])) {
+                                                            if ( ($examiner == $urow['id'])) {
                                                                 echo " selected";
                                                             }
                                                         }

@@ -755,7 +755,7 @@ if ($postCalendarCategoryACO) {
                                     }
                                 ?>
                                 <button type='submit'  class="btn btn-default btn-save" name="save_progress_notes"><?php echo xlt('Save'); ?></button>
-                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
+                                <button type="button" class="btn btn-link btn-cancel oe-opt-btn-separate-left" onclick="form_close_tab()"><?php echo xlt('Cancel');?></button>
                                 <a href="#" class="btn btn-default" id="print" style="margin-left: 18px">Print</a>
                             </div>
                         </div>
@@ -785,53 +785,7 @@ if ($postCalendarCategoryACO) {
                 var today = new Date();
 
                 $("input#endtime, input#starttime").on("keypress change blur focusout",function(){
-                  var s = $("input#starttime").val();
-                  var e = $("input#endtime").val();
-                  var startTime = s.replace(/\s+/g, '').trim();
-                  var endTime = e.replace(/\s+/g, '').trim();
-                  if(startTime && endTime) {
-                    
-                    //console.log('Start: ' + startTime + ' | End: ' + endTime);
-                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate())).slice(-2);
-                    //console.log('Date Today: ' + date_today);
-                    var date1 = new Date( date_today + " " + s ).getTime();
-                    var date2 = new Date( date_today + " " + e ).getTime();
-                    var msec = date2 - date1;
-                    var total_in_minutes = Math.floor(msec / 60000);
-                    var mins = Math.floor(msec / 60000);
-                    var hrs = Math.floor(mins / 60);
-                    var days = Math.floor(hrs / 24);
-                    var yrs = Math.floor(days / 365);
-                    var hours_text = '';
-                    var hour_and_mins = '';
-
-                   // console.log('Date1: ' + date1 + ' | date2: ' + date2);
-
-                    mins = mins % 60;
-                    if(mins>1) {
-                      hour_and_mins = hrs + "." + mins + ' hours';
-                    } else {
-                      if(hrs>1) {
-                        hour_and_mins = hrs + ' hours';
-                      } else {
-                        hour_and_mins = hrs + ' hour';
-                      }
-                    }
-
-                    /* 
-                      1 hour = 4 units 
-                      60 mins = 4 units
-                      4 / 60 = 0.066 unit
-                      1 min = 0.066 unit
-                    */
-
-                    var per_unit = 4/60;
-                    var total_units = total_in_minutes * per_unit;
-                    var unit_text = (total_units>0) ? total_units + ' units': total_units + ' unit';
-                    var duration_text = hour_and_mins + " / " + unit_text;
-                    $("input#duration").val(duration_text);
-                    
-                  }
+                  calculate_duration();
                 });
 
 
@@ -908,7 +862,75 @@ if ($postCalendarCategoryACO) {
                     });
                 });
 
+                calculate_duration();
+
             });
+
+
+            function calculate_duration()
+            {
+                var today = new Date();
+                var s = $("input#starttime").val();
+                  var e = $("input#endtime").val();
+                  var startTime = s.replace(/\s+/g, '').trim();
+                  var endTime = e.replace(/\s+/g, '').trim();
+                  if(startTime && endTime) {
+                    
+                    var date_today = today.getFullYear() + "-" + ('0' + (today.getMonth() + 1)).slice(-2) + "-" + ('0' + (today.getDate())).slice(-2);
+                    var date1 = new Date( date_today + " " + s ).getTime();
+                    var date2 = new Date( date_today + " " + e ).getTime();
+                    var msec = date2 - date1;
+                    var total_in_minutes = Math.floor(msec / 60000);
+                    var mins = Math.floor(msec / 60000);
+                    var hrs = Math.floor(mins / 60);
+                    var days = Math.floor(hrs / 24);
+                    var yrs = Math.floor(days / 365);
+                    var hours_text = '';
+                    var hour_and_mins = '';
+
+                    mins = mins % 60;
+                    if(mins>1) {
+                      hour_and_mins = hrs + "." + mins + ' hours';
+                    } else {
+                      if(hrs>1) {
+                        hour_and_mins = hrs + ' hours';
+                      } else {
+                        hour_and_mins = hrs + ' hour';
+                      }
+                    }
+
+                    /* 
+                      1 hour = 4 units 
+                      60 mins = 4 units
+                      4 / 60 = 0.066 unit
+                      1 min = 0.066 unit
+                    */
+
+                    var per_unit = 4/60;
+                    var total_units = total_in_minutes * per_unit;
+                    var unit_text = (total_units>0) ? total_units + ' units': total_units + ' unit';
+                    var duration_text = hour_and_mins + " / " + unit_text;
+                    $("input#duration").val(duration_text);
+
+                    $('#billable_hours').val(hour_and_mins);
+                    $('#billable_units').val(unit_text);
+                    
+                  }
+            }
+
+
+            function form_close_tab()
+            {
+                var session_dashboard = "<?php echo isset($_SESSION['from_dashboard']) ? $_SESSION['from_dashboard'] : ''; ?>";
+                //console.log('Session Dashboard: ' + session_dashboard);
+                if(session_dashboard) {
+                    //window.top.location.reload();
+                    window.top.location.href = window.top.location;
+                } else {
+                   top.restoreSession(); 
+                    parent.closeTab(window.name, false);
+                }                
+            }
         </script>
     </body>
 </html>

@@ -476,6 +476,8 @@ function InsertFormCategory($args, $pc_eid)
                 $oldSet = '';
                 $onset_date = date('Y-m-d H:i:s', strtotime($onset_date));
 
+                $pn_arr = array('cbrs', 'cpss', 'provider_id', 'counselor', 'examiner');
+
                 foreach($table_fields as $field){
                     if($field === 'id'){
                         array_push($oldData, 'NULL');
@@ -492,7 +494,7 @@ function InsertFormCategory($args, $pc_eid)
                     } elseif($field === 'encounter'){
                         array_push($oldData, $encounter);
                         $oldSet .= ',?';
-                    } elseif( ($field === 'counselor') || ($field === 'examiner')  ){
+                    } elseif( in_array($field, $pn_arr) ){
                         array_push($oldData, $provider_id);
                         $oldSet .= ',?';
                     } elseif($field === 'status'){
