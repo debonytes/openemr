@@ -591,6 +591,8 @@ if ($_POST['form_action'] == "save") {
                     $args['locationspec'] = $locationspec;
                     $args['form_apptstatus'] = $args['form_apptstatus'];
                     InsertEvent($args);
+
+                    // end of current repeating
                 }
             } else if ($_POST['recurr_affect'] == 'future') { // ===== Future Recurring events of a repeating series =====
                 // update all existing event records to

@@ -478,10 +478,15 @@ function InsertFormCategory($args, $pc_eid)
 
                 $pn_arr = array('cbrs', 'cpss', 'provider_id', 'counselor', 'examiner');
 
+                $now = date('Y-m-d H:i:s');
+
                 foreach($table_fields as $field){
                     if($field === 'id'){
                         array_push($oldData, 'NULL');
                         $oldSet .= '?';
+                    } elseif($field === 'timestamp'){
+                        array_push($oldData, $now);
+                        $oldSet .= ',?';
                     } elseif($field === 'date'){
                         array_push($oldData, $onset_date);
                         $oldSet .= ',?';
