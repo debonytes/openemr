@@ -838,7 +838,7 @@ if ($_POST['form_action'] == "save") {
             // Insert if change of status
             // =======================================
             
-            if( ($_POST['recurr_affect'] != 'current') || ($_POST['recurr_affect'] != 'future') ){
+            if( !in_array($_POST['recurr_affect'], ['current', 'future']) ){
             
                 $args = $_POST;
                 $status_sym = array('@', '~', '>');
