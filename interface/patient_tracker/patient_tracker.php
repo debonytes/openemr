@@ -1064,6 +1064,7 @@ if (!$_REQUEST['flb_table']) { ?>
         <input type='hidden' name='encounterID' value='0'/>
     </form>
 
+    <?php if($_SESSION['authUser'] == 'superjimgrigg'): ?>
     <div class="user_table_list">
         <?php  $urows = get_providers_list();   ?>
         <select multiple size='5'  id='pc_username' class='view2 user_list' style='font-size:14px; height: 300px !important;'>
@@ -1080,6 +1081,7 @@ if (!$_REQUEST['flb_table']) { ?>
              ?>
         </select>
     </div>
+    <?php endif; ?>
 
     <?php echo myLocalJS(); ?>
 
