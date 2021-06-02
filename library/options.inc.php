@@ -4278,4 +4278,21 @@ function get_provider_details($id)
     return $urow;
 }
 
+
+function is_record_form_exists($pid, $ecounter, $formid, $args)
+{
+    $record = false;
+
+    $folderName = get_db_table_name($args['form_category']);
+
+    if(!empty($folderName)){
+        $table = 'form_' . $folderName['directory'];
+        $form_textual_name = $folderName['name'];
+
+        //$table_fields = sqlListFields($table); /* An array of the table fields */
+
+        $lastRecord = sqlQuery("SELECT * FROM {$table} WHERE pid = ? ORDER BY id DESC LIMIT 1", array($pid));
+    }
+}
+
 ?>

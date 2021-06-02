@@ -186,6 +186,8 @@ function InsertEventFull()
             if ($pc_eid == null) {
                 $pc_eid = $pc_eid_temp;
             }
+
+            //insert_form_details($args, $pc_eid, $starttime, $endtime);
         }
 
         return $pc_eid;
@@ -206,6 +208,9 @@ function InsertEventFull()
         $args['locationspec'] = $locationspec;
         $args['form_apptstatus'] = $args['form_apptstatus'];
         $pc_eid = InsertEvent($args);
+
+        //insert_form_details($args, $pc_eid, $starttime, $endtime);
+        
         return $pc_eid;
     }
 }
@@ -590,10 +595,13 @@ if ($_POST['form_action'] == "save") {
                     $args['endtime'] = $endtime;
                     $args['locationspec'] = $locationspec;
                     $args['form_apptstatus'] = $args['form_apptstatus'];
-                    InsertEvent($args);
+                    $pc_eid = InsertEvent($args);   
 
-                    // end of current repeating
+                                    
                 }
+                // end of current repeating            
+
+
             } else if ($_POST['recurr_affect'] == 'future') { // ===== Future Recurring events of a repeating series =====
                 // update all existing event records to
                 // stop recurring on this date-1
@@ -712,6 +720,8 @@ if ($_POST['form_action'] == "save") {
                 } // foreach
             }
 
+
+
             // ====================================
             // single provider
             // ====================================
@@ -753,7 +763,13 @@ if ($_POST['form_action'] == "save") {
                 $args['endtime'] = $endtime;
                 $args['locationspec'] = $locationspec;
                 $args['form_apptstatus'] = $args['form_apptstatus'];
-                InsertEvent($args);
+                $pc_eid = InsertEvent($args);
+
+               
+                // inserting new form as per the repeating category - current
+                insert_form_details($args, $pc_eid, $starttime, $endtime, $fullappt_date);
+
+
             } else if ($_POST['recurr_affect'] == 'future') {
                 // mod original event to stop recurring on this date-1
                 $selected_date = date("Ymd", (strtotime($_POST['selected_date'])-24*60*60));
@@ -771,7 +787,11 @@ if ($_POST['form_action'] == "save") {
                 $args['endtime'] = $endtime;
                 $args['locationspec'] = $locationspec;
                 $args['form_apptstatus'] = $args['form_apptstatus'];
-                InsertEvent($args);
+                $pc_eid = InsertEvent($args);
+
+                // inserting new form as per the repeating category - future
+                insert_form_details($args, $pc_eid, $starttime, $endtime, $fullappt_date);
+
             } else {
         // perform a check to see if user changed event date
         // this is important when editing an existing recurring event
@@ -818,20 +838,25 @@ if ($_POST['form_action'] == "save") {
             // Insert if change of status
             // =======================================
             
-            $args = $_POST;
-            $status_sym = array('@', '~', '>');
-            $status = $args['form_apptstatus'];
-            $args['starttime'] = convert_time_format($starttime);
-            $args['endtime'] = convert_time_format($endtime);
+            if( ($_POST['recurr_affect'] != 'current') || ($_POST['recurr_affect'] != 'future') ){
+            
+                $args = $_POST;
+                $status_sym = array('@', '~', '>');
+                $status = $args['form_apptstatus'];
+                $args['starttime'] = convert_time_format($starttime);
+                $args['endtime'] = convert_time_format($endtime);
 
-            if(!empty($status) || in_array($status, $status_sym) ){
-                $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
+                if(!empty($status) || in_array($status, $status_sym) ){
+                    $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
 
-                if(empty($query)){
-                    $args['event_date'] = $fullappt_date;
-                    InsertFormCategory($args, $eid);
-                }            
-            }
+                    if(empty($query)){
+                        $args['event_date'] = $fullappt_date;
+                        InsertFormCategory($args, $eid);
+                    }            
+                }
+            
+            }                    
+            
 
             // =======================================
             // Insert if change of status
@@ -840,9 +865,14 @@ if ($_POST['form_action'] == "save") {
 
         }
 
+
+        
+
         // =======================================
         // end Update Multi providers case
         // =======================================
+
+        
 
         // EVENTS TO FACILITIES
         $e2f = (int)$eid;
@@ -858,6 +888,21 @@ if ($_POST['form_action'] == "save") {
      * ======================================================*/
 
         $eid = InsertEventFull();
+
+        $args = $_POST;
+        $status_sym = array('@', '~', '>');
+        $status = $_POST['form_apptstatus'];
+        $args['starttime'] = convert_time_format($starttime);
+        $args['endtime'] = convert_time_format($endtime);
+
+        if(!empty($status) || in_array($status, $status_sym) ){
+            $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
+
+            if(empty($query)){
+                $args['event_date'] = $fullappt_date;
+                InsertFormCategory($args, $eid);
+            }            
+        }
     }
 
         // done with EVENT insert/update statements

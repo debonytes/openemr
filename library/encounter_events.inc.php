@@ -546,94 +546,7 @@ function InsertFormCategory($args, $pc_eid)
 
                 addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
 
-            /*} else { // else PID is existing in plan table and status is not completed 
-
-                // pid, name, dateofservice, billing_code
-                $column_arr_options = array('name', 'participant_name', 'dateofservice', 'billing_code', 'user', 'counselor');
-
-                $date = date('Y-m-d H:i:s', strtotime($args['event_date']));
-
-                $column_arr = 'pid, encounter';
-                $data = array($form_pid, $encounter);
-                $set = '?,?';
-
-                // additional parameter name
-                if(in_array('name', $table_fields)){
-                    $column_arr .= ', name';
-                    array_push($data, $patient_full_name);
-                    $set .= ',?';
-                }
-
-                if(in_array('participant_name', $table_fields)){
-                    $column_arr .= ', participant_name';
-                    array_push($data, $patient_full_name);
-                    $set .= ',?';
-                }
-
-                if(in_array('user', $table_fields)){
-                    $column_arr .= ', user';
-                    array_push($data, $_SESSION['authUser']);
-                    $set .= ',?';
-                }
-
-                if(in_array('dateofservice', $table_fields)){
-                    $column_arr .= ', dateofservice';
-                    array_push($data, $args['event_date']);
-                    $set .= ',?';
-                }
-
-                if(in_array('billing_code', $table_fields)){
-                    $column_arr .= ', billing_code';
-                    array_push($data, $args['form_title']);
-                    $set .= ',?';
-                }
-
-                if(in_array('counselor', $table_fields)){
-                    $counselor = get_provider_name($args['form_provider']);
-                    $column_arr .= ', counselor';
-                    array_push($data, $counselor);
-                    $set .= ',?';
-                }
-
-                if(in_array('examiner', $table_fields)){
-                    $examiner = get_provider_name($args['form_provider']);
-                    $column_arr .= ', examiner';
-                    array_push($data, $examiner);
-                    $set .= ',?';
-                }
-
-                $reference = md5(uniqid(rand(), true) . time());
-                if(in_array('reference', $table_fields)){
-                    $column_arr .= ', reference';
-                    array_push($data, $reference);
-                    $set .= ',?';
-                }
-
-                if(in_array('status', $table_fields)){
-                    $column_arr .= ', status';
-                    array_push($data, 'started');
-                    $set .= ',?';
-                }
-
-                $db_name_id = sqlInsert(
-                    "INSERT INTO {$table} ( " .
-                    "{$column_arr}" .
-                    ") VALUES ({$set})", $data                
-                );
-
-                // insert into record
-                if($db_name_id){
-                    $addl = sqlInsert(
-                        "INSERT INTO openemr_postcalendar_categories_additional ( " .
-                        "pc_eid, db_name, db_name_id " .
-                        ") VALUES (?,?,?)", array($pc_eid, $table, $db_name_id)               
-                    );
-                }
-
-                addForm($encounter, $form_textual_name, $db_name_id, $folderName['directory'], $form_pid, $userauthorized);
-
-            } // endif PID is existing in plan table and status is not completed
-            */
+           
         } // if(!empty($folderName))
         
     }  // if(empty($query))
@@ -760,6 +673,8 @@ function InsertEvent($args, $from = 'general')
 
         $event_addl = sqlInsert("INSERT INTO openemr_postcalendar_events_additional (pc_eid, type_patient, new_patient, bg_color) VALUES (?,?,?, ?)", array($pc_eid, $args['type_patient'], $args['new_patient'], $args['provbgcolor']));
 
+        //insert_form_details($args, $pc_eid, $args['starttime'], $args['endtime']);
+
             //Manage tracker status.
         if (!empty($form_pid)) {
             manage_tracker_status($args['event_date'], $args['starttime'], $pc_eid, $form_pid, $_SESSION['authUser'], $args['form_apptstatus'], $args['form_room']);
@@ -811,6 +726,25 @@ function InsertEvent($args, $from = 'general')
     // =======================================
     // Insert if change of status
     // =======================================
+}
+
+
+function insert_form_details($args, $eid, $starttime, $endtime, $fullappt_date)
+{
+    $status_sym     = array('@', '~', '>');
+    $status         = $args['form_apptstatus'];                    
+
+    if( in_array($status, $status_sym) ){
+        $query = sqlQuery("SELECT pc_eid FROM openemr_postcalendar_categories_additional WHERE pc_eid = ?", array($eid));
+
+        if(empty($query)){
+            //$args               = $_POST;                            
+            $args['starttime']  = convert_time_format($starttime);
+            $args['endtime']    = convert_time_format($endtime);
+            $args['event_date'] = $fullappt_date;
+            InsertFormCategory($args, $eid);
+        }            
+    }
 }
 //================================================================================================================
 /**
