@@ -231,6 +231,7 @@ if (!$_REQUEST['flb_table']) {
         }
         body_top {
             height:100%;
+            position: relative;
         }
         a:hover {
             color:black;
@@ -239,6 +240,21 @@ if (!$_REQUEST['flb_table']) {
 
         #table_esign tbody tr:hover {           
            cursor: pointer;
+       }
+
+       .user_table_list{
+        position: absolute;
+        top: 80px;
+        left: 5px;
+        width: 160px;
+        height: 300px;
+        border: 1px solid #ccc;
+       }
+
+       .user_list{
+        margin: 0;
+        width: 160px;
+        height: 300px !important;
        }
     </style>
 
@@ -949,7 +965,8 @@ if (!$_REQUEST['flb_table']) { ?>
                 <div class="text-center row divTable" style="width: 85%; padding: 10px; margin: 10px auto">
                     <div>
                         <h2><?php  echo text('Forms need to be e-signed'); ?></h2>
-                        
+
+
                         <table class="table table-hover table-bordered" id="table_esign">
                             <thead>
                                 <tr>
@@ -983,8 +1000,14 @@ if (!$_REQUEST['flb_table']) { ?>
                                 }
                                 $forms = array();
 
-                                $form_query = "SELECT * FROM forms WHERE user = ?";
-                                $form_stmt = sqlStatement($form_query, array($_SESSION['authUser']));
+                                if($_SESSION['authUser'] == 'superjimgrigg'){
+                                    $form_query = "SELECT * FROM forms";
+                                    $form_stmt = sqlStatement($form_query);
+                                } else {
+                                    $form_query = "SELECT * FROM forms WHERE user = ?";
+                                    $form_stmt = sqlStatement($form_query, array($_SESSION['authUser']));
+                                }
+                                
 
                                 while($form_row = sqlFetchArray($form_stmt)){
                                     $sql_form = "form_" . $form_row['formdir'];
@@ -1041,7 +1064,46 @@ if (!$_REQUEST['flb_table']) { ?>
         <input type='hidden' name='encounterID' value='0'/>
     </form>
 
+    <div class="user_table_list">
+        <?php  $urows = get_providers_list();   ?>
+        <select multiple size='5'  id='pc_username' class='view2 user_list' style='font-size:14px; height: 300px !important;'>
+            <option value="">All Users</option>
+            <?php  
+                while($urow = sqlFetchArray($urows)){        
+                    echo "    <option value='" . attr($urow['username']) . "'";                    
+                    echo ">" . text($urow['lname']);
+                    if ($urow['fname']) {
+                        echo ", " . text($urow['fname']);
+                    }
+                    echo "</option>\n";
+                } 
+             ?>
+        </select>
+    </div>
+
     <?php echo myLocalJS(); ?>
+
+    <script>
+        var $sidebar   = $(".user_table_list"), 
+        $window    = $(window),
+        offset     = $sidebar.offset(),
+        topPadding = 0;
+
+        $window.scroll(function() {
+            if ($window.scrollTop() > offset.top) {
+                $sidebar.stop().animate({
+                    marginTop: $window.scrollTop() - offset.top + topPadding
+                }, 0);
+            } else {
+                $sidebar.stop().animate({
+                    marginTop: 0
+                }, 0);
+            }
+
+        });
+
+        
+    </script>
 </body>
 </html>
     <?php
@@ -1282,6 +1344,28 @@ function myLocalJS()
                           "pageLength": 50
                         });
 
+
+            // custom filtering here
+            $.fn.dataTable.ext.search.push(
+                function( settings, data, dataIndex ) {
+                    var value = $('#pc_username').val();                    
+                    var user =  data[7]; 
+             
+                    if ( (value ==  user) || ( value == '') )
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+            $('#pc_username').change(function(){ 
+                var value = $(this).val();                
+                table.draw();
+            });
+
+            // custom filtering here
+
            $('#table_esign tbody').on( 'click', 'tr', function () {
                 <?php $_SESSION['from_dashboard_referer'] = $_SERVER['HTTP_REFERER']; ?>
                 var formname    = $(this).find('td.formname').html();
@@ -1315,7 +1399,7 @@ function myLocalJS()
             } );
 
             var dash_sess = '<?php echo isset($_SESSION['dashboard_datatables']) ?  $_SESSION['dashboard_datatables'] : ''; ?>';
-            console.log('Dashboard Session 2: ' + dash_sess);
+            //console.log('Dashboard Session 2: ' + dash_sess);
 
             onresize = function () {
                 var state = 1 >= outerHeight - innerHeight ? "fullscreen" : "windowed";
