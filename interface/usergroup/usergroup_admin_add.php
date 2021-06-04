@@ -365,7 +365,7 @@ foreach (array(1 => xl('None'), 2 => xl('Only Mine'), 3 => xl('All')) as $key =>
 	</td>
 
 	<td>
-		<span class="text"><?php echo xlt('License/Certification Expiration Date'); ?>: </span>
+		<span class="text"><?php echo xlt('Annual Review/License/Certification Expiration Date'); ?>: </span>
 	</td>
 	<td>
 		<input type="date" name="licenseDate" style="width:150px;" class="form-control">

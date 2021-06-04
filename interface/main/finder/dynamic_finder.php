@@ -110,7 +110,7 @@ $loading = "<i class='fa fa-refresh fa-2x fa-spin'></i>";
             // http://datatables.net/release-datatables/extras/ColReorder/server_side.html
             "columns": [ <?php echo $coljson; ?> ],
             "lengthMenu": [10, 25, 50, 100],
-            "pageLength": <?php echo empty($GLOBALS['gbl_pt_list_page_size']) ? '10' : $GLOBALS['gbl_pt_list_page_size']; ?>,
+            "pageLength": <?php echo empty($GLOBALS['gbl_pt_list_page_size']) ? '100' : $GLOBALS['gbl_pt_list_page_size']; ?>,
             <?php // Bring in the translations ?>
             <?php $translationsDatatablesOverride = array('search' => (xla('Search all columns') . ':')); ?>
             <?php $translationsDatatablesOverride = array('processing' => $loading); ?>
