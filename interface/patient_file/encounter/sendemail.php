@@ -51,18 +51,16 @@ if(isset($_POST['send_email'])){
         //$billing_code = $details['billing_code'];
         if($details['billing_code']){
             $billing_code = $details['billing_code'];
-        } elseif($details['icd_code']){
-            $billing_code = $details['icd_code'];
         } elseif($details['diagnosis_code']){
             $billing_code = $details['diagnosis_code'];
         } else {
             $billing_code = '';
         }
 
-        if($details['diagnosis']){
-            $diagnosis = $details['diagnosis'];
+        if($details['icd_code']){
+            $icd_code = $details['icd_code'];
         } else {
-            $diagnosis = '';
+            $icd_code = '';
         }
 
         $body .= "Name of Client: {$fname} {$lname} \n";
@@ -72,8 +70,8 @@ if(isset($_POST['send_email'])){
         if($billing_code)
         $body .= "Billing Code: {$billing_code}\n";
 
-        if($diagnosis)
-            $body .= "Diagnosis: {$diagnosis}\n";
+        if($icd_code)
+            $body .= "ICD Code: {$icd_code}\n";
 
         $body .= "Date of Appointment: {$date_received}\n";
         $body .= "Start Time: {$starttime}\n";
