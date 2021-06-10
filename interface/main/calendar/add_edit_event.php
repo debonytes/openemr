@@ -357,14 +357,14 @@ if ($_POST['form_action'] == "duplicate" || $_POST['form_action'] == "save") {
 
         $form_date = $_POST['form_date'];
 
-        if($_POST['provider_tab']){
+        //if($_POST['provider_tab']){
             $form_hour_end = $_POST['form_hour_end'];
             $form_minute_end = $_POST['form_minute_end'];
             $form_ampm_end = $_POST['form_ampm_end'];
             $duration = get_provider_duration($form_date, $tmph, $tmpm, $form_ampm, $form_hour_end, $form_minute_end, $form_ampm_end);
-        } else {
-            $duration = abs($_POST['form_duration']); // fixes #395
-        }    
+        //} else {
+        //    $duration = abs($_POST['form_duration']); // fixes #395
+        //}    
         
     }
 
@@ -376,7 +376,9 @@ if ($_POST['form_action'] == "duplicate" || $_POST['form_action'] == "save") {
         ++$tmph;
     }
 
-        $endtime = ($_POST['provider_tab']) ? "$form_hour_end:$form_minute_end:00": "$tmph:$tmpm:00";
+        //$endtime = ($_POST['provider_tab']) ? "$form_hour_end:$form_minute_end:00": "$tmph:$tmpm:00";
+
+        $endtime = "$form_hour_end:$form_minute_end:00";
 
         // Set up working variables related to repeated events.
         $my_recurrtype = 0;
@@ -521,14 +523,14 @@ if ($_POST['form_action'] == "save") {
 
     $fullappt_date = $form_date . " $tmph:$tmpm:00";
 
-    if($_POST['provider_tab']){
+    //if($_POST['provider_tab']){
         $form_hour_end = $_POST['form_hour_end'];
         $form_minute_end = $_POST['form_minute_end'];
         $form_ampm_end = $_POST['form_ampm_end'];
         $duration = get_provider_duration($form_date, $tmph, $tmpm, $form_ampm, $form_hour_end, $form_minute_end, $form_ampm_end);
-    } else {
-        $duration = abs($_POST['form_duration']); // fixes #395
-    }
+    //} else {
+    //    $duration = abs($_POST['form_duration']); // fixes #395
+    //}
 
     /* =======================================================
      *                    UPDATE EVENTS
@@ -1276,14 +1278,14 @@ function set_display() {
         }
 
         // value of stop time
-        <?php if($_GET['prov']): ?>
+        <?php //if($_GET['prov']): ?>
             var hour = f.form_hour.value;
             var minute = f.form_minute.value;
             var ampm = f.form_ampm.value;
             var duration = f.form_duration.value;
             //console.log('Dur: ' + duration);
             set_stop_time(hour, minute, ampm, duration);
-        <?php endif; ?>
+        <?php //endif; ?>
     }
 }
 
@@ -1975,14 +1977,14 @@ function isRegularRepeat($repeat)
                         <option value='1'><?php echo xlt('AM'); ?></option>
                         <option value='2'<?php echo ($startampm == '2') ? " selected" : ""; ?>><?php echo xlt('PM'); ?></option>
                     </select>
-                    <span style="<?php echo ($_GET['prov'] == true) ? 'visibility: hidden;':''; ?>">
+                    <span style="visibility: hidden">
                         <label id='tdallday4'><?php echo xlt('duration'); ?></label>
                         <input class="form-control" id='tdallday5' type='text' size='4' name='form_duration' value='<?php echo attr($thisduration) ?>'
                 title='<?php echo xla('Event duration in minutes'); ?>' /><?php echo xlt('minutes'); ?>
                     </span>
                     
                 </span>
-                <?php if($_GET['prov'] == true): ?>
+                <?php //if($_GET['prov'] == true): ?>
                     <div>
                         <span>
                             <label for="endtime" class="" id='endtime'><?php echo xlt('End Time'); ?></label>
@@ -1999,7 +2001,7 @@ function isRegularRepeat($repeat)
                             </select>
                         </span>
                     </div>
-                <?php endif; ?>
+                <?php //endif; ?>
             </div>
             
             
