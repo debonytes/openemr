@@ -12,8 +12,8 @@ $form_name = '';
 
 if(isset($_POST['send_email'])){
     $pid = intval($_POST['pid']);
-    //$emailDestination = 'hermiebarit@gmail.com';
-    $emailDestination = 'cgdebona@gmail.com';
+    $emailDestination = 'hermiebarit@gmail.com';
+    //$emailDestination = 'cgdebona@gmail.com';
     $firstNameDestination = "John";
     $lastNameDestination = "Doe";
     $formid = intval($_POST['formid']);
@@ -63,6 +63,12 @@ if(isset($_POST['send_email'])){
             $icd_code = '';
         }
 
+        if($details['session_type']){
+            $session_type = $details['session_type'];
+        } else {
+            $session_type = '';
+        }
+
         $body .= "Name of Client: {$fname} {$lname} \n";
         $body .= "Name of Provider: {$examiner}\n";
         $body .= "Service Rendered: {$form_name}\n";
@@ -72,6 +78,9 @@ if(isset($_POST['send_email'])){
 
         if($icd_code)
             $body .= "ICD Code: {$icd_code}\n";
+
+        if($session_type)
+            $body .= "Session Type: {$session_type}\n";
 
         $body .= "Date of Appointment: {$date_received}\n";
         $body .= "Start Time: {$starttime}\n";
