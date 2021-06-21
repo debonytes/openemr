@@ -18,11 +18,13 @@ if(isset($_POST['formid'])){
         $new_addl = sqlInsert($new_query, array($id, $date_requested));
         $request_deletion = 'insert';
         $message = "New record requested for deletion.";
-    } else {
+    } elseif($confirmation == 'cancel') {
         $sql_query = "DELETE FROM forms_deletion WHERE pc_eid = ?";
         $delete_query = sqlQuery($sql_query, array($id));
         $message = "Request for deletion has been removed.";
         $request_deletion = 'cancel';
+    } else {
+        $request_deletion = 'none';
     }
 
     echo $request_deletion;
