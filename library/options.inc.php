@@ -4295,4 +4295,12 @@ function is_record_form_exists($pid, $ecounter, $formid, $args)
     }
 }
 
+
+function is_form_for_deletion($id)
+{
+    $checkRecord = sqlQuery("SELECT * FROM forms_deletion WHERE pc_eid = ?", array($id));    
+    return $checkRecord;
+   // return (!empty($checkRecord)) ? true : false;
+}
+
 ?>

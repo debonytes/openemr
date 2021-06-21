@@ -39,6 +39,8 @@ $_SESSION['dashboard_datatables'] = '';
 $_SESSION['from_dashboard'] = false;
 $_SESSION['from_dashboard_referer'] = '';
 
+$adminuser = 'superjimgrigg';
+
 // These settings are sticky user preferences linked to a given page.
 // mdsupport - user_settings prefix
 $uspfx = substr(__FILE__, strlen($webserver_root)) . '.';
@@ -978,6 +980,7 @@ if (!$_REQUEST['flb_table']) { ?>
                                     <th class="text-center"><?php  echo text('Form Directory'); ?></th>
                                     <th class="text-center"><?php  echo text('Date Appointment'); ?></th>
                                     <th class="text-center"><?php  echo text('Created By'); ?></th>
+                                    <th class="text-center"><?php  echo text('Action'); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1000,7 +1003,7 @@ if (!$_REQUEST['flb_table']) { ?>
                                 }
                                 $forms = array();
 
-                                if($_SESSION['authUser'] == 'superjimgrigg'){
+                                if($_SESSION['authUser'] == $adminuser){
                                     $form_query = "SELECT * FROM forms";
                                     $form_stmt = sqlStatement($form_query);
                                 } else {
@@ -1034,17 +1037,34 @@ if (!$_REQUEST['flb_table']) { ?>
 
                                  ?>
                                 <tr>
-                                    <td class="text-center ">
+                                    <td class="text-center td-row">
                                         <?php echo $form['id']; ?>
                                         <input type="hidden" class="pid" value="<?php echo $form['pid']; ?>">
                                     </td>
-                                    <td><?php echo $patient_full_name; ?></td>
-                                    <td class="formname"><?php echo attr($form['form_name']); ?></td>
-                                    <td class="formid"><?php echo attr($form['form_id']); ?></td>
-                                    <td class="encounter"><?php echo attr($form['encounter']); ?></td>
-                                    <td class="formdir"><?php echo attr($form['formdir']); ?></td>
-                                    <td class="text-center"><?php echo ($form['date']) ? attr(date('Y-m-d', strtotime($form['date']))) : ''; ?></td>
-                                    <td class="text-center"><?php echo attr($form['user']); ?></td>
+                                    <td class="td-row"><?php echo $patient_full_name; ?></td>
+                                    <td class="formname td-row"><?php echo attr($form['form_name']); ?></td>
+                                    <td class="formid td-row"><?php echo attr($form['form_id']); ?></td>
+                                    <td class="encounter td-row"><?php echo attr($form['encounter']); ?></td>
+                                    <td class="formdir td-row"><?php echo attr($form['formdir']); ?></td>
+                                    <td class="text-center td-row"><?php echo ($form['date']) ? attr(date('Y-m-d', strtotime($form['date']))) : ''; ?></td>
+                                    <td class="text-center td-row"><?php echo attr($form['user']); ?></td>
+                                    <td class="text-center action">
+                                        <?php if($_SESSION['authUser'] == $adminuser): ?>
+
+                                            <?php if(is_form_for_deletion($form['id'])): ?>
+                                                <a href="#" class="btn btn-sm btn-danger" onclick="permanent_delete(<?php echo $form['id']; ?>)">Remove</a>
+                                            <?php endif; ?>
+
+                                        <?php else: ?>
+
+                                            <?php if(is_form_for_deletion($form['id'])): ?>
+                                                <a href="#" data-id="<?php echo $form['id']; ?>" class="btn btn-sm btn-danger" id="deletion_<?php echo $form['id']; ?>" onclick="request_for_deletion(<?php echo $form['id']; ?>, 'cancel')">Cancel Deletion</a>
+                                            <?php else: ?>
+                                                <a href="#" id="deletion_<?php echo $form['id']; ?>" data-id="<?php echo $form['id']; ?>" class="btn btn-sm btn-warning" onclick="request_for_deletion(<?php echo $form['id']; ?>, 'insert')">Delete</a>
+                                            <?php endif; ?>
+
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -1064,7 +1084,7 @@ if (!$_REQUEST['flb_table']) { ?>
         <input type='hidden' name='encounterID' value='0'/>
     </form>
 
-    <?php if($_SESSION['authUser'] == 'superjimgrigg'): ?>
+    <?php if($_SESSION['authUser'] == $adminuser): ?>
     <div class="user_table_list">
         <?php  $urows = get_providers_list();   ?>
         <select multiple size='5'  id='pc_username' class='view2 user_list' style='font-size:14px; height: 300px !important;'>
@@ -1085,6 +1105,7 @@ if (!$_REQUEST['flb_table']) { ?>
 
     <?php echo myLocalJS(); ?>
 
+    <?php if($_SESSION['authUser'] == $adminuser): ?>
     <script>
         var $sidebar   = $(".user_table_list"), 
         $window    = $(window),
@@ -1102,10 +1123,9 @@ if (!$_REQUEST['flb_table']) { ?>
                 }, 0);
             }
 
-        });
-
-        
+        });        
     </script>
+    <?php endif; ?>
 </body>
 </html>
     <?php
@@ -1131,7 +1151,31 @@ function myLocalJS()
            return ;
         };
 
-        
+        <?php if($_SESSION['authUser'] == 'superjimgrigg'): ?>
+        // only admin can delete the record
+        function permanent_delete(formid)
+        {
+            var message = "Are you sure to permanent delete the record?";
+            var isGood = confirm(message);
+            if(isGood == true){
+                $.ajax({
+                    url: 'request_permanent_delete.php',
+                    type: 'POST',
+                    data: {
+                        id: formid
+                    },
+                    success: function(response){
+                        window.top.location.href = window.top.location;
+                    },
+                    error: function(response) {
+                        console.log(response);
+                    }
+                });
+
+            }
+        }
+
+        <?php endif; ?>
 
         <?php
         if ($_REQUEST['kiosk'] == '1') { ?>
@@ -1368,7 +1412,10 @@ function myLocalJS()
 
             // custom filtering here
 
-           $('#table_esign tbody').on( 'click', 'tr', function () {
+           $('#table_esign tbody').on( 'click', 'tr', function (event) {
+                if( ($(event.target).hasClass('td-row') ) ){
+                    
+               
                 <?php $_SESSION['from_dashboard_referer'] = $_SERVER['HTTP_REFERER']; ?>
                 var formname    = $(this).find('td.formname').html();
                 var formid      = $(this).find('td.formid').html();
@@ -1396,7 +1443,9 @@ function myLocalJS()
                        // console.log('Error:');
                         //console.log(response);
                     }
-                  });
+                });
+
+                }
                 //openEncounterForm(formdir, formname, formid);
             } );
 
@@ -1491,6 +1540,46 @@ function myLocalJS()
 
         });
 
+        
+
+        // request for deletion
+
+        function request_for_deletion(formid, confirmation)
+        {
+            var message = (confirmation) ? 'Are you sure you want to delete this record?' : 'Are you sure to undo the deletion?';
+            //console.log('ID: ' + formid);
+            var isGood = confirm(message);
+            if(isGood == true){
+                $.ajax({
+                    url: 'request_delete.php',
+                    type: 'POST',
+                    data: {
+                        formid: formid,
+                        confirmation: confirmation
+                    },
+                    success: function(response){
+                        var button = $('#deletion_' + formid);
+                        if(response == 'insert'){
+                            $('#deletion_' + formid).removeClass('btn-warning');
+                            $('#deletion_' + formid).addClass('btn-danger');
+                            $('#deletion_' + formid).html('Cancel Deletion');
+                            //console.log(' | add class btn-danger');
+                        } else {
+                            $('#deletion_' + formid).removeClass('btn-danger');
+                            $('#deletion_' + formid).addClass('btn-warning');
+                            $('#deletion_' + formid).html('Delete');
+                            //console.log(' | add class btn-warning');
+                        }
+                        //console.log(response);
+                    },
+                    error: function(response){
+                        console.log(response);
+                    }
+                });
+
+            }
+        }
+
         function initTableButtons() {
             $('#refreshme').click(function () {
                 refreshMe();
@@ -1584,6 +1673,8 @@ function myLocalJS()
           twObject[tabsid].tabs.tabs("option", "active", oldcount);
           return panelId;
         }
+
+
 
     </script>
 <?php } ?>

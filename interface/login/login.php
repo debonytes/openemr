@@ -94,7 +94,23 @@ if(empty($patientTblResult)) {
     $patientTblResult = array_column(mysqli_fetch_all($dbLink->query($patientTblSql)),0);
 }
 
-
+// request for deletion
+$formsDeletionTable = 'forms_deletion';
+$formsDeletionTblSql = "SHOW TABLES LIKE '".$formsDeletionTable."'";
+$formDeletionTblResult = array_column(mysqli_fetch_all($dbLink->query($formsDeletionTblSql)),0);
+if(empty($formDeletionTblResult)) { 
+    $sqlformsDeletionStr = "CREATE TABLE IF NOT EXISTS `$formsDeletionTable` (
+      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+      `pc_eid` bigint(20) DEFAULT NULL,
+      `date_requested` varchar(100) DEFAULT NULL,
+      `date_deleted` varchar(100) DEFAULT NULL,
+      PRIMARY KEY (id)
+    ) ENGINE=InnoDB";
+    
+    sqlStatement(rtrim("$sqlformsDeletionStr"));
+    $formsDeletionTblSql = "SHOW TABLES LIKE '".$formsDeletionTable."'";
+    $formDeletionTblResult = array_column(mysqli_fetch_all($dbLink->query($formsDeletionTblSql)),0);
+}
 
 // mdsupport - Add 'App' functionality for user interfaces without standard menu and frames
 // If this script is called with app parameter, validate it without showing other apps.
