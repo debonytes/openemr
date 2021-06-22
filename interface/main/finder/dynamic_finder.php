@@ -31,6 +31,10 @@ $popup = empty($_REQUEST['popup']) ? 0 : 1;
 $searchAny = empty($_GET['search_any']) ? "" : $_GET['search_any'];
 unset($_GET['search_any']);
 // Generate some code based on the list of columns.
+
+// assigning superuser
+$adminuser = 'superjimgrigg';
+
 //
 $colcount = 0;
 $header0 = "";
@@ -130,6 +134,8 @@ $loading = "<i class='fa fa-refresh fa-2x fa-spin'></i>";
             // Filter on the column (the index) of this element
             oTable.fnFilter(this.value, $("thead input").index(this));
         });
+
+        <?php if( $_SESSION['authUser'] == $adminuser): ?>
         // OnClick handler for the rows
         $('#pt_table').on('click', 'tbody tr', function () {
             // ID of a row element is pid_{value}
@@ -149,6 +155,8 @@ $loading = "<i class='fa fa-refresh fa-2x fa-spin'></i>";
                 top.RTop.location = "../../patient_file/summary/demographics.php?set_pid=" + encodeURIComponent(newpid);
             }
         });
+        <?php endif; ?>
+
     });
 
     function openNewTopWindow(pid) {
@@ -197,9 +205,11 @@ $loading = "<i class='fa fa-refresh fa-2x fa-spin'></i>";
         </div>
         <div class="row">
             <div class="col-sm-12">
+                <?php if( $_SESSION['authUser'] == $adminuser): ?>
                 <?php if (acl_check('patients', 'demo', '', array('write','addonly'))) { ?>
                     <button id="create_patient_btn1" class="btn btn-default btn-add" onclick="top.restoreSession();top.RTop.location = '<?php echo $web_root ?>/interface/new/new.php'"><?php echo xlt('Add New Patient'); ?></button>
                 <?php } ?>
+            <?php endif; ?>
             </div>
             </div>
         <br>

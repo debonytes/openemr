@@ -35,6 +35,9 @@ use OpenEMR\Reminder\BirthdayReminder;
 use OpenEMR\OeUI\OemrUI;
 use OpenEMR\Events\PatientDemographics\ViewEvent;
 
+// assigning superuser
+$adminuser = 'superjimgrigg';
+
 if (isset($_GET['set_pid'])) {
     require_once("$srcdir/pid.inc");
     setpid($_GET['set_pid']);
@@ -870,8 +873,11 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
 
                         <?php if (acl_check('patients', 'demo')) { ?>
                               <tr>
-                               <td>
+                               <td>                                
                             <?php
+
+                            if( $_SESSION['authUser'] == $adminuser ):
+
                         // Demographics expand collapse widget
                             $widgetTitle = xl("Demographics");
                             $widgetLabel = "demographics";
@@ -893,6 +899,8 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
                                 $widgetAuth,
                                 $fixedWidth
                             );
+
+                            endif;
                             ?>
                                  <div id="DEM" >
                                   <ul class="tabNav">
