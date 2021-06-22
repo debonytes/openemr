@@ -135,7 +135,7 @@ $loading = "<i class='fa fa-refresh fa-2x fa-spin'></i>";
             oTable.fnFilter(this.value, $("thead input").index(this));
         });
 
-        <?php if( $_SESSION['authUser'] == $adminuser): ?>
+        <?php //if( $_SESSION['authUser'] == $adminuser): ?>
         // OnClick handler for the rows
         $('#pt_table').on('click', 'tbody tr', function () {
             // ID of a row element is pid_{value}
@@ -155,7 +155,7 @@ $loading = "<i class='fa fa-refresh fa-2x fa-spin'></i>";
                 top.RTop.location = "../../patient_file/summary/demographics.php?set_pid=" + encodeURIComponent(newpid);
             }
         });
-        <?php endif; ?>
+        <?php //endif; ?>
 
     });
 
