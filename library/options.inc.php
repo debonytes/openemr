@@ -4279,6 +4279,14 @@ function get_provider_details($id)
 }
 
 
+function get_provider_full_details($id)
+{
+    $urow = sqlQuery("SELECT * FROM users WHERE " .
+    "authorized != 0 AND active = 1 AND id = ?", array($id));      
+    return $urow;
+}
+
+
 function is_record_form_exists($pid, $ecounter, $formid, $args)
 {
     $record = false;

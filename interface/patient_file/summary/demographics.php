@@ -36,7 +36,7 @@ use OpenEMR\OeUI\OemrUI;
 use OpenEMR\Events\PatientDemographics\ViewEvent;
 
 // assigning superuser
-$adminuser = 'superjimgrigg';
+$restricted_user = 'cbs_provider';
 
 if (isset($_GET['set_pid'])) {
     require_once("$srcdir/pid.inc");
@@ -176,6 +176,8 @@ $insco_name = "";
 if ($result3['provider']) {   // Use provider in case there is an ins record w/ unassigned insco
     $insco_name = getInsuranceProvider($result3['provider']);
 }
+
+$provider = get_provider_full_details($_SESSION['authUserID']);
 ?>
 <html>
 
@@ -876,7 +878,7 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
                                <td>                                
                             <?php
 
-                            if( $_SESSION['authUser'] == $adminuser ):
+                            if( $provider['physician_type'] != $restricted_user ):
 
                         // Demographics expand collapse widget
                             $widgetTitle = xl("Demographics");
@@ -1497,62 +1499,64 @@ $oemr_ui = new OemrUI($arrOeUiSettings);
                 </div>
                 <div>
                     <?php
-                    // Advance Directives
-                    if ($GLOBALS['advance_directives_warning']) {
-                    // advance directives expand collapse widget
-                        $widgetTitle = xl("Advance Directives");
-                        $widgetLabel = "directives";
-                        $widgetButtonLabel = xl("Edit");
-                        $widgetButtonLink = "return advdirconfigure();";
-                        $widgetButtonClass = "";
-                        $linkMethod = "javascript";
-                        $bodyClass = "summary_item small";
-                        $widgetAuth = true;
-                        $fixedWidth = false;
-                        expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel, $widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass, $widgetAuth, $fixedWidth);
-                          $counterFlag = false; //flag to record whether any categories contain ad records
-                          $query = "SELECT id FROM categories WHERE name='Advance Directive'";
-                          $myrow2 = sqlQuery($query);
-                        if ($myrow2) {
-                            $parentId = $myrow2['id'];
-                            $query = "SELECT id, name FROM categories WHERE parent=?";
-                            $resNew1 = sqlStatement($query, array($parentId));
-                            while ($myrows3 = sqlFetchArray($resNew1)) {
-                                $categoryId = $myrows3['id'];
-                                $nameDoc = $myrows3['name'];
-                                $query = "SELECT documents.date, documents.id " .
-                                   "FROM documents " .
-                                   "INNER JOIN categories_to_documents " .
-                                   "ON categories_to_documents.document_id=documents.id " .
-                                   "WHERE categories_to_documents.category_id=? " .
-                                   "AND documents.foreign_id=? " .
-                                   "ORDER BY documents.date DESC";
-                                $resNew2 = sqlStatement($query, array($categoryId, $pid));
-                                $limitCounter = 0; // limit to one entry per category
-                                while (($myrows4 = sqlFetchArray($resNew2)) && ($limitCounter == 0)) {
-                                    $dateTimeDoc = $myrows4['date'];
-                                // remove time from datetime stamp
-                                    $tempParse = explode(" ", $dateTimeDoc);
-                                    $dateDoc = $tempParse[0];
-                                    $idDoc = $myrows4['id'];
-                                    echo "<a href='$web_root/controller.php?document&retrieve&patient_id=" .
-                                    attr_url($pid) . "&document_id=" .
-                                    attr_url($idDoc) . "&as_file=true' onclick='top.restoreSession()'>" .
-                                    text(xl_document_category($nameDoc)) . "</a> " .
-                                    text($dateDoc);
-                                    echo "<br>";
-                                    $limitCounter = $limitCounter + 1;
-                                    $counterFlag = true;
+                    
+                        // Advance Directives
+                        if ($GLOBALS['advance_directives_warning']) {
+                        // advance directives expand collapse widget
+                            $widgetTitle = xl("Advance Directives");
+                            $widgetLabel = "directives";
+                            $widgetButtonLabel = xl("Edit");
+                            $widgetButtonLink = "return advdirconfigure();";
+                            $widgetButtonClass = "";
+                            $linkMethod = "javascript";
+                            $bodyClass = "summary_item small";
+                            $widgetAuth = true;
+                            $fixedWidth = false;
+                            expand_collapse_widget($widgetTitle, $widgetLabel, $widgetButtonLabel, $widgetButtonLink, $widgetButtonClass, $linkMethod, $bodyClass, $widgetAuth, $fixedWidth);
+                              $counterFlag = false; //flag to record whether any categories contain ad records
+                              $query = "SELECT id FROM categories WHERE name='Advance Directive'";
+                              $myrow2 = sqlQuery($query);
+                            if ($myrow2) {
+                                $parentId = $myrow2['id'];
+                                $query = "SELECT id, name FROM categories WHERE parent=?";
+                                $resNew1 = sqlStatement($query, array($parentId));
+                                while ($myrows3 = sqlFetchArray($resNew1)) {
+                                    $categoryId = $myrows3['id'];
+                                    $nameDoc = $myrows3['name'];
+                                    $query = "SELECT documents.date, documents.id " .
+                                       "FROM documents " .
+                                       "INNER JOIN categories_to_documents " .
+                                       "ON categories_to_documents.document_id=documents.id " .
+                                       "WHERE categories_to_documents.category_id=? " .
+                                       "AND documents.foreign_id=? " .
+                                       "ORDER BY documents.date DESC";
+                                    $resNew2 = sqlStatement($query, array($categoryId, $pid));
+                                    $limitCounter = 0; // limit to one entry per category
+                                    while (($myrows4 = sqlFetchArray($resNew2)) && ($limitCounter == 0)) {
+                                        $dateTimeDoc = $myrows4['date'];
+                                    // remove time from datetime stamp
+                                        $tempParse = explode(" ", $dateTimeDoc);
+                                        $dateDoc = $tempParse[0];
+                                        $idDoc = $myrows4['id'];
+                                        echo "<a href='$web_root/controller.php?document&retrieve&patient_id=" .
+                                        attr_url($pid) . "&document_id=" .
+                                        attr_url($idDoc) . "&as_file=true' onclick='top.restoreSession()'>" .
+                                        text(xl_document_category($nameDoc)) . "</a> " .
+                                        text($dateDoc);
+                                        echo "<br>";
+                                        $limitCounter = $limitCounter + 1;
+                                        $counterFlag = true;
+                                    }
                                 }
                             }
-                        }
 
-                        if (!$counterFlag) {
-                            echo "&nbsp;&nbsp;" . xlt('None');
-                        } ?>
-                      </div>
-                        <?php
-                    }  // close advanced dir block
+                            if (!$counterFlag) {
+                                echo "&nbsp;&nbsp;" . xlt('None');
+                            } ?>
+                          </div>
+                            <?php
+                        }  // close advanced dir block
+
 
                     // Show Clinical Reminders for any user that has rules that are permitted.
                     $clin_rem_check = resolve_rules_sql('', '0', true, '', $_SESSION['authUser']);
