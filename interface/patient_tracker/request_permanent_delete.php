@@ -4,6 +4,7 @@ require_once "$srcdir/patient.inc";
 require_once "$srcdir/options.inc.php";
 
 $adminuser = 'superjimgrigg';
+//$adminuser = 'dummyadmin';
 
 if($_SESSION['authUser'] !== $adminuser){
     return;

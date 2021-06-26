@@ -40,6 +40,7 @@ $_SESSION['from_dashboard'] = false;
 $_SESSION['from_dashboard_referer'] = '';
 
 $adminuser = 'superjimgrigg';
+//$adminuser = 'dummyadmin';
 
 // These settings are sticky user preferences linked to a given page.
 // mdsupport - user_settings prefix
@@ -1052,18 +1053,35 @@ if (!$_REQUEST['flb_table']) { ?>
                                         <?php if($_SESSION['authUser'] == $adminuser): ?>
 
                                             <?php if(is_form_for_deletion($form['id'])): ?>
+
+                                                <!--
                                                 <a href="#" class="btn btn-sm btn-danger" onclick="permanent_delete(<?php echo $form['id']; ?>)">Remove</a>
+                                            -->
+
+                                            <button type="button" data-formid="<?php echo attr($form['id']); ?>" class="btn btn-danger" data-toggle="modal" data-target="#myModal" id="modal_<?php echo $form['id']; ?>" data-name="<?php echo $patient_full_name; ?>" data-category="<?php echo attr($form['form_name']); ?>" data-id="<?php echo $form['id']; ?>" data-confirmation="<?php echo (!is_form_for_deletion($form['id'])) ? 'insert' : 'cancel'; ?>">Delete</button>
+
+
                                             <?php endif; ?>
 
                                         <?php else: ?>
 
                                             <?php if(is_form_for_deletion($form['id'])): ?>
-                                                <a href="#" data-id="<?php echo $form['id']; ?>" class="btn btn-sm btn-danger" id="deletion_<?php echo $form['id']; ?>" onclick="request_for_deletion(<?php echo $form['id']; ?>, 'cancel')">Cancel Deletion</a>
+                                               
+                                                <button type="button" data-formid="<?php echo attr($form['id']); ?>" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="modal_<?php echo $form['id']; ?>" data-name="<?php echo $patient_full_name; ?>" data-category="<?php echo attr($form['form_name']); ?>" data-id="<?php echo $form['id']; ?>" data-confirmation="<?php echo (!is_form_for_deletion($form['id'])) ? 'insert' : 'cancel'; ?>">Cancel Deletion</button>
+
                                             <?php else: ?>
-                                                <a href="#" id="deletion_<?php echo $form['id']; ?>" data-id="<?php echo $form['id']; ?>" class="btn btn-sm btn-warning" onclick="request_for_deletion(<?php echo $form['id']; ?>, 'insert')">Delete</a>
+
+                                            <button type="button" data-formid="<?php echo attr($form['id']); ?>" data-name="<?php echo $patient_full_name; ?>" data-category="<?php echo attr($form['form_name']); ?>" data-id="<?php echo $form['id']; ?>" data-confirmation="<?php echo (!is_form_for_deletion($form['id'])) ? 'insert' : 'cancel'; ?>" class="btn btn-warning" data-toggle="modal" data-target="#myModal" id="modal_<?php echo $form['id']; ?>">
+                                            Delete
+                                            </button>
+
                                             <?php endif; ?>
 
+                                            
+
                                         <?php endif; ?>
+
+                                        
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -1074,6 +1092,8 @@ if (!$_REQUEST['flb_table']) { ?>
             </div>
         </div>
         <!-- forms need to be signed in -->
+
+        
 
     </div><?php //end container ?>
     <!-- form used to open a new top level window when a patient row is clicked -->
@@ -1126,6 +1146,153 @@ if (!$_REQUEST['flb_table']) { ?>
         });        
     </script>
     <?php endif; ?>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal</h4>
+              </div>
+              <form id="deleteForm" name="deleteForm" role="form" method="POST">            
+                    
+                  <div class="modal-body">    
+                    <p class="para-text">Are you sure to delete?</p>            
+                    <input type="hidden" name="formid" value="" class="formid">
+                    <input type="hidden" name="id" value="" class="id">
+                    <input type="hidden" name="confirmation" class="confirmation">
+                    <div class="form-group">
+                        <label for="">Name</label>
+                        <input type="text" name="name" value="" readonly class="form-control  name" style="text-align: left">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Category</label>
+                        <input type="text" name="category" value="" readonly class="form-control category" style="text-align: left">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Reason for Deletion</label>
+                        <textarea name="reason" id="reason" rows="4" class="form-control reason"></textarea>
+                    </div>
+                    
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                  </div>
+               </form>
+            </div>
+          </div>
+        </div>
+        <!-- Modal -->
+        <script>
+            $('#myModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                  var recipient = button.data('id') // Extract info from data-* attributes
+                  var name = button.data('name')
+                  var category = button.data('category')
+                  var formid = button.data('formid')
+                  var confirmation = button.data('confirmation')
+                  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                  var title = '';
+                  var reason = '';
+                    <?php if($_SESSION['authUser'] == $adminuser): ?>
+                        reason = get_reason(formid);
+                        title = 'Confirm Permanent Deletion?';
+                    <?php else: ?>
+
+                        if(confirmation == 'cancel'){
+                            reason = get_reason(formid);
+                            title = 'Are you sure to Cancel Deletion?';
+                            //console.log('Reason: ' + reason);                    
+                          } else {
+                            $('.modal-body textarea.reason').removeAttr('readonly');
+                            title = 'Are you sure to Delete?';
+                          }
+
+                    <?php endif; ?>
+
+                  
+                  
+                  var modal = $(this);                  
+                  modal.find('.modal-title').text(title);
+                  modal.find('.modal-body p.para-text').text(title);                  
+                  modal.find('.modal-body input.name').val(name);
+                  modal.find('.modal-body input.category').val(category);
+                  modal.find('.modal-body input.formid').val(formid);
+                  modal.find('.modal-body input.id').val(formid);
+                  modal.find('.modal-body input.confirmation').val(confirmation);                  
+                  modal.find('.modal-body textarea.reason').html(reason);
+                });
+
+            $("#deleteForm").submit(function(event){
+                submitForm();
+                return false;
+            });
+
+           
+
+            function submitForm(){
+                var data = $('form#deleteForm').serialize();
+                var formid = jQuery('input[name="formid"]').val();
+                <?php if($_SESSION['authUser'] == $adminuser): ?>
+                    var url ='request_permanent_delete.php';
+                <?php else: ?>
+                    var url ='request_delete.php';
+                <?php endif; ?>
+
+                 $.ajax({
+                    type: "POST",
+                    url: url,
+                    cache:false,
+                    data: data,
+                    success: function(response){
+                        $("#myModal").modal('hide');
+                        if(response == 'insert'){
+                            $('#modal_' + formid).removeClass('btn-warning');
+                            $('#modal_' + formid).addClass('btn-primary');
+                            $('#modal_' + formid).html('Cancel Deletion');
+                            //console.log(' | add class btn-danger');
+                        } else if(response == 'cancel') {
+                            $('#modal_' + formid).removeClass('btn-primary');
+                            $('#modal_' + formid).addClass('btn-warning');
+                            $('#modal_' + formid).html('Delete');
+                            //console.log(' | add class btn-warning');
+                        } else {
+                            console.log(response);
+                            //window.top.location.href = window.top.location;
+                        }
+                        
+                    },
+                    error: function(response){
+                        alert("Error");
+                        console.log(response);
+                    }
+                });
+            }
+
+            function get_reason(pc_eid)
+            {
+                $.ajax({
+                    url: 'get_forms_reason.php',
+                    type: 'POST',
+                    data: {
+                        pc_eid: pc_eid
+                    },
+                    success: function(response){
+                        //console.log(response);
+                        $('.modal-body textarea.reason').attr('readonly', 'readonly').html(response);
+                    },
+                    error: function(response)
+                    {
+                        alert('Error in getting reason.');
+                    }
+                });
+            }
+        </script>
 </body>
 </html>
     <?php
