@@ -69,6 +69,12 @@ if(isset($_POST['send_email'])){
             $session_type = '';
         }
 
+        if($details['translator_used']){
+            $translator_used = $details['translator_used'];
+        } else {
+            $translator_used = '';
+        }
+
         $body .= "Name of Client: {$fname} {$lname} \n";
         $body .= "Name of Provider: {$examiner}\n";
         $body .= "Service Rendered: {$form_name}\n";
@@ -78,6 +84,9 @@ if(isset($_POST['send_email'])){
 
         if($icd_code)
             $body .= "ICD Code: {$icd_code}\n";
+
+        if($translator_used)
+            $body .= "Translator Used: {$translator_used}\n";
 
         if($session_type)
             $body .= "Session Type: {$session_type}\n";
