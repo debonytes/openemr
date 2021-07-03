@@ -1,8 +1,8 @@
 <?php
-require_once("../../globals.php");
+
+require_once("$srcdir/user.inc");
 require_once("$srcdir/patient.inc");
-require_once("$srcdir/options.inc.php");
-require_once "$srcdir/classes/postmaster.php";
+require_once("$srcdir/classes/postmaster.php");
 
 $body = '';
 $fname = '';
@@ -18,10 +18,10 @@ if(isset($_POST['send_email'])){
     $lastNameDestination = "Doe";
     $formid = intval($_POST['formid']);
     $dir = $_POST['formdir'];
-    $formdir = 'form_' . $_POST['formdir'];
+    $formdir = 'form_' . $dir;
 
     $query = "SELECT * FROM forms WHERE form_id = ? AND formdir = ?";
-    $res = sqlQuery($query, array($formid, $dir));  
+    $res = sqlQuery($query, array($formid, $dir)); 
     $examiner = '';
     $starttime = '';
     $endtime = '';

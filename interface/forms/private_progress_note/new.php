@@ -823,6 +823,10 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                             $.post( formConfig.logViewAction, response, function( html ) {
                                 $("#"+logId).replaceWith( html );
                             });
+
+                            var formid = "<?php echo $_REQUEST['id']; ?>";
+                            var formdir = "<?php echo $_REQUEST['formname']; ?>";
+                            send_email_after_esign(formid, formdir);
                         }
                     }
                 );
@@ -898,7 +902,27 @@ $path_url = $_SERVER['REQUEST_SCHEME'] . '//' . $_SERVER['SERVER_NAME'];
                 }                
             }
 
-            
+            function send_email_after_esign(formid, formdir)
+            {                
+                $.ajax({
+                  url: "sendemail.php",
+                  type: 'POST',
+                  data: {
+                    send_email: true,
+                    pid: <?php echo $pid; ?>,
+                    formdir: formdir,
+                    formid: formid,
+                  },
+                  success: function(response){
+                      $('.send_email').removeAttr('disabled');
+                      console.log(response);
+                  },
+                  error: function(response){
+                    $('.send_email').removeAttr('disabled');
+                      console.log(response);
+                  }
+                });
+            }
         </script>
     </body>
 </html>

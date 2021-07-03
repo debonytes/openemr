@@ -20,6 +20,7 @@ require_once("$srcdir/api.inc");
 require_once("$srcdir/acl.inc");
 require_once("$srcdir/patient.inc");
 require_once("$srcdir/options.inc.php");
+//require_once "$srcdir/sendemail.php";
 require_once $GLOBALS['srcdir'].'/ESign/Api.php';
 
 use OpenEMR\Common\Csrf\CsrfUtils;
@@ -762,9 +763,7 @@ if ($postCalendarCategoryACO) {
 
                             <div class="clearfix">&nbsp;</div>
                             
-                    </fieldset>
-
-                    
+                    </fieldset>                   
 
                     <div class="form-group clearfix">
                         <div class="col-sm-12 col-sm-offset-1 position-override">
@@ -834,11 +833,14 @@ if ($postCalendarCategoryACO) {
                                 var editButtonId = "form-edit-button-"+response.formDir+"-"+response.formId;
                                 $("#"+editButtonId).replaceWith( response.editButtonHtml );
                             }
-
                             var logId = "esign-signature-log-"+response.formDir+"-"+response.formId;
                             $.post( formConfig.logViewAction, response, function( html ) {
                                 $("#"+logId).replaceWith( html );
                             });
+
+                            var formid = "<?php echo $_REQUEST['id']; ?>";
+                            var formdir = "<?php echo $_REQUEST['formname']; ?>";
+                            send_email_after_esign(formid, formdir);
                         }
                     }
                 );
@@ -864,6 +866,8 @@ if ($postCalendarCategoryACO) {
                             $.post( encounterConfig.logViewAction, response, function( html ) {
                                 $("#"+logId).replaceWith( html );
                             });
+
+
                         }
                     }
                 );
@@ -969,6 +973,28 @@ if ($postCalendarCategoryACO) {
                 }                
             }
 
+
+            function send_email_after_esign(formid, formdir)
+            {                
+                $.ajax({
+                  url: "sendemail.php",
+                  type: 'POST',
+                  data: {
+                    send_email: true,
+                    pid: <?php echo $pid; ?>,
+                    formdir: formdir,
+                    formid: formid,
+                  },
+                  success: function(response){
+                      $('.send_email').removeAttr('disabled');
+                      console.log(response);
+                  },
+                  error: function(response){
+                    $('.send_email').removeAttr('disabled');
+                      console.log(response);
+                  }
+                });
+            }
 
         </script>
     </body>

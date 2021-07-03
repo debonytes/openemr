@@ -1261,7 +1261,7 @@ if ($pass_sens_squad &&
         }
 
         if ($esign->isLocked()) {
-          echo '<button type="button" class="css_button_small send_email" data-formid="'. attr_url($iter['id']) .'" data-formdir="'. attr_url($formdir) .'">Send Email</button>';
+          echo '<button type="button" class="css_button_small send_email" data-formid="'. attr_url($iter['form_id']) .'" data-formdir="'. attr_url($formdir) .'">Send Email</button>';
         }
         echo "</div>\n"; // Added as bug fix.
 
