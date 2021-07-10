@@ -58,6 +58,10 @@ if ($id) {
 
 			$val = ($val) ? $val : NULL;
 
+			if( ($field == 'additional_session_type') && $_REQUEST['is_addtional_session_type'] == NULL ){
+					$val = NULL; 
+			}
+
 			if( in_array($field, $table_fields) ) {
 				if($val) {
 
@@ -96,6 +100,10 @@ if ($id) {
 			$i=0; foreach( $_REQUEST as $field=>$val ) {
 
 				$val = ($val) ? $val : NULL;
+
+				if( ($field == 'additional_session_type') && $_REQUEST['is_addtional_session_type'] == NULL ){
+					$val = NULL; 
+				}
 
 				if( in_array($field, $table_fields) ) {
 					if($val) {
