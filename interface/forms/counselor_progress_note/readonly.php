@@ -455,6 +455,16 @@ if($pid){
                                           <input type="text" class="form-control" name="session_type" id="session_type" value="<?php echo text($check_res['session_type']); ?>" disabled>
                                         </div>
                                     </div>
+
+                                    <div class="clearfix"></div>
+                                    <div class="form-group">
+                                        <label for="additional_session_type" class="col-sm-4 control-label"><?php echo xlt('Addtional Session Type:'); ?> </label>                         
+                                        <div class="col-sm-8">
+                                            <input type="checkbox" name="is_addtional_session_type" disabled id="is_addtional_session_type" class="form-control" style="width: 19px; height: 40px; float: left;" value="1" <?php echo !empty($check_res['additional_session_type']) ? 'checked' : ''; ?> > 
+                                          <input type="text" class="form-control" disabled name="additional_session_type" id="additional_session_type" value="<?php echo text($check_res['additional_session_type']); ?>" style="width: 200px; float:right;">
+                                        </div>
+                                    </div>
+
                                    <div class="clearfix"></div>
                                     <div class="form-group">
                                             <label for="diagnosis" class="col-sm-4 control-label"><?php echo xlt('Diagnosis:'); ?> </label>                         

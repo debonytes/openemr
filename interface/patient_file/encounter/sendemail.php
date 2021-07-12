@@ -13,6 +13,8 @@ $form_name = '';
 if(isset($_POST['send_email'])){
     $pid = intval($_POST['pid']);
     $emailDestination = 'hermiebarit@gmail.com';
+    $emailCopy = 'hermie.ezelink@gmail.com';
+
     //$emailDestination = 'cgdebona@gmail.com';
     $firstNameDestination = "John";
     $lastNameDestination = "Doe";
@@ -70,6 +72,12 @@ if(isset($_POST['send_email'])){
             $session_type = '';
         }
 
+        if($details['additional_session_type']){
+            $additional_session_type = $details['additional_session_type'];
+        } else {
+            $additional_session_type = '';
+        }
+
         if($details['translator_used']){
             $translator_used = $details['translator_used'];
         } else {
@@ -92,6 +100,9 @@ if(isset($_POST['send_email'])){
         if($session_type)
             $body .= "Session Type: {$session_type}\n";
 
+        if($additional_session_type)
+            $body .= "Additional Session Type: {$additional_session_type}\n";
+
         $body .= "Date of Appointment: {$date_received}\n";
         $body .= "Start Time: {$starttime}\n";
         $body .= "End Time: {$endtime}\n";
@@ -102,6 +113,7 @@ if(isset($_POST['send_email'])){
         $mail->Body = $body;
         $mail->Subject = $form_name . ' Received';
         $mail->AddAddress($emailDestination, $firstNameDestination.", ".$lastNameDestination);
+        $mail->AddCC($emailCopy);
         if(!$mail->Send()) {
           echo ("There has been a mail error sending to " . $firstNameDestination .
            " " . $mail->ErrorInfo);
