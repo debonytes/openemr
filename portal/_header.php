@@ -158,6 +158,8 @@ use OpenEMR\Core\Header;
                              </ul>
                         </li>
                     <?php } ?>
+
+                    <!--
                     <li class="dropdown reporting-menu"><a href="#"
                         class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-calendar"></i> <span><?php echo xlt('Reports'); ?></span></a>
                         <ul class="dropdown-menu">
@@ -173,6 +175,9 @@ use OpenEMR\Core\Header;
                                     data-parent="#panelgroup"> <i class="fa fa-download"></i> <span><?php echo xlt('Download Lab Documents'); ?></span></a></li>
                             <?php } ?>
                         </ul></li>
+                    -->
+
+
                     <li><a href="<?php echo $GLOBALS['web_root']; ?>/portal/messaging/messages.php"><i class="fa fa-envelope" aria-hidden="true"></i>
                             <span><?php echo xlt('Secure Messaging'); ?></span>
                     </a></li>

@@ -302,6 +302,7 @@ function changeCredentials(e) {
             </div>
             <?php } ?>
             <div class="row">
+                
                 <div class="col-sm-8">
                     <div class="panel panel-primary collapse" id="reportpanel">
                         <header class="panel-heading"><?php echo xlt('Reports'); ?>  </header>
@@ -309,6 +310,7 @@ function changeCredentials(e) {
                         <div class="panel-footer"></div>
                     </div>
                 </div>
+            
                 <!-- /.col -->
                 <?php if (!empty($GLOBALS['portal_onsite_document_download'])) { ?>
                 <div class="col-sm-6">

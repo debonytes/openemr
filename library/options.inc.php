@@ -4232,6 +4232,13 @@ function get_form_details_by_id($formid, $form_table)
     return ($res) ? $res : null;
 }
 
+function get_category_details($catid)
+{
+    $sql = "SELECT * FROM openemr_postcalendar_categories WHERE pc_catid = ?";
+    $res = sqlQuery($sql, array($catid));
+    return ($res) ? $res : null;
+}
+
 function update_patient_data_extra($pid)
 {
     $sql = "UPDATE patient_data_additional SET patient_code = null WHERE pc_eid = ?";
